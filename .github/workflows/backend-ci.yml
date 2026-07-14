@@ -46,7 +46,7 @@ jobs:
       env:
         SUPABASE_URL: "https://dummy-url.supabase.co"
         SUPABASE_KEY: "dummy-key"
-        # Pwede mong gamitin ang env na ito sa config mo para malaman ng FastAPI na "testing mode" siya
         APP_ENV: "testing" 
       run: |
-        pytest
+        # Ituturo natin ang PYTHONPATH sa loob ng app folder at patatakbuhin ang pytest doon
+        PYTHONPATH=app pytest app/test

@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTE3NBoss — Import From China to Philippines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #f97316; --primary-light: #fff7ed; --primary-dark: #ea580c;
+    --text: #0f172a; --text-secondary: #64748b; --text-muted: #94a3b8;
+    --bg: #ffffff; --bg-warm: #f8fafc; --bg-card: #ffffff;
+    --border: #e2e8f0; --border-light: #f1f5f9;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 20px rgba(0,0,0,0.06);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.08);
+    --radius-sm: 8px; --radius: 12px; --radius-lg: 20px; --radius-xl: 24px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text); background: var(--bg); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  /* BACKEND: Load theme variables from GET /api/v1/config/theme */
+  /* BACKEND: Inject user preferences from GET /api/v1/user/preferences */
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light); transition: var(--transition);
+  }
+  .nav.scrolled { box-shadow: var(--shadow); }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 24px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; text-decoration: none; cursor: pointer; }
+  .logo span { color: var(--primary); }
+  .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+  .nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-size: 14px;
+    font-weight: 500; transition: var(--transition); cursor: pointer; position: relative;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+  .nav-links a.active::after {
+    content: ''; position: absolute; bottom: -20px; left: 0; right: 0;
+    height: 2px; background: var(--primary); border-radius: 2px;
+  }
+  .nav-cta {
+    padding: 10px 20px; background: var(--primary); color: #fff; border: none;
+    border-radius: var(--radius); font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+  }
+  .nav-cta:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
+  .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+  .mobile-menu-btn span { display: block; width: 24px; height: 2px; background: var(--text); margin: 5px 0; transition: var(--transition); border-radius: 2px; }
+  .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+  .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+  .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+  .mobile-menu {
+    display: none; position: fixed; top: 64px; left: 0; right: 0;
+    background: rgba(255,255,255,0.98); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light); padding: 16px 24px;
+    z-index: 999; transform: translateY(-100%); opacity: 0; transition: var(--transition);
+  }
+  .mobile-menu.open { transform: translateY(0); opacity: 1; }
+  .mobile-menu a {
+    display: block; padding: 14px 0; color: var(--text); text-decoration: none;
+    font-size: 16px; font-weight: 500; border-bottom: 1px solid var(--border-light); cursor: pointer;
+  }
+  .mobile-menu a:last-child { border-bottom: none; }
+
+  .page { display: none; animation: fadeIn 0.4s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #fff7ed 100%);
+    position: relative; overflow: hidden; padding-top: 64px;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -20%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 70%); border-radius: 50%;
+  }
+  .hero-inner {
+    max-width: 1280px; margin: 0 auto; padding: 80px 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; position: relative; z-index: 1;
+  }
+  .hero-left h1 { font-size: 56px; font-weight: 800; line-height: 1.08; letter-spacing: -2px; margin-bottom: 24px; }
+  .hero-left h1 em { color: var(--primary); font-style: normal; position: relative; }
+  .hero-left h1 em::after { content: ''; position: absolute; bottom: 4px; left: 0; right: 0; height: 8px; background: rgba(249,115,22,0.15); border-radius: 4px; z-index: -1; }
+  .hero-left p { font-size: 18px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 32px; max-width: 480px; }
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+  .btn {
+    padding: 14px 28px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: var(--transition); border: none;
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+  }
+  .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 20px rgba(249,115,22,0.25); }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(249,115,22,0.35); }
+  .btn-secondary { background: #fff; color: var(--text); border: 2px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+  .trust-bar { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); }
+  .trust-item svg { width: 18px; height: 18px; color: var(--primary); flex-shrink: 0; }
+
+  .hero-card { background: var(--bg-card); border-radius: var(--radius-xl); padding: 32px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-light); }
+  .hero-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-field { text-align: left; }
+  .form-field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-field input, .form-field select {
+    width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 14px; outline: none; transition: var(--transition); background: #fff; color: var(--text); font-family: inherit;
+  }
+  .form-field input:focus, .form-field select:focus { border-color: var(--primary); }
+  .form-field input::placeholder { color: var(--text-muted); }
+  .hero-card .btn { width: 100%; justify-content: center; margin-top: 8px; }
+  .quick-result { margin-top: 16px; padding: 16px; background: var(--primary-light); border-radius: var(--radius-sm); text-align: center; display: none; }
+  .quick-result.show { display: block; }
+  .quick-result .price { font-size: 28px; font-weight: 800; color: var(--primary); }
+  .quick-result .note { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+  .bento-section { padding: 100px 24px; max-width: 1280px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: 40px; font-weight: 800; margin-bottom: 12px; letter-spacing: -1px; }
+  .section-header p { color: var(--text-secondary); font-size: 17px; max-width: 500px; margin: 0 auto; }
+  .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 220px); gap: 20px; }
+  .bento-card {
+    background: var(--bg-card); border-radius: var(--radius-lg); padding: 28px;
+    border: 1px solid var(--border-light); transition: var(--transition);
+    display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+  }
+  .bento-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: #fed7aa; }
+  .bento-card.large { grid-column: span 2; grid-row: span 2; background: linear-gradient(135deg, var(--primary-light), #fff); }
+  .bento-card.wide { grid-column: span 2; }
+  .bento-card .icon { width: 48px; height: 48px; background: var(--primary-light); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .bento-card h3 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; }
+  .bento-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+  .bento-card .stat-number { font-size: 52px; font-weight: 800; color: var(--primary); line-height: 1; }
+  .bento-card .stat-label { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+
+  .services-section { padding: 100px 24px; background: var(--bg-warm); }
+  .services-inner { max-width: 1280px; margin: 0 auto; }
+  .service-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .service-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px 32px; border: 1px solid var(--border); transition: var(--transition); position: relative; }
+  .service-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .service-card .icon { width: 56px; height: 56px; background: var(--primary-light); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 24px; }
+  .service-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+  .service-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+  .tag { display: inline-block; padding: 4px 12px; background: var(--primary-light); color: var(--primary); border-radius: 100px; font-size: 12px; font-weight: 600; }
+  .service-features { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+  .service-features li { list-style: none; font-size: 13px; color: var(--text-secondary); padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+  .service-features li::before { content: '✓'; color: var(--primary); font-weight: 700; }
+
+  .tracking-section { padding: 100px 24px; max-width: 800px; margin: 0 auto; text-align: center; }
+  .tracking-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 48px; margin-top: 40px; box-shadow: var(--shadow); }
+  .track-input-group { display: flex; gap: 12px; margin-bottom: 32px; }
+  .track-input-group input { flex: 1; padding: 16px 20px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 16px; outline: none; transition: var(--transition); font-family: inherit; }
+  .track-input-group input:focus { border-color: var(--primary); }
+  .track-input-group input::placeholder { color: var(--text-muted); }
+  .track-btn { padding: 16px 32px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+  .track-btn:hover { background: var(--primary-dark); }
+  .track-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .track-result { display: none; text-align: left; animation: fadeIn 0.4s ease; }
+  .track-result.show { display: block; }
+  .track-result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-light); }
+  .track-result-header h4 { font-size: 16px; font-weight: 700; }
+  .track-status-badge { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+  .status-transit { background: #dbeafe; color: #1d4ed8; }
+  .status-delivered { background: #dcfce7; color: #15803d; }
+  .status-customs { background: #fef3c7; color: #b45309; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 4px; bottom: 4px; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; padding-bottom: 24px; }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot { position: absolute; left: -24px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--border); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--border); }
+  .timeline-item.active .timeline-dot { background: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
+  .timeline-item.completed .timeline-dot { background: #22c55e; box-shadow: 0 0 0 2px #22c55e; }
+  .timeline-content h5 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .timeline-content p { font-size: 13px; color: var(--text-secondary); }
+  .timeline-content .time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .calc-page { padding: 120px 24px 80px; max-width: 900px; margin: 0 auto; }
+  .calc-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px; box-shadow: var(--shadow); }
+  .calc-card h2 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+  .calc-card > p { color: var(--text-secondary); margin-bottom: 32px; }
+  .calc-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .calc-form .form-field.full-width { grid-column: span 2; }
+  .calc-form .btn-primary { grid-column: span 2; justify-content: center; padding: 16px; font-size: 16px; }
+  .calc-result { margin-top: 32px; padding: 32px; background: var(--primary-light); border-radius: var(--radius-lg); border: 1px solid #fed7aa; display: none; }
+  .calc-result.show { display: block; }
+  .calc-result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .calc-result-header h3 { font-size: 20px; font-weight: 700; }
+  .calc-price { text-align: right; }
+  .calc-price .amount { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
+  .calc-price .period { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .calc-breakdown { background: #fff; border-radius: var(--radius-sm); padding: 20px; }
+  .calc-breakdown-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; border-bottom: 1px dashed var(--border-light); }
+  .calc-breakdown-row:last-child { border-bottom: none; font-weight: 700; font-size: 16px; padding-top: 14px; margin-top: 4px; border-top: 2px solid var(--border); }
+  .calc-breakdown-row .value { font-weight: 600; color: var(--text); }
+  .calc-note { margin-top: 16px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  .services-page { padding: 120px 24px 80px; max-width: 1280px; margin: 0 auto; }
+  .services-hero { text-align: center; margin-bottom: 64px; }
+  .services-hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 16px; letter-spacing: -1.5px; }
+  .services-hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+  .service-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-bottom: 64px; }
+  .service-detail-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px; transition: var(--transition); }
+  .service-detail-card:hover { border-color: var(--primary); box-shadow: var(--shadow-lg); }
+  .service-detail-card .icon { width: 64px; height: 64px; background: var(--primary-light); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 24px; }
+  .service-detail-card h3 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+  .service-detail-card p { color: var(--text-secondary); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+  .service-detail-card .price-tag { display: inline-block; padding: 8px 16px; background: var(--primary-light); color: var(--primary); border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+  .service-detail-card ul { list-style: none; }
+  .service-detail-card ul li { font-size: 14px; color: var(--text-secondary); padding: 6px 0; display: flex; align-items: center; gap: 10px; }
+  .service-detail-card ul li::before { content: '✓'; color: var(--primary); font-weight: 700; width: 20px; height: 20px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+
+  .contact-page { padding: 120px 24px 80px; max-width: 1000px; margin: 0 auto; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: start; }
+  .contact-info h1 { font-size: 40px; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+  .contact-info > p { color: var(--text-secondary); font-size: 16px; line-height: 1.6; margin-bottom: 32px; }
+  .contact-method { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  .contact-method .icon-box { width: 48px; height: 48px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .contact-method h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .contact-method p { font-size: 14px; color: var(--text-secondary); }
+  .contact-form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px; box-shadow: var(--shadow); }
+  .contact-form-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 24px; }
+  .contact-form .form-field { margin-bottom: 20px; }
+  .contact-form textarea { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; outline: none; transition: var(--transition); font-family: inherit; resize: vertical; min-height: 120px; }
+  .contact-form textarea:focus { border-color: var(--primary); }
+  .contact-form .btn-primary { width: 100%; justify-content: center; padding: 16px; }
+  .form-success { display: none; text-align: center; padding: 40px; }
+  .form-success.show { display: block; }
+  .form-success .icon { width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+  .form-success h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .form-success p { color: var(--text-secondary); font-size: 14px; }
+
+  .cta-section { padding: 80px 24px; background: linear-gradient(135deg, var(--primary-light), #fff); }
+  .cta-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .cta-inner h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+  .cta-inner p { color: var(--text-secondary); font-size: 17px; margin-bottom: 32px; }
+
+  .footer { background: var(--text); color: #94a3b8; padding: 60px 24px 32px; }
+  .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
+  .footer-brand .logo { color: #fff; margin-bottom: 16px; display: inline-block; }
+  .footer-brand p { font-size: 14px; line-height: 1.6; max-width: 300px; }
+  .footer-col h4 { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .footer-col a { display: block; color: #94a3b8; text-decoration: none; font-size: 14px; padding: 6px 0; transition: var(--transition); cursor: pointer; }
+  .footer-col a:hover { color: var(--primary); }
+  .footer-bottom { max-width: 1280px; margin: 48px auto 0; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+
+  .chat-widget { position: fixed; bottom: 24px; right: 24px; z-index: 2000; font-family: 'Inter', sans-serif; }
+  .chat-toggle { width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: #fff; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(249,115,22,0.4); transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+  .chat-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(249,115,22,0.5); }
+  .chat-toggle .close-icon { display: none; }
+  .chat-toggle.open .chat-icon { display: none; }
+  .chat-toggle.open .close-icon { display: block; }
+  .chat-window { position: absolute; bottom: 72px; right: 0; width: 360px; height: 480px; background: #fff; border-radius: var(--radius-xl); box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 1px solid var(--border); display: none; flex-direction: column; overflow: hidden; }
+  .chat-window.open { display: flex; }
+  .chat-header { padding: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; }
+  .chat-header h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .chat-header p { font-size: 12px; opacity: 0.9; }
+  .chat-header .status { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; }
+  .chat-header .status-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .chat-message { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; animation: fadeIn 0.3s ease; }
+  .chat-message.bot { background: var(--bg-warm); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .chat-message.user { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .chat-message .time { font-size: 10px; opacity: 0.6; margin-top: 4px; }
+  .chat-input-area { padding: 12px 16px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; }
+  .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 100px; font-size: 13px; outline: none; font-family: inherit; }
+  .chat-input-area input:focus { border-color: var(--primary); }
+  .chat-send { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+  .chat-send:hover { background: var(--primary-dark); }
+  .chat-quick-replies { display: flex; gap: 8px; padding: 0 16px 12px; flex-wrap: wrap; }
+  .chat-quick-replies button { padding: 6px 12px; background: var(--primary-light); color: var(--primary); border: none; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+  .chat-quick-replies button:hover { background: var(--primary); color: #fff; }
+
+  @media (max-width: 1024px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    .hero-left h1 { font-size: 42px; }
+    .bento-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+    .bento-card.large, .bento-card.wide { grid-column: span 2; grid-row: span 1; }
+    .service-cards, .service-detail-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner { grid-template-columns: repeat(2, 1fr); }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .nav-links, .nav-cta { display: none; }
+    .mobile-menu-btn { display: block; }
+    .mobile-menu { display: block; }
+    .hero-left h1 { font-size: 32px; }
+    .hero-inner { padding: 40px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .bento-grid { grid-template-columns: 1fr; }
+    .bento-card.large, .bento-card.wide { grid-column: span 1; }
+    .service-cards, .service-detail-grid { grid-template-columns: 1fr; }
+    .calc-form { grid-template-columns: 1fr; }
+    .calc-form .form-field.full-width, .calc-form .btn-primary { grid-column: span 1; }
+    .track-input-group { flex-direction: column; }
+    .track-btn { width: 100%; }
+    .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    .chat-window { width: calc(100vw - 48px); right: -12px; }
+    .section-header h2 { font-size: 28px; }
+    .services-hero h1 { font-size: 32px; }
+    .contact-info h1 { font-size: 28px; }
+    .calc-card, .contact-form-card, .tracking-box { padding: 24px; }
+  }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--text); color: #fff; padding: 14px 24px; border-radius: var(--radius);
+    font-size: 14px; font-weight: 500; z-index: 3000; opacity: 0; transition: all 0.4s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- ================================================================
+     BACKEND MARKER: Navigation Data
+     ---------------------------------------------------------------
+     BACKEND: Fetch nav links from GET /api/v1/navigation
+     BACKEND: Inject user auth state from GET /api/v1/auth/session
+     BACKEND: Load unread notification count from GET /api/v1/notifications/unread
+     ================================================================ -->
+<nav class="nav" id="navbar">
+  <div class="nav-inner">
+    <a class="logo" onclick="goToPage('home')">UTE3N<span>Boss</span></a>
+    <ul class="nav-links">
+      <li><a onclick="goToPage('home')" class="nav-link active" data-page="home">Home</a></li>
+      <li><a onclick="goToPage('services')" class="nav-link" data-page="services">Services</a></li>
+      <li><a onclick="goToPage('tracking')" class="nav-link" data-page="tracking">Track</a></li>
+      <li><a onclick="goToPage('pricing')" class="nav-link" data-page="pricing">Pricing</a></li>
+      <li><a onclick="goToPage('contact')" class="nav-link" data-page="contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta" onclick="goToPage('pricing')">Get Quote</button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="goToPage('home'); toggleMobileMenu()">Home</a>
+  <a onclick="goToPage('services'); toggleMobileMenu()">Services</a>
+  <a onclick="goToPage('tracking'); toggleMobileMenu()">Track Shipment</a>
+  <a onclick="goToPage('pricing'); toggleMobileMenu()">Pricing</a>
+  <a onclick="goToPage('contact'); toggleMobileMenu()">Contact Us</a>
+</div>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page active" id="page-home">
+
+  <!-- ================================================================
+       BACKEND MARKER: Hero Section
+       ---------------------------------------------------------------
+       BACKEND: Hero content from GET /api/v1/content/hero
+       BACKEND: A/B test hero copy via GET /api/v1/experiments/hero-variant
+       BACKEND: Track hero CTA clicks via POST /api/v1/analytics/events
+       ================================================================ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <h1>Import from China <em>without the stress</em></h1>
+        <p>All-inclusive sea and air freight from China to the Philippines. Customs, taxes, and delivery — handled. Transparent pricing, real-time tracking, and a team that actually replies.</p>
+        <div class="hero-btns">
+          <button class="btn btn-primary" onclick="goToPage('pricing')">Get a Free Quote</button>
+          <button class="btn btn-secondary" onclick="goToPage('tracking')">Track Your Shipment</button>
+        </div>
+        <div class="trust-bar">
+          <div class="trust-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            <span>All-In Pricing</span>
+          </div>
+          <div class="trust-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>7-Day Support</span>
+          </div>
+          <div class="trust-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>93% On-Time</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================
+           BACKEND MARKER: Hero Quick Calculator
+           ---------------------------------------------------------------
+           BACKEND: Calculator config (rates, destinations) from GET /api/v1/config/rates
+           BACKEND: POST estimate to /api/v1/quotes/estimate for logged-in users
+           BACKEND: Log calculator usage for analytics via POST /api/v1/analytics/events
+           ================================================================ -->
+      <div class="hero-right">
+        <div class="hero-card">
+          <h3>📦 Quick Estimate</h3>
+          <div class="form-row">
+            <div class="form-field">
+              <label>From</label>
+              <select id="heroFrom">
+                <option value="guangzhou">Guangzhou</option>
+                <option value="shenzhen">Shenzhen</option>
+                <option value="yiwu">Yiwu</option>
+                <option value="xiamen">Xiamen</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>To</label>
+              <select id="heroTo">
+                <option value="manila">Manila</option>
+                <option value="cebu">Cebu</option>
+                <option value="davao">Davao</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Mode</label>
+              <select id="heroMode" onchange="updateHeroCalc()">
+                <option value="sea">Sea Freight</option>
+                <option value="air">Air Freight</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label id="heroUnitLabel">CBM</label>
+              <input type="number" id="heroCBM" placeholder="e.g. 2.5" step="0.1" min="0.1" oninput="updateHeroCalc()">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="calculateHero()">Calculate Estimate</button>
+          <div class="quick-result" id="heroResult">
+            <div class="price" id="heroPrice">₱0</div>
+            <div class="note">All-inclusive estimate. Taxes & duties included.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       BACKEND MARKER: Stats & Trust Section
+       ---------------------------------------------------------------
+       BACKEND: Stats from GET /api/v1/metrics/public
+       BACKEND: Cache stats with Redis TTL 300s to reduce DB load
+       BACKEND: A/B test stat ordering via GET /api/v1/experiments/stats-layout
+       ================================================================ -->
+  <section class="bento-section">
+    <div class="section-header reveal">
+      <h2>Why Entrepreneurs Trust Us</h2>
+      <p>Built for Filipino business owners importing from China</p>
+    </div>
+    <div class="bento-grid">
+      <div class="bento-card large reveal">
+        <div>
+          <div class="icon">📊</div>
+          <h3>Real-Time Tracking</h3>
+          <p>Follow your cargo from our China warehouse to your doorstep. Email and SMS updates at every milestone — no more guessing where your inventory is.</p>
+        </div>
+      </div>
+      <div class="bento-card reveal">
+        <div class="stat-number">95K+</div>
+        <div class="stat-label">Shipments Delivered</div>
+      </div>
+      <div class="bento-card reveal">
+        <div class="stat-number">47K+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
+      <div class="bento-card wide reveal">
+        <div class="icon">🏭</div>
+        <h3>4 Warehouses in China</h3>
+        <p>Consolidate purchases from multiple suppliers into one shipment and save on freight costs.</p>
+      </div>
+      <div class="bento-card reveal">
+        <div class="stat-number">₱0</div>
+        <div class="stat-label">Hidden Fees</div>
+      </div>
+      <div class="bento-card reveal">
+        <div class="icon">🎓</div>
+        <h3>Importing 101</h3>
+        <p>First time importing? We guide you step-by-step.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       BACKEND MARKER: Services Section
+       ---------------------------------------------------------------
+       BACKEND: Services from GET /api/v1/services
+       BACKEND: Service pricing from GET /api/v1/config/pricing
+       BACKEND: Popular tag determined by GET /api/v1/analytics/popular-service
+       ================================================================ -->
+  <section class="services-section">
+    <div class="services-inner">
+      <div class="section-header reveal">
+        <h2>Shipping Solutions</h2>
+        <p>Choose the right mode for your cargo</p>
+      </div>
+      <div class="service-cards">
+        <div class="service-card reveal">
+          <div class="icon">🚢</div>
+          <h3>Sea Freight</h3>
+          <p>Best for bulk orders and non-urgent inventory. Includes customs, duties, and port fees.</p>
+          <span class="tag">Most Popular</span>
+          <ul class="service-features">
+            <li>₱9,500/CBM all-in rate</li>
+            <li>15–25 day transit</li>
+            <li>Free consolidation</li>
+          </ul>
+        </div>
+        <div class="service-card reveal">
+          <div class="icon">✈️</div>
+          <h3>Air Freight</h3>
+          <p>Under one week delivery. Ideal for electronics, samples, and time-sensitive goods.</p>
+          <span class="tag">Express</span>
+          <ul class="service-features">
+            <li>₱550/kg all-in rate</li>
+            <li>3–7 day transit</li>
+            <li>Door-to-door available</li>
+          </ul>
+        </div>
+        <div class="service-card reveal">
+          <div class="icon">🚚</div>
+          <h3>Door-to-Door</h3>
+          <p>Free delivery within 35km of Malabon for shipments 3 CBM and above.</p>
+          <span class="tag">Free</span>
+          <ul class="service-features">
+            <li>No pickup needed</li>
+            <li>Real-time SMS updates</li>
+            <li>COD available</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       BACKEND MARKER: Press / Media Mentions
+       ---------------------------------------------------------------
+       BACKEND: Media mentions from GET /api/v1/content/press
+       BACKEND: Article links from GET /api/v1/content/articles
+       ================================================================ -->
+  <section class="bento-section" style="background: var(--bg-warm); border-radius: var(--radius-xl); margin: 0 24px 80px; max-width: none; padding: 60px 40px;">
+    <div class="section-header reveal">
+      <h2>Featured In</h2>
+      <p>Trusted by the Philippines' leading business publications</p>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; opacity: 0.5;">
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -1px;">Manila Bulletin</span>
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -1px;">The Philippine Star</span>
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -1px;">BusinessMirror</span>
+      <span style="font-size: 20px; font-weight: 700; letter-spacing: -1px;">BusinessWorld</span>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-inner reveal">
+      <h2>Ready to start importing?</h2>
+      <p>Join 47,000+ Filipino entrepreneurs who ship smarter with UTE3NBoss.</p>
+      <button class="btn btn-primary" style="padding: 16px 40px; font-size: 16px;" onclick="goToPage('pricing')">Get Your Free Quote</button>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== SERVICES PAGE ==================== -->
+<div class="page" id="page-services">
+  <div class="services-page">
+    <div class="services-hero reveal">
+      <h1>Shipping Solutions That Scale</h1>
+      <p>From your first box to full container loads, we have a solution that fits your business.</p>
+    </div>
+
+    <!-- ================================================================
+         BACKEND MARKER: Detailed Services
+         ---------------------------------------------------------------
+         BACKEND: Service details from GET /api/v1/services/{id}
+         BACKEND: Dynamic pricing from GET /api/v1/pricing?service={id}
+         BACKEND: Feature lists from GET /api/v1/services/{id}/features
+         ================================================================ -->
+    <div class="service-detail-grid">
+      <div class="service-detail-card reveal">
+        <div class="icon">🚢</div>
+        <span class="price-tag">From ₱9,500/CBM</span>
+        <h3>Sea Freight</h3>
+        <p>Our most popular option for entrepreneurs importing inventory from China. All customs taxes, duties, and port fees are included — what you see is what you pay.</p>
+        <ul>
+          <li>All-in pricing, zero hidden fees</li>
+          <li>15–25 day door-to-door transit</li>
+          <li>Free consolidation across 4 warehouses</li>
+          <li>Real-time email & SMS tracking</li>
+          <li>Free delivery within 35km of Malabon (3+ CBM)</li>
+          <li>Customs clearance handled end-to-end</li>
+        </ul>
+      </div>
+
+      <div class="service-detail-card reveal">
+        <div class="icon">✈️</div>
+        <span class="price-tag">From ₱550/kg</span>
+        <h3>Air Freight</h3>
+        <p>When speed matters. Perfect for electronics, samples, seasonal goods, or urgent restocks. Door-to-door in under one week.</p>
+        <ul>
+          <li>All-in pricing per kilogram</li>
+          <li>3–7 day door-to-door transit</li>
+          <li>Ideal for high-value / low-weight cargo</li>
+          <li>Priority customs clearance</li>
+          <li>Real-time tracking dashboard</li>
+          <li>Insurance included up to ₱50,000</li>
+        </ul>
+      </div>
+
+      <div class="service-detail-card reveal">
+        <div class="icon">🏭</div>
+        <span class="price-tag">Free Storage</span>
+        <h3>Warehouse Consolidation</h3>
+        <p>Buy from multiple suppliers? We will collect, inspect, and consolidate everything into one shipment at our warehouses in Guangzhou, Shenzhen, Yiwu, or Xiamen.</p>
+        <ul>
+          <li>4 strategic locations in China</li>
+          <li>Free 30-day storage</li>
+          <li>Quality inspection available</li>
+          <li>Repacking & labeling services</li>
+          <li>Supplier coordination support</li>
+        </ul>
+      </div>
+
+      <div class="service-detail-card reveal">
+        <div class="icon">🛡️</div>
+        <span class="price-tag">Included</span>
+        <h3>Customs & Clearance</h3>
+        <p>Never worry about BOC paperwork again. Our licensed brokers handle every document, tax computation, and inspection requirement.</p>
+        <ul>
+          <li>Licensed customs brokers</li>
+          <li>Import permit assistance</li>
+          <li>Tax computation & payment</li>
+          <li>BOC inspection handling</li>
+          <li>Release coordination</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TRACKING PAGE ==================== -->
+<div class="page" id="page-tracking">
+  <div class="tracking-section">
+    <div class="section-header reveal">
+      <h2>Track Your Shipment</h2>
+      <p>Enter your tracking number to see real-time updates on your cargo</p>
+    </div>
+
+    <!-- ================================================================
+         BACKEND MARKER: Shipment Tracking
+         ---------------------------------------------------------------
+         BACKEND: POST tracking number to /api/v1/shipments/track
+         BACKEND: Response schema: { id, status, route, timeline[], eta }
+         BACKEND: WebSocket connection to wss://api.cargoboss.ph/v1/shipments/{id}/live
+         BACKEND: Rate limit: 10 requests/min per IP via /api/v1/ratelimit
+         BACKEND: Cache tracking data in Redis with TTL 60s
+         ================================================================ -->
+    <div class="tracking-box reveal">
+      <div class="track-input-group">
+        <input type="text" id="trackInput" placeholder="e.g. CBF-2026-88421" onkeypress="if(event.key==='Enter')trackShipment()">
+        <button class="track-btn" id="trackBtn" onclick="trackShipment()">
+          <span id="trackBtnText">Track Now</span>
+        </button>
+      </div>
+
+      <div class="track-result" id="trackResult">
+        <div class="track-result-header">
+          <div>
+            <h4 id="trackId">CBF-2026-88421</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 2px;" id="trackRoute">Guangzhou → Manila</p>
+          </div>
+          <span class="track-status-badge status-transit" id="trackStatus">In Transit</span>
+        </div>
+        <div class="timeline" id="trackTimeline"></div>
+      </div>
+    </div>
+
+    <div style="margin-top: 48px; text-align: center; color: var(--text-secondary); font-size: 14px;">
+      <p>Need help? Our support team is available 7 days a week.</p>
+      <p style="margin-top: 8px;">
+        <a style="color: var(--primary); font-weight: 600; cursor: pointer;" onclick="goToPage('contact')">Contact Support →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PRICING PAGE ==================== -->
+<div class="page" id="page-pricing">
+  <div class="calc-page">
+    <div class="calc-card reveal">
+      <h2>Freight Calculator</h2>
+      <p>Get an instant all-inclusive estimate for your shipment.</p>
+
+      <!-- ================================================================
+           BACKEND MARKER: Full Freight Calculator
+           ---------------------------------------------------------------
+           BACKEND: Rate engine config from GET /api/v1/config/rates
+           BACKEND: POST quote request to /api/v1/quotes (creates quote record)
+           BACKEND: Rate limiting via POST /api/v1/ratelimit/check
+           BACKEND: Store quote in DB for follow-up: POST /api/v1/quotes
+           BACKEND: Send quote email via POST /api/v1/notifications/email
+           BACKEND: Log conversion funnel: POST /api/v1/analytics/funnel
+           ================================================================ -->
+      <div class="calc-form">
+        <div class="form-field">
+          <label>Origin Warehouse</label>
+          <select id="calcFrom">
+            <option value="guangzhou">Guangzhou</option>
+            <option value="shenzhen">Shenzhen</option>
+            <option value="yiwu">Yiwu</option>
+            <option value="xiamen">Xiamen</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Destination</label>
+          <select id="calcTo">
+            <option value="manila">Manila</option>
+            <option value="cebu">Cebu (+₱1,500)</option>
+            <option value="davao">Davao (+₱2,500)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Shipping Mode</label>
+          <select id="calcMode" onchange="toggleCalcFields()">
+            <option value="sea">Sea Freight (per CBM)</option>
+            <option value="air">Air Freight (per kg)</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label id="calcUnitLabel">Volume (CBM)</label>
+          <input type="number" id="calcUnit" placeholder="e.g. 2.5" step="0.1" min="0.1">
+        </div>
+        <div class="form-field full-width">
+          <label>Cargo Description (Optional)</label>
+          <input type="text" id="calcDesc" placeholder="e.g. Electronics, garments, furniture...">
+        </div>
+        <button class="btn btn-primary" onclick="calculateFull()">
+          <span id="calcBtnText">Calculate Estimate</span>
+        </button>
+      </div>
+
+      <div class="calc-result" id="calcResult">
+        <div class="calc-result-header">
+          <div>
+            <h3>Your Estimate</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;" id="calcResultRoute">Guangzhou → Manila via Sea</p>
+          </div>
+          <div class="calc-price">
+            <div class="amount" id="calcTotalPrice">₱23,750</div>
+            <div class="period">All-inclusive</div>
+          </div>
+        </div>
+        <div class="calc-breakdown">
+          <div class="calc-breakdown-row">
+            <span>Base Freight</span>
+            <span class="value" id="calcBase">₱23,750</span>
+          </div>
+          <div class="calc-breakdown-row">
+            <span>Customs & Duties</span>
+            <span class="value">Included</span>
+          </div>
+          <div class="calc-breakdown-row">
+            <span>Port Fees</span>
+            <span class="value">Included</span>
+          </div>
+          <div class="calc-breakdown-row">
+            <span>Documentation</span>
+            <span class="value">Included</span>
+          </div>
+          <div class="calc-breakdown-row" id="calcDestRow" style="display:none;">
+            <span>Destination Surcharge</span>
+            <span class="value" id="calcDestFee">₱0</span>
+          </div>
+          <div class="calc-breakdown-row">
+            <span>Estimated Total</span>
+            <span class="value" id="calcTotal">₱23,750</span>
+          </div>
+        </div>
+        <div class="calc-note">
+          This is an estimate. Final pricing may vary based on actual cargo dimensions, weight verification, and current fuel surcharges. A formal quote will be sent to your email within 2 hours.
+        </div>
+        <div style="margin-top: 20px; display: flex; gap: 12px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="showToast('Quote request submitted! Check your email.')">
+            Request Formal Quote
+          </button>
+          <button class="btn btn-secondary" onclick="document.getElementById('calcResult').classList.remove('show')">
+            Recalculate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CONTACT PAGE ==================== -->
+<div class="page" id="page-contact">
+  <div class="contact-page">
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h1>Let's talk shipping</h1>
+        <p>Whether it is your first import or your 500th, our team is here to help. Reach out and we will get back to you within 2 hours.</p>
+
+        <div class="contact-method">
+          <div class="icon-box">📧</div>
+          <div>
+            <h4>Email Us</h4>
+            <p>hello@ute3nboss.ph</p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="icon-box">📱</div>
+          <div>
+            <h4>Call / Text</h4>
+            <p>(02) 7777-2677 / 0917-680-5376</p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="icon-box">📍</div>
+          <div>
+            <h4>Visit Us</h4>
+            <p>Unit 12, Commerce Avenue, Malabon City, Metro Manila</p>
+          </div>
+        </div>
+        <div class="contact-method">
+          <div class="icon-box">🕐</div>
+          <div>
+            <h4>Business Hours</h4>
+            <p>Mon–Sun, 8:00 AM – 8:00 PM</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================
+           BACKEND MARKER: Contact Form
+           ---------------------------------------------------------------
+           BACKEND: POST form data to /api/v1/contact/inquiries
+           BACKEND: Validate with reCAPTCHA v3 via POST /api/v1/captcha/verify
+           BACKEND: Auto-assign to sales team via POST /api/v1/crm/leads
+           BACKEND: Send confirmation email via POST /api/v1/notifications/email
+           BACKEND: Slack notification to #sales via POST /api/v1/integrations/slack
+           ================================================================ -->
+      <div class="contact-form-card reveal">
+        <div id="contactFormContent">
+          <h3>Send us a message</h3>
+          <form class="contact-form" onsubmit="submitContact(event)">
+            <div class="form-field">
+              <label>Full Name</label>
+              <input type="text" id="contactName" placeholder="Juan Dela Cruz" required>
+            </div>
+            <div class="form-field">
+              <label>Email Address</label>
+              <input type="email" id="contactEmail" placeholder="juan@business.ph" required>
+            </div>
+            <div class="form-field">
+              <label>Phone Number</label>
+              <input type="tel" id="contactPhone" placeholder="0917 123 4567">
+            </div>
+            <div class="form-field">
+              <label>How can we help?</label>
+              <textarea id="contactMessage" placeholder="Tell us about your shipment, cargo type, and timeline..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="contactSubmitBtn">
+              <span id="contactBtnText">Send Message</span>
+            </button>
+          </form>
+        </div>
+        <div class="form-success" id="contactSuccess">
+          <div class="icon">✓</div>
+          <h3>Message Sent!</h3>
+          <p>Thanks for reaching out. Our team will get back to you within 2 hours.</p>
+          <button class="btn btn-secondary" style="margin-top: 20px;" onclick="resetContact()">Send Another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<!-- ================================================================
+     BACKEND MARKER: Footer Content
+     ---------------------------------------------------------------
+     BACKEND: Footer links from GET /api/v1/navigation/footer
+     BACKEND: Social links from GET /api/v1/config/social
+     BACKEND: Legal text from GET /api/v1/content/legal
+     ================================================================ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="logo" onclick="goToPage('home')">Cargo<span>Boss</span></a>
+      <p>Helping Filipino entrepreneurs import from China since 2018. All-inclusive freight forwarding with transparent pricing and real-time tracking.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a onclick="goToPage('services')">Sea Freight</a>
+      <a onclick="goToPage('services')">Air Freight</a>
+      <a onclick="goToPage('services')">Warehousing</a>
+      <a onclick="goToPage('services')">Customs Clearance</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a onclick="goToPage('home')">About Us</a>
+      <a onclick="goToPage('home')">Careers</a>
+      <a onclick="goToPage('home')">Blog</a>
+      <a onclick="goToPage('contact')">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a onclick="goToPage('tracking')">Track Shipment</a>
+      <a onclick="goToPage('pricing')">Get a Quote</a>
+      <a onclick="goToPage('contact')">Help Center</a>
+      <a onclick="goToPage('contact')">Talk to Sales</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 UTE3N Logistics Inc. All rights reserved.</span>
+    <span>Privacy Policy · Terms of Service</span>
+  </div>
+</footer>
+
+<!-- ==================== LIVE CHAT WIDGET ==================== -->
+<!-- ================================================================
+     BACKEND MARKER: Live Chat Widget
+     ---------------------------------------------------------------
+     BACKEND: Chat config from GET /api/v1/config/chat
+     BACKEND: Connect to WebSocket: wss://api.cargoboss.ph/v1/chat/stream
+     BACKEND: Bot responses from POST /api/v1/chat/bot-response (LLM/NLP)
+     BACKEND: Human handoff via POST /api/v1/chat/escalate
+     BACKEND: Store chat history: POST /api/v1/chat/sessions
+     BACKEND: Load previous chats via GET /api/v1/chat/sessions?user={id}
+     ================================================================ -->
+<div class="chat-widget">
+  <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">
+    <span class="chat-icon">💬</span>
+    <span class="close-icon">✕</span>
+  </button>
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <h4>UTE3NBoss Support</h4>
+      <p>We typically reply within minutes</p>
+      <div class="status"><span class="status-dot"></span> Online now</div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-message bot">
+        <div>Hi there! 👋 I am your UTE3NBoss assistant. How can I help you today?</div>
+        <div class="time">Just now</div>
+      </div>
+    </div>
+    <div class="chat-quick-replies" id="chatQuickReplies">
+      <button onclick="sendQuickReply('How much to ship 2 CBM?')">Shipping rates</button>
+      <button onclick="sendQuickReply('Track my shipment')">Track shipment</button>
+      <button onclick="sendQuickReply('How do I start importing?')">First time importing</button>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+      <button class="chat-send" onclick="sendChatMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ================================================================
+// BACKEND MARKER: Client-Side JavaScript Entry Point
+// ---------------------------------------------------------------
+// BACKEND: Load config from GET /api/v1/config/client
+// BACKEND: Initialize analytics SDK with key from /api/v1/config/analytics
+// BACKEND: Set auth token from cookie / localStorage for API calls
+// ================================================================
+
+// ==================== PAGE ROUTING ====================
+function goToPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  const navLink = document.querySelector('.nav-link[data-page="' + pageId + '"]');
+  if (navLink) navLink.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // BACKEND: Track page view via POST /api/v1/analytics/pageview
+  // BACKEND: { page: pageId, referrer: document.referrer, timestamp: Date.now() }
+}
+
+// ==================== MOBILE MENU ====================
+function toggleMobileMenu() {
+  const btn = document.getElementById('mobileMenuBtn');
+  const menu = document.getElementById('mobileMenu');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+
+// ==================== NAV SCROLL EFFECT ====================
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  if (window.scrollY > 20) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+// ==================== SCROLL REVEAL ====================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ==================== HERO CALCULATOR ====================
+// BACKEND: Rate data should come from GET /api/v1/config/rates
+// BACKEND: { sea: { baseRate: 9500, minCBM: 0.5 }, air: { baseRate: 550, minKG: 1 } }
+const RATES = {
+  sea: { baseRate: 9500, unit: 'CBM', min: 0.5 },
+  air: { baseRate: 550, unit: 'kg', min: 1 }
+};
+
+const DEST_SURCHARGE = {
+  manila: 0,
+  cebu: 1500,
+  davao: 2500
+};
+
+function updateHeroCalc() {
+  const mode = document.getElementById('heroMode').value;
+  document.getElementById('heroUnitLabel').textContent = mode === 'sea' ? 'CBM' : 'Weight (kg)';
+  document.getElementById('heroCBM').placeholder = mode === 'sea' ? 'e.g. 2.5' : 'e.g. 50';
+}
+
+function calculateHero() {
+  const mode = document.getElementById('heroMode').value;
+  const to = document.getElementById('heroTo').value;
+  const unit = parseFloat(document.getElementById('heroCBM').value);
+
+  if (!unit || unit <= 0) {
+    showToast('Please enter a valid amount');
+    return;
+  }
+
+  const rate = RATES[mode];
+  const surcharge = DEST_SURCHARGE[to] || 0;
+  const base = Math.max(unit, rate.min) * rate.baseRate;
+  const total = base + surcharge;
+
+  document.getElementById('heroPrice').textContent = '₱' + total.toLocaleString();
+  document.getElementById('heroResult').classList.add('show');
+
+  // BACKEND: Log calculator usage
+  // POST /api/v1/analytics/events { event: 'hero_calculator_used', mode, to, unit }
+}
+
+// ==================== FULL CALCULATOR (PRICING PAGE) ====================
+function toggleCalcFields() {
+  const mode = document.getElementById('calcMode').value;
+  document.getElementById('calcUnitLabel').textContent = mode === 'sea' ? 'Volume (CBM)' : 'Weight (kg)';
+  document.getElementById('calcUnit').placeholder = mode === 'sea' ? 'e.g. 2.5' : 'e.g. 50';
+}
+
+function calculateFull() {
+  const mode = document.getElementById('calcMode').value;
+  const from = document.getElementById('calcFrom').value;
+  const to = document.getElementById('calcTo').value;
+  const unit = parseFloat(document.getElementById('calcUnit').value);
+
+  if (!unit || unit <= 0) {
+    showToast('Please enter a valid amount');
+    return;
+  }
+
+  const rate = RATES[mode];
+  const surcharge = DEST_SURCHARGE[to] || 0;
+  const base = Math.max(unit, rate.min) * rate.baseRate;
+  const total = base + surcharge;
+
+  const fromNames = { guangzhou: 'Guangzhou', shenzhen: 'Shenzhen', yiwu: 'Yiwu', xiamen: 'Xiamen' };
+  const toNames = { manila: 'Manila', cebu: 'Cebu', davao: 'Davao' };
+  const modeNames = { sea: 'Sea Freight', air: 'Air Freight' };
+
+  document.getElementById('calcResultRoute').textContent = 
+    fromNames[from] + ' → ' + toNames[to] + ' via ' + modeNames[mode];
+  document.getElementById('calcTotalPrice').textContent = '₱' + total.toLocaleString();
+  document.getElementById('calcBase').textContent = '₱' + base.toLocaleString();
+  document.getElementById('calcTotal').textContent = '₱' + total.toLocaleString();
+
+  if (surcharge > 0) {
+    document.getElementById('calcDestRow').style.display = 'flex';
+    document.getElementById('calcDestFee').textContent = '₱' + surcharge.toLocaleString();
+  } else {
+    document.getElementById('calcDestRow').style.display = 'none';
+  }
+
+  document.getElementById('calcResult').classList.add('show');
+
+  // BACKEND: Create quote record
+  // POST /api/v1/quotes {
+  //   origin: from, destination: to, mode, unit, unitType: rate.unit,
+  //   estimatedTotal: total, cargoDesc: document.getElementById('calcDesc').value,
+  //   source: 'pricing_page', timestamp: Date.now()
+  // }
+}
+
+// ==================== TRACKING ====================
+// BACKEND: Replace with real API call to POST /api/v1/shipments/track
+// BACKEND: Response: { id, status, route, timeline: [{ status, location, time, completed }] }
+const MOCK_TRACKING_DATA = {
+  'CBF-2026-88421': {
+    id: 'CBF-2026-88421',
+    route: 'Guangzhou → Manila',
+    status: 'In Transit',
+    statusClass: 'status-transit',
+    timeline: [
+      { status: 'Booking Confirmed', location: 'Online Portal', time: 'Jul 20, 2026 · 10:30 AM', completed: true },
+      { status: 'Package Received', location: 'Guangzhou Warehouse', time: 'Jul 21, 2026 · 2:15 PM', completed: true },
+      { status: 'In Transit to Manila', location: 'South China Sea', time: 'Jul 23, 2026 · 8:00 AM', completed: true },
+      { status: 'Arrived at Manila Port', location: 'Manila International Container Terminal', time: 'Jul 27, 2026 · 6:45 AM', completed: true },
+      { status: 'Customs Clearance', location: 'Bureau of Customs', time: 'In Progress', completed: false, active: true },
+      { status: 'Out for Delivery', location: 'Metro Manila', time: 'Pending', completed: false },
+      { status: 'Delivered', location: 'Your Address', time: 'Pending', completed: false }
+    ]
+  },
+  'CBF-2026-99125': {
+    id: 'CBF-2026-99125',
+    route: 'Shenzhen → Cebu',
+    status: 'Customs Clearance',
+    statusClass: 'status-customs',
+    timeline: [
+      { status: 'Booking Confirmed', location: 'Online Portal', time: 'Jul 15, 2026 · 9:00 AM', completed: true },
+      { status: 'Package Received', location: 'Shenzhen Warehouse', time: 'Jul 16, 2026 · 11:30 AM', completed: true },
+      { status: 'In Transit to Cebu', location: 'South China Sea', time: 'Jul 18, 2026 · 3:00 PM', completed: true },
+      { status: 'Arrived at Cebu Port', location: 'Cebu International Port', time: 'Jul 25, 2026 · 7:20 AM', completed: true },
+      { status: 'Customs Clearance', location: 'Bureau of Customs Cebu', time: 'In Progress', completed: false, active: true }
+    ]
+  }
+};
+
+function trackShipment() {
+  const input = document.getElementById('trackInput').value.trim().toUpperCase();
+  const btn = document.getElementById('trackBtn');
+  const btnText = document.getElementById('trackBtnText');
+
+  if (!input) {
+    showToast('Please enter a tracking number');
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.innerHTML = '<span class="spinner"></span>';
+
+  // BACKEND: Replace with fetch('/api/v1/shipments/track', { method: 'POST', body: JSON.stringify({ trackingNumber: input }) })
+  setTimeout(() => {
+    const data = MOCK_TRACKING_DATA[input] || generateMockTracking(input);
+
+    document.getElementById('trackId').textContent = data.id;
+    document.getElementById('trackRoute').textContent = data.route;
+    document.getElementById('trackStatus').textContent = data.status;
+    document.getElementById('trackStatus').className = 'track-status-badge ' + data.statusClass;
+
+    const timelineHtml = data.timeline.map(item => `
+      <div class="timeline-item ${item.active ? 'active' : ''} ${item.completed ? 'completed' : ''}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <h5>${item.status}</h5>
+          <p>${item.location}</p>
+          <div class="time">${item.time}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('trackTimeline').innerHTML = timelineHtml;
+    document.getElementById('trackResult').classList.add('show');
+
+    btn.disabled = false;
+    btnText.textContent = 'Track Now';
+
+    // BACKEND: POST /api/v1/analytics/events { event: 'tracking_search', trackingNumber: input }
+  }, 1200);
+}
+
+function generateMockTracking(id) {
+  return {
+    id: id,
+    route: 'Guangzhou → Manila',
+    status: 'In Transit',
+    statusClass: 'status-transit',
+    timeline: [
+      { status: 'Booking Confirmed', location: 'Online Portal', time: 'Jul 22, 2026 · 10:30 AM', completed: true },
+      { status: 'Package Received', location: 'Guangzhou Warehouse', time: 'Jul 23, 2026 · 2:15 PM', completed: true },
+      { status: 'In Transit to Manila', location: 'South China Sea', time: 'In Progress', completed: false, active: true }
+    ]
+  };
+}
+
+// ==================== CONTACT FORM ====================
+function submitContact(e) {
+  e.preventDefault();
+
+  const btn = document.getElementById('contactSubmitBtn');
+  const btnText = document.getElementById('contactBtnText');
+  const name = document.getElementById('contactName').value;
+  const email = document.getElementById('contactEmail').value;
+  const phone = document.getElementById('contactPhone').value;
+  const message = document.getElementById('contactMessage').value;
+
+  btnText.innerHTML = '<span class="spinner"></span> Sending...';
+  btn.disabled = true;
+
+  // BACKEND: POST /api/v1/contact/inquiries
+  // {
+  //   name, email, phone, message,
+  //   source: 'website_contact_page',
+  //   recaptchaToken: await grecaptcha.execute(),
+  //   timestamp: Date.now()
+  // }
+
+  setTimeout(() => {
+    document.getElementById('contactFormContent').style.display = 'none';
+    document.getElementById('contactSuccess').classList.add('show');
+    btnText.textContent = 'Send Message';
+    btn.disabled = false;
+
+    // BACKEND: POST /api/v1/analytics/events { event: 'contact_form_submitted' }
+  }, 1500);
+}
+
+function resetContact() {
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactPhone').value = '';
+  document.getElementById('contactMessage').value = '';
+  document.getElementById('contactFormContent').style.display = 'block';
+  document.getElementById('contactSuccess').classList.remove('show');
+}
+
+// ==================== LIVE CHAT ====================
+function toggleChat() {
+  const toggle = document.getElementById('chatToggle');
+  const window = document.getElementById('chatWindow');
+  toggle.classList.toggle('open');
+  window.classList.toggle('open');
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  addChatMessage(text, 'user');
+  input.value = '';
+
+  // BACKEND: POST /api/v1/chat/bot-response
+  // { message: text, sessionId: getSessionId(), timestamp: Date.now() }
+  // Response: { reply: string, quickReplies: string[], escalate: boolean }
+
+  setTimeout(() => {
+    const replies = {
+      'How much to ship 2 CBM?': 'For 2 CBM via Sea Freight from Guangzhou to Manila, your all-in estimate is ₱19,000. This includes customs, duties, and port fees. Want a formal quote?',
+      'Track my shipment': 'Sure! Please provide your tracking number (e.g., CBF-2026-XXXXX) and I can look it up for you.',
+      'How do I start importing?': 'Great question! First, register for an account and get your China warehouse address. Then shop from any Chinese supplier and have items delivered to your warehouse. We handle the rest!'
+    };
+
+    const reply = replies[text] || 'Thanks for your message! A member of our team will be with you shortly. In the meantime, you can also call us at (02) 7777-2677.';
+    addChatMessage(reply, 'bot');
+  }, 800);
+}
+
+function sendQuickReply(text) {
+  document.getElementById('chatInput').value = text;
+  sendChatMessage();
+}
+
+function addChatMessage(text, sender) {
+  const container = document.getElementById('chatMessages');
+  const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const div = document.createElement('div');
+  div.className = 'chat-message ' + sender;
+  div.innerHTML = '<div>' + text + '</div><div class="time">' + time + '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ==================== TOAST ====================
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ==================== INIT ====================
+// BACKEND: Initialize session, analytics, and auth state on load
+document.addEventListener('DOMContentLoaded', () => {
+  // BACKEND: GET /api/v1/auth/session → set user state
+  // BACKEND: GET /api/v1/config/client → load dynamic config
+  // BACKEND: POST /api/v1/analytics/session-start
+
+  // Handle deep links
+  const hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('page-' + hash)) {
+    goToPage(hash);
+  }
+});
+</script>
+</body>
+</html>

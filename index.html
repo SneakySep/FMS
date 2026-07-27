@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UTE3N — Smart Logistics</title>
+  <title>FreightFlow — Smart Logistics</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    /* ---------- CSS Variables (Light & Dark) ---------- */
+    /* ---------- CSS Variables ---------- */
     :root {
       --primary: #0b3b5c;
       --primary-light: #1a5a7a;
@@ -26,6 +26,8 @@
       --chat-msg-user: #00b4d8;
       --chat-msg-bot: #e9f0f5;
       --footer-bg: #e8edf2;
+      --header-bg: #ffffff;
+      --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
 
     body.dark-mode {
@@ -45,6 +47,8 @@
       --chat-msg-user: #48cae4;
       --chat-msg-bot: #2a3a4a;
       --footer-bg: #1a1a1a;
+      --header-bg: #1a1a1a;
+      --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     /* ---------- Reset & Base ---------- */
@@ -59,24 +63,47 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 0 20px;
+      padding: 0;
       transition: background var(--transition), color var(--transition);
     }
 
+    /* ---------- FULL-WIDTH CONTAINER ---------- */
     .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 20px 0 0;
+      width: 100%;
+      padding: 0;
+      margin: 0;
     }
 
-    /* ---------- Header ---------- */
-    header {
+    /* ---------- CONSTRAINT WRAPPER (for Services & Tracking) ---------- */
+    .constraint-wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ---------- FULL-WIDTH HEADER (EDGE-TO-EDGE) ---------- */
+    .site-header {
+      background: var(--header-bg);
+      box-shadow: var(--header-shadow);
+      border-bottom: 1px solid var(--border-color);
+      transition: background var(--transition), box-shadow var(--transition), border-color var(--transition);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: fadeInUp 0.6s ease;
+      width: 100%;
+    }
+
+    .header-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 0;
       flex-wrap: wrap;
       gap: 16px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      width: 100%;
     }
 
     .logo {
@@ -86,10 +113,15 @@
       font-size: 1.8rem;
       font-weight: 700;
       color: var(--primary);
+      text-decoration: none;
     }
     .logo i {
       color: var(--accent);
       font-size: 2rem;
+      transition: transform 0.4s ease;
+    }
+    .logo:hover i {
+      transform: rotate(-10deg) scale(1.1);
     }
 
     nav {
@@ -102,22 +134,58 @@
       text-decoration: none;
       color: var(--text-light);
       font-weight: 500;
-      transition: color var(--transition);
+      transition: color var(--transition), transform 0.2s ease;
+      position: relative;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px 0;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    nav a:hover::after {
+      width: 100%;
     }
     nav a:hover {
       color: var(--primary);
+      transform: translateY(-1px);
     }
+    nav a.active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    nav a.active::after {
+      width: 100%;
+    }
+
     nav a.contact-link {
       background: var(--accent);
       color: #fff;
       padding: 8px 24px;
       border-radius: 40px;
       font-weight: 600;
-      transition: background var(--transition);
+      transition: background var(--transition), transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    nav a.contact-link::after {
+      display: none;
     }
     nav a.contact-link:hover {
       background: #0096b8;
+      transform: scale(1.04);
+      box-shadow: 0 4px 16px rgba(0, 180, 216, 0.35);
       color: #fff;
+    }
+    nav a.contact-link.active {
+      background: #0096b8;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 180, 216, 0.3);
     }
 
     /* ---------- Dark Mode Toggle ---------- */
@@ -129,28 +197,60 @@
       font-size: 1.2rem;
       cursor: pointer;
       color: var(--text);
-      transition: all var(--transition);
+      transition: all var(--transition), transform 0.2s ease;
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
     }
     .theme-toggle:hover {
       border-color: var(--accent);
+      transform: rotate(8deg) scale(1.05);
     }
-    .theme-toggle .moon-icon {
-      display: inline-block;
+    .theme-toggle:active {
+      transform: rotate(0deg) scale(0.92);
     }
-    body.dark-mode .theme-toggle .sun-icon {
-      display: inline-block;
+    .theme-toggle .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--accent);
+      width: 20px;
+      height: 20px;
+      animation: rippleExpand 0.6s ease-out forwards;
+      pointer-events: none;
     }
-    body.dark-mode .theme-toggle .moon-icon {
-      display: none;
+    .theme-toggle .moon-icon { display: inline-block; }
+    body.dark-mode .theme-toggle .sun-icon { display: inline-block; }
+    body.dark-mode .theme-toggle .moon-icon { display: none; }
+    .theme-toggle .sun-icon { display: none; }
+    body.dark-mode .theme-toggle .sun-icon { display: inline-block; }
+
+    /* ---------- GLOBAL ANIMATIONS ---------- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .theme-toggle .sun-icon {
-      display: none;
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
     }
-    body.dark-mode .theme-toggle .sun-icon {
-      display: inline-block;
+    @keyframes rippleExpand {
+      from { transform: scale(0); opacity: 0.6; }
+      to { transform: scale(4); opacity: 0; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 var(--accent); }
+      50% { box-shadow: 0 0 0 8px transparent; }
+    }
+    @keyframes highlightGlow {
+      0% { box-shadow: inset 0 0 0 3px var(--accent), 0 0 40px rgba(0, 180, 216, 0.25); transform: scale(1.02); }
+      100% { box-shadow: inset 0 0 0 0 var(--accent), 0 0 0 rgba(0, 180, 216, 0); transform: scale(1); }
+    }
+    .section-highlight {
+      animation: highlightGlow 1.2s ease-out;
+      border-radius: var(--radius);
     }
 
     /* ---------- Hero ---------- */
@@ -159,8 +259,12 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      padding: 40px 0 20px;
+      padding: 40px 20px;
       gap: 30px;
+      animation: fadeInUp 0.7s ease 0.1s both;
+      background: var(--bg);
+      max-width: 1280px;
+      margin: 0 auto;
     }
     .hero-text {
       flex: 1 1 400px;
@@ -174,6 +278,11 @@
     }
     .hero-text h1 span {
       color: var(--accent);
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+    .hero-text h1:hover span {
+      transform: scale(1.05);
     }
     .hero-text p {
       font-size: 1.2rem;
@@ -186,6 +295,16 @@
       flex-wrap: wrap;
       gap: 14px;
     }
+    .btn-primary, .btn-secondary {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background var(--transition);
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-primary:active, .btn-secondary:active {
+      transform: scale(0.94);
+    }
     .btn-primary {
       background: var(--accent);
       color: #fff;
@@ -194,15 +313,13 @@
       border-radius: 60px;
       font-weight: 600;
       font-size: 1rem;
-      cursor: pointer;
-      transition: background var(--transition), transform 0.1s;
       box-shadow: 0 8px 18px rgba(0, 180, 216, 0.3);
       text-decoration: none;
-      display: inline-block;
     }
     .btn-primary:hover {
       background: #0096b8;
-      transform: scale(1.02);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 28px rgba(0, 180, 216, 0.4);
     }
     .btn-secondary {
       background: var(--card-bg);
@@ -211,18 +328,26 @@
       border-radius: 60px;
       font-weight: 600;
       color: var(--text);
-      cursor: pointer;
-      transition: all var(--transition);
       text-decoration: none;
-      display: inline-block;
     }
     .btn-secondary:hover {
       border-color: var(--primary);
       background: var(--primary);
       color: #fff;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      width: 20px;
+      height: 20px;
+      animation: rippleExpand 0.7s ease-out forwards;
+      pointer-events: none;
     }
 
-    /* ---------- HERO IMAGE – Scrolling Carousel ---------- */
+    /* ---------- Carousel ---------- */
     .hero-image {
       flex: 1 1 400px;
       min-width: 280px;
@@ -232,32 +357,30 @@
       background: var(--card-bg);
       position: relative;
       height: 260px;
+      animation: fadeInUp 0.7s ease 0.2s both;
     }
-
     .carousel-track {
       display: flex;
       width: calc(200%);
       height: 100%;
       animation: scrollLeft 24s linear infinite;
     }
-
-    .carousel-track:hover {
-      animation-play-state: paused;
-    }
-
+    .carousel-track:hover { animation-play-state: paused; }
     .carousel-slide {
       flex: 0 0 calc(100% / 4);
       height: 100%;
       overflow: hidden;
     }
-
     .carousel-slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      transition: transform 0.5s ease;
     }
-
+    .carousel-slide:hover img {
+      transform: scale(1.05);
+    }
     @keyframes scrollLeft {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -270,10 +393,15 @@
       margin: 40px 0 20px;
       color: var(--primary);
       letter-spacing: -0.02em;
+      animation: fadeInUp 0.6s ease;
     }
     .section-title i {
       color: var(--accent);
       margin-right: 10px;
+      transition: transform 0.4s ease;
+    }
+    .section-title:hover i {
+      transform: rotate(20deg) scale(1.1);
     }
 
     .bento-grid {
@@ -282,26 +410,35 @@
       gap: 24px;
       margin: 20px 0 40px;
     }
-
     .bento-card {
       background: var(--card-bg);
       border-radius: var(--radius);
       padding: 28px 22px;
       box-shadow: var(--shadow);
-      transition: transform var(--transition), box-shadow var(--transition);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      transition: transform 0.3s ease, box-shadow 0.4s ease;
       border: 1px solid rgba(0,0,0,0.02);
+      cursor: default;
+      animation: fadeInUp 0.6s ease both;
     }
+    .bento-card:nth-child(1) { animation-delay: 0.05s; }
+    .bento-card:nth-child(2) { animation-delay: 0.10s; }
+    .bento-card:nth-child(3) { animation-delay: 0.15s; }
+    .bento-card:nth-child(4) { animation-delay: 0.20s; }
+    .bento-card:nth-child(5) { animation-delay: 0.25s; }
+    .bento-card:nth-child(6) { animation-delay: 0.30s; }
+
     .bento-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
     }
     .bento-card .icon {
       font-size: 2.4rem;
       color: var(--accent);
       margin-bottom: 4px;
+      transition: transform 0.4s ease;
+    }
+    .bento-card:hover .icon {
+      transform: scale(1.15) rotate(-5deg);
     }
     .bento-card h3 {
       font-size: 1.3rem;
@@ -321,15 +458,17 @@
       font-size: 0.75rem;
       font-weight: 600;
       align-self: flex-start;
+      transition: transform 0.3s ease, background 0.3s ease;
     }
-    .card-wide {
-      grid-column: span 2;
+    .bento-card:hover .tag {
+      transform: scale(1.05);
+      background: var(--accent);
+      color: #fff;
     }
-    .card-tall {
-      grid-row: span 2;
-    }
+    .card-wide { grid-column: span 2; }
+    .card-tall { grid-row: span 2; }
 
-    /* ---------- Tracking with Google Maps ---------- */
+    /* ---------- Tracking ---------- */
     .track-section {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -337,6 +476,7 @@
       margin: 30px 0 40px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,0,0,0.02);
+      animation: fadeInUp 0.6s ease;
     }
     .track-section h2 {
       display: flex;
@@ -353,18 +493,20 @@
       align-items: center;
     }
     .track-input {
-      flex: 2 1 260px;
+      flex: 1 1 320px;
+      max-width: 480px;
       padding: 14px 20px;
       border-radius: 60px;
       border: 1.5px solid var(--border-color);
       font-size: 1rem;
       outline: none;
-      transition: border var(--transition);
+      transition: border var(--transition), box-shadow 0.3s ease;
       background: var(--input-bg);
       color: var(--text);
     }
     .track-input:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.15);
     }
     .track-btn {
       background: var(--primary);
@@ -374,12 +516,19 @@
       border-radius: 60px;
       font-weight: 600;
       cursor: pointer;
-      transition: background var(--transition);
+      transition: background var(--transition), transform 0.2s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
     }
     .track-btn:hover {
       background: var(--primary-light);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     }
-
+    .track-btn:active {
+      transform: scale(0.94);
+    }
     #tracking-map {
       position: relative;
       width: 100%;
@@ -389,15 +538,14 @@
       overflow: hidden;
       border: 1px solid var(--border-color);
       background: var(--map-bg);
+      transition: background 0.4s ease;
     }
-
     #mapFrame {
       width: 100%;
       height: 100%;
       border: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.4s ease;
     }
-
     .status-overlay {
       position: absolute;
       bottom: 16px;
@@ -414,17 +562,24 @@
       pointer-events: none;
       letter-spacing: 0.3px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.4s ease, background 0.4s ease;
+    }
+    #tracking-map.map-updated .status-overlay {
+      transform: translateX(-50%) scale(1.04);
+      background: rgba(0, 0, 0, 0.85);
     }
 
-    /* ---------- Why FreightFlow? ---------- */
+    /* ---------- Why Section ---------- */
     .why-section {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 40px 32px;
-      margin: 30px 0 40px;
+      padding: 40px 20px;
+      margin: 30px auto 40px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,0,0,0.02);
       text-align: center;
+      animation: fadeInUp 0.6s ease;
+      max-width: 1280px;
     }
     .why-section h2 {
       font-size: 1.8rem;
@@ -450,11 +605,17 @@
       background: var(--bg);
       border-radius: 20px;
       padding: 28px 16px;
-      transition: transform var(--transition), box-shadow var(--transition);
+      transition: transform 0.3s ease, box-shadow 0.4s ease, border-color 0.3s ease;
       border: 1px solid transparent;
+      cursor: default;
+      animation: fadeInUp 0.6s ease both;
     }
+    .why-item:nth-child(1) { animation-delay: 0.05s; }
+    .why-item:nth-child(2) { animation-delay: 0.10s; }
+    .why-item:nth-child(3) { animation-delay: 0.15s; }
+    .why-item:nth-child(4) { animation-delay: 0.20s; }
     .why-item:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px) scale(1.01);
       box-shadow: var(--shadow);
       border-color: var(--accent);
     }
@@ -462,6 +623,10 @@
       font-size: 2.8rem;
       color: var(--accent);
       margin-bottom: 12px;
+      transition: transform 0.5s ease;
+    }
+    .why-item:hover .icon {
+      transform: scale(1.15) rotate(-5deg);
     }
     .why-item h3 {
       font-size: 1.2rem;
@@ -479,15 +644,21 @@
       font-weight: 800;
       color: var(--accent);
       margin-top: 8px;
+      transition: transform 0.3s ease;
+    }
+    .why-item:hover .stat {
+      transform: scale(1.05);
     }
 
     /* ---------- Rate Calculator ---------- */
     .calc-section {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 32px 28px;
-      margin: 30px 0 40px;
+      padding: 32px 20px;
+      margin: 30px auto 40px;
       box-shadow: var(--shadow);
+      animation: fadeInUp 0.6s ease;
+      max-width: 1280px;
     }
     .calc-section h2 {
       font-size: 1.6rem;
@@ -510,6 +681,8 @@
     }
     .calc-group {
       flex: 1 1 180px;
+      min-width: 150px;
+      max-width: 280px;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -521,6 +694,7 @@
     }
     .calc-group select,
     .calc-group input {
+      width: 100%;
       padding: 12px 16px;
       border-radius: 12px;
       border: 1.5px solid var(--border-color);
@@ -528,11 +702,16 @@
       background: var(--input-bg);
       color: var(--text);
       outline: none;
-      transition: border var(--transition);
+      transition: border var(--transition), box-shadow 0.3s ease, transform 0.2s ease;
     }
     .calc-group select:focus,
     .calc-group input:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.12);
+      transform: scale(1.01);
+    }
+    .calc-btn-wrapper {
+      flex: 0 0 auto;
     }
     .calc-result {
       margin-top: 24px;
@@ -544,16 +723,22 @@
       border-radius: 16px;
       display: inline-block;
       border-left: 6px solid var(--accent);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .calc-result.updated {
+      animation: popIn 0.4s ease;
     }
 
     /* ---------- Contact Form ---------- */
     .contact-section {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 40px 32px;
-      margin: 40px 0 30px;
+      padding: 40px 20px;
+      margin: 40px auto 30px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,0,0,0.02);
+      animation: fadeInUp 0.6s ease;
+      max-width: 1280px;
     }
     .contact-section h2 {
       font-size: 1.8rem;
@@ -573,9 +758,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
-    .contact-form .full-width {
-      grid-column: 1 / -1;
-    }
+    .contact-form .full-width { grid-column: 1 / -1; }
     .contact-form label {
       font-weight: 600;
       font-size: 0.9rem;
@@ -586,12 +769,13 @@
     .contact-form input,
     .contact-form textarea {
       width: 100%;
+      max-width: 100%;
       padding: 14px 18px;
       border-radius: 16px;
       border: 1.5px solid var(--border-color);
       font-size: 1rem;
       outline: none;
-      transition: border var(--transition);
+      transition: border var(--transition), box-shadow 0.3s ease, transform 0.2s ease;
       background: var(--input-bg);
       color: var(--text);
       font-family: inherit;
@@ -599,6 +783,8 @@
     .contact-form input:focus,
     .contact-form textarea:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.12);
+      transform: scale(1.01);
     }
     .contact-form textarea {
       resize: vertical;
@@ -613,163 +799,43 @@
       font-weight: 700;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: background var(--transition), transform 0.1s;
+      transition: background var(--transition), transform 0.2s ease, box-shadow 0.3s ease;
       box-shadow: 0 8px 20px rgba(0, 180, 216, 0.25);
       justify-self: start;
       grid-column: 1 / -1;
+      position: relative;
+      overflow: hidden;
     }
     .contact-form .btn-submit:hover {
       background: #0096b8;
-      transform: scale(1.02);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(0, 180, 216, 0.35);
+    }
+    .contact-form .btn-submit:active {
+      transform: scale(0.94);
     }
     .contact-form .btn-submit i {
       margin-right: 10px;
+      transition: transform 0.3s ease;
+    }
+    .contact-form .btn-submit:hover i {
+      transform: translateX(4px);
     }
 
-    /* ---------- CHAT BUBBLE ---------- */
-    #chat-bubble {
-      position: fixed;
-      bottom: 30px;
-      left: 30px;
-      z-index: 999;
-      background: var(--accent);
-      color: #fff;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      box-shadow: 0 8px 28px rgba(0, 180, 216, 0.4);
-      cursor: pointer;
-      transition: transform 0.2s, background var(--transition);
-      border: none;
-    }
-    #chat-bubble:hover {
-      transform: scale(1.08);
-      background: #0096b8;
-    }
-
-    /* ---------- CHAT WINDOW ---------- */
-    #chat-window {
-      position: fixed;
-      bottom: 110px;
-      left: 30px;
-      width: 380px;
-      max-width: calc(100vw - 60px);
-      max-height: 520px;
-      background: var(--chat-bg);
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-      display: none;
-      flex-direction: column;
-      z-index: 1000;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      transition: all 0.3s ease;
-    }
-    #chat-window.open {
-      display: flex;
-    }
-    .chat-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    .chat-header i {
-      cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s;
-    }
-    .chat-header i:hover {
-      opacity: 1;
-    }
-    .chat-messages {
-      flex: 1;
-      padding: 16px 18px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 340px;
-      background: var(--bg);
-    }
-    .chat-messages .msg {
-      max-width: 80%;
-      padding: 10px 16px;
-      border-radius: 18px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      word-wrap: break-word;
-      animation: fadeIn 0.2s;
-    }
-    .chat-messages .msg.user {
-      align-self: flex-end;
-      background: var(--chat-msg-user);
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-    .chat-messages .msg.bot {
-      align-self: flex-start;
-      background: var(--chat-msg-bot);
-      color: var(--text);
-      border-bottom-left-radius: 4px;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .chat-input-row {
-      display: flex;
-      padding: 12px 16px;
-      gap: 10px;
-      border-top: 1px solid var(--border-color);
-      background: var(--card-bg);
-    }
-    .chat-input-row input {
-      flex: 1;
-      padding: 10px 16px;
-      border-radius: 40px;
-      border: 1.5px solid var(--border-color);
-      outline: none;
-      font-size: 0.95rem;
-      background: var(--input-bg);
-      color: var(--text);
-      transition: border var(--transition);
-    }
-    .chat-input-row input:focus {
-      border-color: var(--accent);
-    }
-    .chat-input-row button {
-      background: var(--accent);
-      border: none;
-      border-radius: 40px;
-      padding: 0 20px;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background var(--transition);
-    }
-    .chat-input-row button:hover {
-      background: #0096b8;
-    }
-
-    /* ---------- NEW: ENHANCED FOOTER ---------- */
+    /* ---------- Enhanced Footer ---------- */
     .footer-section {
       background: var(--footer-bg);
       border-radius: var(--radius) var(--radius) 0 0;
-      padding: 40px 32px 20px;
+      padding: 40px 20px 20px;
       margin-top: 40px;
       border-top: 1px solid var(--border-color);
       transition: background var(--transition);
+      animation: fadeInUp 0.7s ease;
+      width: 100%;
     }
     .footer-grid {
+      max-width: 1280px;
+      margin: 0 auto;
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 1fr;
       gap: 32px;
@@ -785,6 +851,10 @@
     }
     .footer-brand h3 i {
       color: var(--accent);
+      transition: transform 0.4s ease;
+    }
+    .footer-brand:hover h3 i {
+      transform: rotate(-10deg) scale(1.1);
     }
     .footer-brand p {
       color: var(--text-light);
@@ -802,32 +872,33 @@
     .footer-brand .address i {
       color: var(--accent);
       margin-top: 3px;
+      transition: transform 0.3s ease;
     }
-
-    .footer-links h4,
-    .footer-contact h4,
-    .footer-social h4 {
+    .footer-brand:hover .address i {
+      transform: translateX(3px);
+    }
+    .footer-links h4, .footer-contact h4, .footer-social h4 {
       color: var(--primary);
       font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 14px;
     }
-    .footer-links ul,
-    .footer-contact ul {
+    .footer-links ul, .footer-contact ul {
       list-style: none;
     }
-    .footer-links ul li,
-    .footer-contact ul li {
+    .footer-links ul li, .footer-contact ul li {
       margin-bottom: 10px;
     }
     .footer-links ul li a {
       color: var(--text-light);
       text-decoration: none;
-      transition: color var(--transition);
+      transition: color var(--transition), transform 0.2s ease, padding-left 0.2s ease;
+      display: inline-block;
       font-size: 0.95rem;
     }
     .footer-links ul li a:hover {
       color: var(--accent);
+      transform: translateX(6px);
     }
     .footer-contact ul li {
       color: var(--text-light);
@@ -835,13 +906,16 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      transition: transform 0.2s ease;
+    }
+    .footer-contact ul li:hover {
+      transform: translateX(4px);
     }
     .footer-contact ul li i {
       color: var(--accent);
       width: 20px;
       text-align: center;
     }
-
     .footer-social .social-icons {
       display: flex;
       gap: 14px;
@@ -857,17 +931,22 @@
       background: var(--card-bg);
       color: var(--primary);
       font-size: 1.3rem;
-      transition: all var(--transition);
+      transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       text-decoration: none;
     }
     .footer-social .social-icons a:hover {
       background: var(--accent);
       color: #fff;
-      transform: translateY(-3px);
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 6px 20px rgba(0, 180, 216, 0.25);
     }
-
+    .footer-social .social-icons a:active {
+      transform: scale(0.92);
+    }
     .footer-bottom {
+      max-width: 1280px;
+      margin: 0 auto;
       border-top: 1px solid var(--border-color);
       padding-top: 20px;
       display: flex;
@@ -885,17 +964,32 @@
     .footer-bottom .legal-links a {
       color: var(--text-light);
       text-decoration: none;
-      transition: color var(--transition);
+      transition: color var(--transition), transform 0.2s ease;
       cursor: pointer;
+      position: relative;
+    }
+    .footer-bottom .legal-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0%;
+      height: 1.5px;
+      background: var(--accent);
+      transition: width 0.3s ease;
     }
     .footer-bottom .legal-links a:hover {
       color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .footer-bottom .legal-links a:hover::after {
+      width: 100%;
     }
     .footer-bottom .copyright {
       color: var(--text-light);
     }
 
-    /* ---------- LEGAL MODALS ---------- */
+    /* ---------- Modals ---------- */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -908,14 +1002,13 @@
       z-index: 2000;
       align-items: center;
       justify-content: center;
+      animation: fadeInUp 0.3s ease;
     }
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
     .modal-box {
       background: var(--card-bg);
       color: var(--text);
-      max-width: 700px;
+      max-width: 820px;
       width: 92%;
       max-height: 85vh;
       border-radius: var(--radius);
@@ -923,11 +1016,7 @@
       box-shadow: 0 30px 60px rgba(0,0,0,0.3);
       overflow-y: auto;
       position: relative;
-      animation: fadeUp 0.3s ease;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      animation: popIn 0.35s ease;
     }
     .modal-box h2 {
       color: var(--primary);
@@ -948,13 +1037,17 @@
       font-size: 1.8rem;
       color: var(--text-light);
       cursor: pointer;
-      transition: color var(--transition);
+      transition: transform 0.3s ease, color 0.3s ease;
       background: none;
       border: none;
       line-height: 1;
     }
     .modal-box .close-modal:hover {
       color: var(--accent);
+      transform: rotate(90deg) scale(1.1);
+    }
+    .modal-box .close-modal:active {
+      transform: scale(0.85);
     }
     .modal-box p {
       color: var(--text-light);
@@ -972,128 +1065,249 @@
     .modal-box ul li {
       margin-bottom: 8px;
     }
+    .modal-box .notice-box {
+      background: var(--bg);
+      border-left: 4px solid var(--accent);
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .modal-box .notice-box strong {
+      color: var(--primary);
+    }
+
+    /* ---------- Chat ---------- */
+    #chat-bubble {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      z-index: 999;
+      background: var(--accent);
+      color: #fff;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 8px 28px rgba(0, 180, 216, 0.4);
+      cursor: pointer;
+      transition: transform 0.3s ease, background var(--transition), box-shadow 0.3s ease;
+      border: none;
+    }
+    #chat-bubble:hover {
+      transform: scale(1.1) rotate(-5deg);
+      background: #0096b8;
+      box-shadow: 0 12px 36px rgba(0, 180, 216, 0.5);
+    }
+    #chat-bubble:active {
+      transform: scale(0.9);
+    }
+    #chat-bubble .bubble-pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      animation: pulseGlow 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    #chat-window {
+      position: fixed;
+      bottom: 110px;
+      left: 30px;
+      width: 380px;
+      max-width: calc(100vw - 60px);
+      max-height: 520px;
+      background: var(--chat-bg);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      animation: popIn 0.35s ease;
+    }
+    #chat-window.open { display: flex; }
+    .chat-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .chat-header i {
+      cursor: pointer;
+      opacity: 0.8;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .chat-header i:hover {
+      opacity: 1;
+      transform: rotate(90deg) scale(1.1);
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 340px;
+      background: var(--bg);
+    }
+    .chat-messages .msg {
+      max-width: 80%;
+      padding: 10px 16px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      animation: fadeInUp 0.25s ease;
+    }
+    .chat-messages .msg.user {
+      align-self: flex-end;
+      background: var(--chat-msg-user);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-messages .msg.bot {
+      align-self: flex-start;
+      background: var(--chat-msg-bot);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-input-row {
+      display: flex;
+      padding: 12px 16px;
+      gap: 10px;
+      border-top: 1px solid var(--border-color);
+      background: var(--card-bg);
+    }
+    .chat-input-row input {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 40px;
+      border: 1.5px solid var(--border-color);
+      outline: none;
+      font-size: 0.95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border var(--transition), box-shadow 0.3s ease;
+      max-width: 100%;
+    }
+    .chat-input-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+    }
+    .chat-input-row button {
+      background: var(--accent);
+      border: none;
+      border-radius: 40px;
+      padding: 0 20px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.2s ease, box-shadow 0.3s ease;
+      flex-shrink: 0;
+    }
+    .chat-input-row button:hover {
+      background: #0096b8;
+      transform: scale(1.04);
+      box-shadow: 0 4px 16px rgba(0, 180, 216, 0.25);
+    }
+    .chat-input-row button:active {
+      transform: scale(0.92);
+    }
 
     /* ---------- Responsive ---------- */
+    @media (max-width: 1100px) {
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-wide { grid-column: span 1; }
+      .card-tall { grid-row: span 1; }
+    }
     @media (max-width: 900px) {
-      .bento-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .card-wide {
-        grid-column: span 1;
-      }
-      .card-tall {
-        grid-row: span 1;
-      }
-      .contact-form {
-        grid-template-columns: 1fr;
-      }
-      .contact-form .full-width {
-        grid-column: 1;
-      }
-      .contact-form .btn-submit {
-        grid-column: 1;
-        width: 100%;
-        text-align: center;
-      }
-      .why-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .footer-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      #tracking-map {
-        height: 200px;
-      }
-      .status-overlay {
-        font-size: 0.8rem;
-        padding: 6px 16px;
-        white-space: normal;
-      }
-      .hero-image {
-        height: 200px;
-      }
-      .carousel-slide {
-        flex: 0 0 calc(100% / 3);
-      }
+      .contact-form { grid-template-columns: 1fr; }
+      .contact-form .full-width { grid-column: 1; }
+      .contact-form .btn-submit { grid-column: 1; width: 100%; text-align: center; }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      #tracking-map { height: 200px; }
+      .status-overlay { font-size: 0.8rem; padding: 6px 16px; white-space: normal; }
+      .hero-image { height: 200px; }
+      .carousel-slide { flex: 0 0 calc(100% / 3); }
+      .header-inner { padding: 12px 16px; }
+      .modal-box { max-width: 95%; padding: 24px 20px; }
+      .calc-group { min-width: 130px; max-width: 100%; flex: 1 1 150px; }
+      .calc-form { gap: 14px; }
+    }
+    @media (max-width: 768px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .track-input { max-width: 100%; flex: 1 1 100%; }
+      .track-row { flex-direction: column; align-items: stretch; }
+      .track-btn { width: 100%; text-align: center; }
     }
     @media (max-width: 600px) {
-      body { padding: 0 12px; }
-      .bento-grid {
-        grid-template-columns: 1fr;
-      }
+      body { padding: 0; }
+      .container { padding: 0; }
+      .hero { padding: 30px 16px; flex-direction: column; }
+      .hero-text { text-align: center; }
+      .hero-text p { margin: 0 auto 28px; }
+      .cta-group { justify-content: center; }
+      .constraint-wrapper { padding: 0 16px; }
+      .section-title { font-size: 1.6rem; margin: 30px 0 16px; }
+      .bento-grid { gap: 16px; margin: 16px 0 30px; }
+      .track-section { padding: 20px 16px; margin: 16px 0 30px; }
+      .why-section { padding: 24px 16px; margin: 16px auto 30px; }
+      .why-grid { grid-template-columns: 1fr; gap: 16px; }
+      .calc-section { padding: 24px 16px; margin: 16px auto 30px; }
+      .calc-group { min-width: 100%; max-width: 100%; flex: 1 1 100%; }
+      .calc-form { flex-direction: column; align-items: stretch; }
+      .calc-btn-wrapper { width: 100%; }
+      .calc-btn-wrapper .btn-primary { width: 100%; text-align: center; }
+      .contact-section { padding: 24px 16px; margin: 16px auto 30px; }
+      .footer-section { padding: 24px 16px; border-radius: 16px 16px 0 0; }
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .footer-bottom .legal-links { justify-content: center; gap: 16px; }
       .hero-text h1 { font-size: 2.2rem; }
-      header { flex-direction: column; align-items: stretch; }
-      nav { justify-content: center; }
-      .cta-group { flex-direction: column; }
+      .header-inner { flex-direction: column; align-items: stretch; padding: 12px 16px; }
+      nav { justify-content: center; flex-wrap: wrap; gap: 10px; }
+      nav a { font-size: 0.85rem; }
+      .logo { font-size: 1.4rem; }
+      .cta-group { flex-direction: column; align-items: center; }
       .btn-primary, .btn-secondary { width: 100%; text-align: center; }
       .track-row { flex-direction: column; }
-      .track-input { width: 100%; }
+      .track-input { width: 100%; max-width: 100%; }
       .calc-form { flex-direction: column; }
-      .calc-group { width: 100%; }
-      .contact-section { padding: 24px 16px; }
-      .why-section { padding: 24px 16px; }
-      .why-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      .footer-section { padding: 24px 16px; }
-      .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-      .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-      }
-      .footer-bottom .legal-links {
-        justify-content: center;
-        gap: 16px;
-      }
-      #chat-window {
-        left: 10px;
-        right: 10px;
-        width: auto;
-        max-width: none;
-        bottom: 100px;
-        max-height: 70vh;
-      }
-      #chat-bubble {
-        bottom: 20px;
-        left: 20px;
-        width: 56px;
-        height: 56px;
-        font-size: 1.8rem;
-      }
-      #tracking-map {
-        height: 180px;
-      }
-      .status-overlay {
-        bottom: 10px;
-        font-size: 0.7rem;
-        padding: 4px 12px;
-      }
-      .hero-image {
-        height: 160px;
-      }
-      .carousel-slide {
-        flex: 0 0 calc(100% / 2);
-      }
-      .modal-box {
-        padding: 24px 18px;
-      }
+      .calc-group { width: 100%; min-width: 100%; }
+      .why-grid { grid-template-columns: 1fr; gap: 16px; }
+      #chat-window { left: 10px; right: 10px; width: auto; max-width: none; bottom: 100px; max-height: 70vh; }
+      #chat-bubble { bottom: 20px; left: 20px; width: 56px; height: 56px; font-size: 1.8rem; }
+      #tracking-map { height: 180px; }
+      .status-overlay { bottom: 10px; font-size: 0.7rem; padding: 4px 12px; }
+      .hero-image { height: 160px; }
+      .carousel-slide { flex: 0 0 calc(100% / 2); }
+      .modal-box { padding: 20px 16px; max-width: 98%; }
+      .modal-box h2 { font-size: 1.3rem; }
+      .contact-form .btn-submit { width: 100%; text-align: center; justify-self: center; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-
-  <!-- HEADER -->
-  <header>
-    <div class="logo">
+<!-- ===== FULL-WIDTH HEADER (EDGE-TO-EDGE) ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#" class="logo">
       <i class="fas fa-ship"></i>
-      <span>UTE3N</span>
-    </div>
+      <span>FreightFlow</span>
+    </a>
     <nav>
       <a href="#services">Services</a>
       <a href="#tracking">Tracking</a>
@@ -1104,7 +1318,11 @@
         <i class="fas fa-moon moon-icon"></i>
       </button>
     </nav>
-  </header>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="container">
 
   <!-- HERO -->
   <section class="hero">
@@ -1112,8 +1330,8 @@
       <h1>Ship Smarter, <span>Faster</span></h1>
       <p>Reliable truck and van freight across the Philippines. Real‑time tracking and instant rates – all in one place.</p>
       <div class="cta-group">
-        <a href="#contact" class="btn-primary"><i class="fas fa-paper-plane"></i> Get a Quote</a>
-        <a href="#tracking" class="btn-secondary"><i class="fas fa-search"></i> Track Shipment</a>
+        <a href="#contact" class="btn-primary" id="heroQuoteBtn"><i class="fas fa-paper-plane"></i> Get a Quote</a>
+        <a href="#tracking" class="btn-secondary" id="heroTrackBtn"><i class="fas fa-search"></i> Track Shipment</a>
       </div>
     </div>
     <div class="hero-image">
@@ -1130,60 +1348,65 @@
     </div>
   </section>
 
-  <!-- SERVICES -->
-  <h2 class="section-title" id="services"><i class="fas fa-th-large"></i> Our Services</h2>
-  <div class="bento-grid">
-    <div class="bento-card card-wide">
-      <div class="icon"><i class="fas fa-truck"></i></div>
-      <h3>Van & Truck Freight</h3>
-      <p>Reliable door‑to‑door delivery using vans, L300s, wing vans, and 10‑wheelers across Luzon, Visayas, and Mindanao.</p>
-      <span class="tag">Popular</span>
-    </div>
-    <div class="bento-card">
-      <div class="icon"><i class="fas fa-boxes"></i></div>
-      <h3>LTL & FTL</h3>
-      <p>Less‑than‑truckload and full‑truckload options to fit your cargo size and budget.</p>
-    </div>
-    <div class="bento-card">
-      <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
-      <h3>Live Tracking</h3>
-      <p>Real‑time GPS tracking with instant status updates and Google Maps integration.</p>
-      <span class="tag">New</span>
-    </div>
-    <div class="bento-card card-tall">
-      <div class="icon"><i class="fas fa-calculator"></i></div>
-      <h3>Instant Rate Calculator</h3>
-      <p>Get instant estimates based on vehicle type, weight, and distance in the Philippines.</p>
-      <span class="tag">Try it</span>
-    </div>
-    <div class="bento-card">
-      <div class="icon"><i class="fas fa-warehouse"></i></div>
-      <h3>Warehousing</h3>
-      <p>Storage and distribution services in key Philippine economic zones.</p>
-    </div>
-    <div class="bento-card">
-      <div class="icon"><i class="fas fa-file-invoice"></i></div>
-      <h3>Customs Brokerage</h3>
-      <p>Hassle‑free import/export documentation for your international shipments.</p>
-    </div>
-  </div>
+  <!-- ===== CONSTRAINED SECTIONS (Services & Tracking) ===== -->
+  <div class="constraint-wrapper">
 
-  <!-- TRACKING -->
-  <section class="track-section" id="tracking">
-    <h2><i class="fas fa-map-pin" style="color:var(--accent);"></i> Live Tracking</h2>
-    <div class="track-row">
-      <input type="text" class="track-input" id="trackingInput" placeholder="Enter tracking number (e.g. UTE3N-12345)" value="UTE3N-98765" />
-      <button class="track-btn" id="trackBtn"><i class="fas fa-play"></i> Track Now</button>
+    <!-- SERVICES -->
+    <h2 class="section-title" id="services"><i class="fas fa-th-large"></i> Our Services</h2>
+    <div class="bento-grid">
+      <div class="bento-card card-wide">
+        <div class="icon"><i class="fas fa-truck"></i></div>
+        <h3>Van & Truck Freight</h3>
+        <p>Reliable door‑to‑door delivery using vans, L300s, wing vans, and 10‑wheelers across Luzon, Visayas, and Mindanao.</p>
+        <span class="tag">Popular</span>
+      </div>
+      <div class="bento-card">
+        <div class="icon"><i class="fas fa-boxes"></i></div>
+        <h3>LTL & FTL</h3>
+        <p>Less‑than‑truckload and full‑truckload options to fit your cargo size and budget.</p>
+      </div>
+      <div class="bento-card">
+        <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
+        <h3>Live Tracking</h3>
+        <p>Real‑time GPS tracking with instant status updates and Google Maps integration.</p>
+        <span class="tag">New</span>
+      </div>
+      <div class="bento-card card-tall">
+        <div class="icon"><i class="fas fa-calculator"></i></div>
+        <h3>Instant Rate Calculator</h3>
+        <p>Get instant estimates based on vehicle type, weight, and distance in the Philippines.</p>
+        <span class="tag">Try it</span>
+      </div>
+      <div class="bento-card">
+        <div class="icon"><i class="fas fa-warehouse"></i></div>
+        <h3>Warehousing</h3>
+        <p>Storage and distribution services in key Philippine economic zones.</p>
+      </div>
+      <div class="bento-card">
+        <div class="icon"><i class="fas fa-file-invoice"></i></div>
+        <h3>Customs Brokerage</h3>
+        <p>Hassle‑free import/export documentation for your international shipments.</p>
+      </div>
     </div>
-    <div id="tracking-map">
-      <iframe id="mapFrame" src="https://maps.google.com/maps?q=Manila&t=&z=10&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
-      <div class="status-overlay" id="statusText">📍 In transit – Manila, PH</div>
-    </div>
-  </section>
 
-  <!-- WHY US -->
+    <!-- TRACKING -->
+    <section class="track-section" id="tracking">
+      <h2><i class="fas fa-map-pin" style="color:var(--accent);"></i> Live Tracking</h2>
+      <div class="track-row">
+        <input type="text" class="track-input" id="trackingInput" placeholder="Enter tracking number (e.g. FF-12345)" value="FF-98765" />
+        <button class="track-btn" id="trackBtn"><i class="fas fa-play"></i> Track Now</button>
+      </div>
+      <div id="tracking-map">
+        <iframe id="mapFrame" src="https://maps.google.com/maps?q=Manila&t=&z=10&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+        <div class="status-overlay" id="statusText">📍 In transit – Manila, PH</div>
+      </div>
+    </section>
+
+  </div> <!-- end constraint-wrapper -->
+
+  <!-- WHY US (full-width constrained) -->
   <section class="why-section" id="why">
-    <h2><i class="fas fa-star" style="color:var(--accent);"></i> Why UTE3N?</h2>
+    <h2><i class="fas fa-star" style="color:var(--accent);"></i> Why FreightFlow?</h2>
     <p class="sub">We combine local expertise with modern logistics to move your goods safely, on time, every time.</p>
     <div class="why-grid">
       <div class="why-item">
@@ -1213,7 +1436,7 @@
     </div>
   </section>
 
-  <!-- CALCULATOR -->
+  <!-- CALCULATOR (full-width constrained) -->
   <section class="calc-section">
     <h2><i class="fas fa-calculator" style="color:var(--accent);"></i> Instant Rate Calculator</h2>
     <p class="sub">Domestic truck and van freight across the Philippines. Get a quick estimate in Philippine Pesos (₱).</p>
@@ -1257,12 +1480,14 @@
           <option value="truck10">10‑Wheeler Truck (₱25/kg)</option>
         </select>
       </div>
-      <button class="btn-primary" id="calcBtn" style="padding:12px 32px; flex:0 0 auto;">Calculate</button>
+      <div class="calc-btn-wrapper">
+        <button class="btn-primary" id="calcBtn" style="padding:12px 32px;">Calculate</button>
+      </div>
     </div>
     <div class="calc-result" id="calcResult">₱ 12,000.00</div>
   </section>
 
-  <!-- CONTACT -->
+  <!-- CONTACT (full-width constrained) -->
   <section class="contact-section" id="contact">
     <h2><i class="fas fa-envelope" style="color:var(--accent);"></i> Get in Touch</h2>
     <p class="sub">Have a question or need a custom freight solution? Reach out to our team – we’ll reply within 24 hours.</p>
@@ -1289,98 +1514,220 @@
 
 </div> <!-- end container -->
 
-<!-- ===== ENHANCED FOOTER ===== -->
+<!-- ===== FOOTER ===== -->
 <footer class="footer-section">
-  <div class="container" style="padding:0;">
-
-    <div class="footer-grid">
-      <!-- Brand -->
-      <div class="footer-brand">
-        <h3><i class="fas fa-ship"></i> UTE3N</h3>
-        <p>Reliable logistics partner for businesses across the Philippines. Moving your cargo with care and precision.</p>
-        <div class="address">
-          <i class="fas fa-location-dot"></i>
-          <span>#81 Virginia St. Gulod Novaliches Quezon City, Metro Manila, Philippines</span>
-        </div>
-      </div>
-
-      <!-- Quick Links -->
-      <div class="footer-links">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#tracking">Live Tracking</a></li>
-          <li><a href="#why">Why Us</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-
-      <!-- Contact Info -->
-      <div class="footer-contact">
-        <h4>Contact Us</h4>
-        <ul>
-          <li><i class="fas fa-phone"></i> +63 (2) 666 666 6666</li>
-          <li><i class="fas fa-mobile-alt"></i> +63 917 123 4567</li>
-          <li><i class="fas fa-envelope"></i> info@ute3n.ph</li>
-          <li><i class="fas fa-clock"></i> Mon–Fri: 8:00 AM – 6:00 PM</li>
-        </ul>
-      </div>
-
-      <!-- Social -->
-      <div class="footer-social">
-        <h4>Follow Us</h4>
-        <div class="social-icons">
-          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-        </div>
-        <p style="margin-top:16px; color:var(--text-light); font-size:0.85rem;">Safeguarding your cargo with ISO‑certified processes.</p>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3><i class="fas fa-ship"></i> FreightFlow</h3>
+      <p>Reliable logistics partner for businesses across the Philippines. Moving your cargo with care and precision.</p>
+      <div class="address">
+        <i class="fas fa-location-dot"></i>
+        <span>Unit 101, Global Trade Center, Pasig City, Metro Manila, Philippines</span>
       </div>
     </div>
-
-    <!-- Bottom Bar -->
-    <div class="footer-bottom">
-      <div class="copyright">
-        &copy; 2026 UTE3N Logistics Inc. All rights reserved.
-      </div>
-      <div class="legal-links">
-        <a onclick="openModal('terms')">Terms & Conditions</a>
-        <a onclick="openModal('privacy')">Privacy Policy</a>
-      </div>
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#tracking">Live Tracking</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </div>
-
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><i class="fas fa-phone"></i> +63 (2) 8123 4567</li>
+        <li><i class="fas fa-mobile-alt"></i> +63 917 123 4567</li>
+        <li><i class="fas fa-envelope"></i> info@freightflow.ph</li>
+        <li><i class="fas fa-clock"></i> Mon–Fri: 8:00 AM – 6:00 PM</li>
+      </ul>
+    </div>
+    <div class="footer-social">
+      <h4>Follow Us</h4>
+      <div class="social-icons">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+      </div>
+      <p style="margin-top:16px; color:var(--text-light); font-size:0.85rem;">Safeguarding your cargo with ISO‑certified processes.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="copyright">&copy; 2026 FreightFlow Logistics Inc. All rights reserved.</div>
+    <div class="legal-links">
+      <a onclick="openModal('terms')">Terms & Conditions</a>
+      <a onclick="openModal('privacy')">Privacy Policy</a>
+    </div>
   </div>
 </footer>
 
-<!-- ===== TERMS MODAL ===== -->
+<!-- ===== TERMS & CONDITIONS MODAL ===== -->
 <div class="modal-overlay" id="termsModal">
   <div class="modal-box">
     <button class="close-modal" onclick="closeModal('terms')">&times;</button>
-    <h2><i class="fas fa-scale-balanced"></i> Terms & Conditions</h2>
-    <p><strong>Effective Date:</strong> July 27, 2026</p>
-    <p>Welcome to UTE3N. By using our website and services, you agree to the following terms, which are governed by the laws of the Republic of the Philippines.</p>
-    <p><strong>1. Acceptance of Terms</strong><br>By accessing this website, you confirm that you have read, understood, and accept these Terms & Conditions.</p>
-    <p><strong>2. Services</strong><br>UTE3N provides domestic trucking and logistics services. While we strive for timely delivery, all transit times are estimates and not guarantees.</p>
-    <p><strong>3. User Obligations</strong><br>You agree to provide accurate information and to use our services solely for lawful purposes. You are responsible for the legality and safety of your cargo.</p>
-    <p><strong>4. Limitation of Liability</strong><br>To the fullest extent permitted by Philippine law (Civil Code of the Philippines), UTE3N's liability for loss or damage to cargo is limited to the freight charges paid for the affected shipment. We are not liable for indirect, incidental, or consequential damages.</p>
-    <p><strong>5. Force Majeure</strong><br>We are not liable for delays or failures caused by events beyond our control, including natural disasters, government actions, strikes, or pandemics.</p>
-    <p><strong>6. Governing Law & Dispute Resolution</strong><br>These terms are governed by the laws of the Philippines. Any dispute shall be resolved amicably; if unresolved, disputes shall be brought exclusively to the competent courts of Pasig City.</p>
-    <p><strong>7. Amendments</strong><br>We reserve the right to update these terms at any time. Changes will be posted on this page.</p>
+    <h2><i class="fas fa-scale-balanced"></i> Terms and Conditions</h2>
+
+    <div class="notice-box">
+      <strong>IMPORTANT NOTICE TO CUSTOMERS</strong>
+      <p>FreightFlow Logistics Inc., including its officers, employees, and agents, shall not be liable for any losses or damages except as specifically provided herein. In all cases where FreightFlow Logistics Inc. or any of its representatives are found liable, such liability shall be strictly limited in accordance with Condition No. 6 herein. Both the Shipper and the Consignee are strongly advised to conduct due diligence before engaging in any transaction and, by using FreightFlow services, agree to be bound by these Terms & Conditions.</p>
+    </div>
+
+    <p><strong>DEFINITIONS</strong></p>
+    <ul>
+      <li><strong>"Shipper"</strong> – The person or entity tendering the shipment to FreightFlow Logistics Inc.</li>
+      <li><strong>"Consignee"</strong> – The person or entity designated to receive the shipment.</li>
+      <li><strong>"FreightFlow Logistics Inc."</strong> – Refers to FreightFlow Logistics Inc., its officers, agents, employees, and authorized representatives.</li>
+      <li><strong>"Importer of Record"</strong> – The party legally responsible for customs declaration and payment of duties and taxes.</li>
+      <li><strong>"Force Majeure"</strong> – Events beyond FreightFlow Logistics Inc.'s reasonable control, including but not limited to natural disasters, war, terrorism, labor disputes, government actions, and technical failures.</li>
+    </ul>
+
+    <p><strong>GENERAL TERMS</strong></p>
+    <p>By tendering a shipment to FreightFlow Logistics Inc. and utilizing this Waybill, both the Shipper and the Consignee agree to the following Terms and Conditions. No employee or agent of FreightFlow Logistics Inc. is authorized to alter or waive these conditions.</p>
+
+    <p><strong>1. CONSIGNMENT NOTE OR AIR WAYBILL</strong></p>
+    <ul>
+      <li>This Waybill is NON-NEGOTIABLE.</li>
+      <li>The Shipper confirms that this document has been completed either by themselves or by FreightFlow Logistics Inc. on their behalf.</li>
+      <li>The Shipper warrants they are the rightful owner or authorized agent of the goods.</li>
+    </ul>
+
+    <p><strong>2. SHIPPER AND CONSIGNEE OBLIGATIONS & WARRANTIES</strong></p>
+    <p>The Shipper and Consignee jointly warrant and agree that:</p>
+    <ul>
+      <li>The shipment is properly and accurately described and does not contain prohibited items as detailed in Condition No. 3.</li>
+      <li>Each shipment is clearly marked with a unique order number code and securely packed in accordance with the Packaging Guidelines.</li>
+      <li>The goods comply with all applicable laws, including but not limited to customs and import/export regulations.</li>
+      <li>FreightFlow Logistics Inc. reserves full discretion to refuse or discontinue transport of any shipment.</li>
+      <li>FreightFlow Logistics Inc. may refuse carriage of any shipment deemed unsafe, improperly documented, in violation of applicable laws, or containing restricted or prohibited items.</li>
+    </ul>
+
+    <p><strong>Warehouse Routing & Address Accuracy</strong></p>
+    <p>The Shipper and Consignee acknowledge that FreightFlow Logistics Inc. operates multiple warehouses servicing different routes and that warehouse addresses vary depending on destination and freight mode. Accordingly, the Shipper and Consignee agree that:</p>
+    <ul>
+      <li>It is their sole responsibility to use and provide the correct warehouse address to their supplier or courier.</li>
+      <li>FreightFlow Logistics Inc. shall not be liable for any loss, delay, misdelivery, customs issue, or additional cost arising from incorrect, outdated, or incomplete warehouse address provided by the Shipper or Consignee.</li>
+      <li>Shipments sent to the wrong warehouse or to an air-freight warehouse instead of a sea-freight warehouse, or vice versa.</li>
+      <li>Supplier or third-party courier errors resulting from incorrect routing instructions.</li>
+    </ul>
+    <p>If a shipment is delivered to an incorrect FreightFlow warehouse due to Shipper or Consignee error, all additional handling, transfer, storage, re-routing, or corrective costs shall be borne solely by the Shipper and/or Consignee. FreightFlow Logistics Inc. does not guarantee transit times affected by such errors.</p>
+
+    <p><strong>3. PROHIBITED AND FRAGILE SHIPMENTS</strong></p>
+    <ul>
+      <li><strong>Prohibited Shipments:</strong> Illegal drugs, flammable materials, toxic chemicals, counterfeit goods, replicas, or any items banned by Philippine law are strictly prohibited and may be surrendered to authorities. The Shipper and Consignee shall bear all related costs.</li>
+      <li><strong>Fragile Shipments:</strong> Glass, perishables, and other fragile items are accepted strictly at the Shipper's and Consignee's risk. FreightFlow Logistics Inc. assumes no liability for damage.</li>
+    </ul>
+
+    <p><strong>4. RIGHT TO INSPECTION</strong></p>
+    <p>FreightFlow Logistics Inc., the Bureau of Customs (BOC), and other relevant authorities may inspect shipments at any time. FreightFlow Logistics Inc. is not liable for any damage resulting from such inspections.</p>
+
+    <p><strong>5. LIEN ON GOODS</strong></p>
+    <p>FreightFlow Logistics Inc. retains a lien on all shipments for unpaid freight and related charges and may withhold delivery until all such charges are paid.</p>
+
+    <p><strong>6. LIMITATION OF LIABILITY</strong></p>
+    <p>FreightFlow Logistics Inc. does not provide "All Risk" coverage and acts solely as a freight forwarder and logistics intermediary. FreightFlow Logistics Inc. shall not be liable for any loss, damage, delay, or non-delivery of shipment unless such loss or damage is proven to have been directly caused by the gross negligence or willful misconduct of FreightFlow Logistics Inc.</p>
+    <p>In all cases where liability is established, such liability shall be strictly limited to the lowest of the following amounts:</p>
+    <ul>
+      <li>PHP 25,000.00</li>
+      <li>The actual proven loss</li>
+      <li>The fair market value of the goods at origin</li>
+      <li>The Shipper's declared value</li>
+      <li>Five (5) times the freight charge paid</li>
+    </ul>
+    <p>Under no circumstances shall FreightFlow Logistics Inc. be liable for: Loss of profits, loss of business opportunity, market losses, indirect, incidental, special, or consequential damages, or delay-related damages of any kind.</p>
+    <p>FreightFlow Logistics Inc. shall not be liable for loss or damage arising from: Improper packaging or labeling by the Shipper; inherent defect or nature of the goods; acts or omissions of third-party carriers, customs authorities, warehouse operators, or subcontractors; or confiscation, inspection, or seizure by government authorities.</p>
+
+    <p><strong>7. ACTUAL VALUE DETERMINATION</strong></p>
+    <p><strong>Documents:</strong> Limited to the cost of preparation or reconstitution.</p>
+    <p><strong>Parcels:</strong> Compensation shall be limited to the lesser of: a) the reasonable repair cost; b) the replacement cost based on the purchase price at origin; c) the actual purchase price paid by the Shipper, supported by invoices or proof of purchase. Under no circumstances shall compensation exceed the original purchase price of the goods at origin. Local retail prices, resale values, anticipated selling prices, loss of profits, markups, taxes, shipping charges, or other consequential losses shall not be included in the calculation of compensation.</p>
+
+    <p><strong>8. EXCLUSION OF CONSEQUENTIAL DAMAGES</strong></p>
+    <p>FreightFlow Logistics Inc. shall not be liable for indirect, consequential, or special damages, including loss of profits, business opportunities, or market losses.</p>
+
+    <p><strong>9. FORCE MAJEURE & LIABILITIES NOT ASSUMED</strong></p>
+    <p>FreightFlow Logistics Inc. shall not be liable for delays, non-delivery, or failure due to causes beyond its control, including but not limited to: weather disturbances preventing safe operations; natural disasters (e.g., typhoons, floods, earthquakes); war, terrorism, government actions, labor disputes, or civil disturbances; regulatory or customs inspections and delays; network or system failures; improper packaging, documentation, or labeling by the Shipper or Consignee; or third-party handlers or customs authorities.</p>
+
+    <p><strong>10. TRANSIT TIME DISCLAIMER</strong></p>
+    <p>All transit times, delivery dates, and estimated arrival schedules provided by FreightFlow Logistics Inc. are indicative and for reference purposes only. Such timelines are not guaranteed. FreightFlow Logistics Inc. shall not be liable for any delay in transportation or delivery, regardless of cause. No employee or representative of FreightFlow Logistics Inc. is authorized to guarantee specific transit times unless expressly confirmed in writing by a duly authorized officer of the Company.</p>
+
+    <p><strong>11. CLAIMS POLICY</strong></p>
+    <ul>
+      <li>Claims must be submitted within 72 hours of delivery via FreightFlow Logistics Inc.'s official channels.</li>
+      <li>Freight charges must be fully settled before claim processing.</li>
+      <li>Claims require sufficient proof, such as photographs and receipts. Incomplete documentation may result in claim denial.</li>
+    </ul>
+
+    <p><strong>12. CONSOLIDATION POLICY</strong></p>
+    <p>FreightFlow Logistics Inc. applies a First-In, First-Out (FIFO) system.</p>
+
+    <p><strong>13. PICK-UPS</strong></p>
+    <ul>
+      <li>Partial pick-ups are not allowed.</li>
+      <li>Shipments will be released only upon full payment of all outstanding balances, including importation fees.</li>
+    </ul>
+
+    <p><strong>14. PRICING POLICY</strong></p>
+    <ul>
+      <li>Prices as published on the FreightFlow Logistics Inc. website shall apply.</li>
+      <li>FreightFlow Logistics Inc. reserves the right to revise prices without prior notice.</li>
+    </ul>
+
+    <p><strong>15. NON-PULL-OUT POLICY</strong></p>
+    <p>Once goods have arrived at the FreightFlow Logistics Inc. warehouse, pull-out requests shall not be accommodated.</p>
+
+    <p><strong>16. INDEMNIFICATION</strong></p>
+    <p>Both the Shipper and Consignee agree to indemnify and hold harmless FreightFlow Logistics Inc., its officers, agents, and employees from any claims or expenses arising from: violation of these Terms & Conditions; improper documentation or transport of restricted/prohibited items; or third-party claims related to the shipment.</p>
+
+    <p><strong>17. CUSTOMS DOCUMENTATION FOR CONSOLIDATED SHIPMENTS</strong></p>
+    <p><strong>17.1 Documentation Limitations</strong> For LCL (Less-than-Container Load) or consolidated freight services, FreightFlow Logistics Inc. processes shipments under a consolidated import entry. Accordingly, FreightFlow Logistics Inc. does NOT provide: a) Individual Bureau of Customs (BOC) Official Receipts under the customer's company name; b) Individual Import Entry Permits under the customer's company name; c) Individual Goods Declarations under the customer's company name; d) Any customs documentation issued under the customer's name as Importer of Record.</p>
+    <p><strong>17.2 Customer Responsibility</strong> The Shipper and Consignee are solely responsible for: a) Informing FreightFlow of specific customs documentation requirements BEFORE booking; b) Understanding that consolidated shipping does not produce individual BOC documentation.</p>
+    <p><strong>17.3 No Liability</strong> FreightFlow Logistics Inc. shall NOT be liable for: a) Customer's inability to obtain individual BOC Official Receipts or Import Entry when consolidated/LCL services were selected; b) Any financial loss, project delays, payment withholding, contract issues, audit penalties, or compliance problems arising from lack of individual BOC customs documentation; c) Third-party requirements for BOC documentation that can only be obtained through Direct Import.</p>
+    <p><strong>17.4 Acknowledgment</strong> By using FreightFlow consolidated/LCL services, the Shipper and Consignee acknowledge they understand BOC Official Receipts and Import Entry will NOT be issued under their company name, and they waive any claims related to this documentation limitation.</p>
+
+    <p><strong>18. ELECTRONIC DATA CONSENT</strong></p>
+    <p>Both the Shipper and Consignee consent to the use of electronic documents, including waybills, invoices, and communications where permitted by applicable law.</p>
+
+    <p><strong>19. LIMITATION OF ACTIONS</strong></p>
+    <p>No legal action may be brought against FreightFlow Logistics Inc. more than one (1) year after the date the shipment was tendered.</p>
+
+    <p><strong>20. DISPUTE RESOLUTION & ARBITRATION</strong></p>
+    <p>Disputes shall first be submitted to arbitration in Pasig City, Philippines, prior to the initiation of any legal action. Both the Shipper and Consignee agree to waive their rights to file lawsuits until arbitration has been completed.</p>
+
+    <p><strong>21. SEVERABILITY</strong></p>
+    <p>If any provision herein is deemed invalid or unenforceable, the remaining provisions shall remain in full force and effect.</p>
+
+    <p><strong>22. ENTIRE AGREEMENT</strong></p>
+    <p>These Terms & Conditions constitute the entire agreement between the Shipper, the Consignee, and FreightFlow Logistics Inc. and supersede all prior agreements or understandings.</p>
+
+    <p><strong>23. GOVERNING LAW</strong></p>
+    <p>This Agreement shall be governed by the laws of the Republic of the Philippines.</p>
+
+    <p><strong>APPENDIX I – PACKAGING GUIDELINES</strong></p>
+    <ul>
+      <li><strong>External Packaging:</strong> All shipments must be fully enclosed using sturdy boxes or heavy-duty poly mailers that provide 100% coverage and structural integrity suitable for freight transportation.</li>
+      <li><strong>Internal Protection:</strong> All items must be secured internally to prevent movement, using protective materials such as bubble wrap, foam inserts, air pillows, or molded cushioning. Fragile or delicate items require double-layered protection.</li>
+      <li><strong>Fragile & Sensitive Items:</strong> Fragile goods (e.g., glassware, electronics, perishable items) must be bubble-wrapped, labeled "FRAGILE," and crated where necessary to minimize damage during handling and transit.</li>
+      <li><strong>Heavy or Oversized Cargo:</strong> Cargoes that are deemed heavy or oversized must be fully crated or palletized and banded securely. Exposed corners should be reinforced.</li>
+      <li><strong>Sealing Requirements:</strong> All packaging must be properly sealed with high-tensile strength packing tape. Staples and strapping are recommended for heavy loads.</li>
+      <li><strong>Labeling:</strong> Remove all previous shipment labels or barcodes and ensure the FreightFlow unique order number code is clearly displayed on the outer packaging.</li>
+      <li><strong>Prohibited Markings:</strong> Packages must not bear any misleading or unauthorized markings (e.g., false declarations or customs labels).</li>
+      <li><strong>Compliance:</strong> Failure to comply with these packaging requirements may result in refusal, delays, additional fees, or voidance of liability coverage. FreightFlow Logistics Inc. reserves the right to refuse any improperly packaged shipment or to require repacking at the Shipper's and Consignee's cost.</li>
+    </ul>
   </div>
 </div>
 
-<!-- ===== PRIVACY MODAL ===== -->
+<!-- ===== PRIVACY POLICY MODAL ===== -->
 <div class="modal-overlay" id="privacyModal">
   <div class="modal-box">
     <button class="close-modal" onclick="closeModal('privacy')">&times;</button>
     <h2><i class="fas fa-shield-halved"></i> Privacy Policy</h2>
     <p><strong>Effective Date:</strong> July 27, 2026</p>
-    <p>UTE3N Logistics Inc. respects your privacy. This Policy explains how we collect, use, and protect your personal data in compliance with the <strong>Philippine Data Privacy Act of 2012 (R.A. 10173)</strong>.</p>
+    <p>FreightFlow Logistics Inc. respects your privacy. This Policy explains how we collect, use, and protect your personal data in compliance with the <strong>Philippine Data Privacy Act of 2012 (R.A. 10173)</strong>.</p>
     <p><strong>1. Information We Collect</strong><br>We collect personal information you provide to us, such as your name, email address, phone number, shipping addresses, and payment details. We also collect non-personal data like browser type and IP address for analytics.</p>
     <p><strong>2. How We Use Your Data</strong><br>Your data is used to process shipments, provide tracking updates, communicate with you, process payments, and improve our services. We do not sell or rent your personal data to third parties.</p>
     <p><strong>3. Sharing of Information</strong><br>We may share your data with trusted delivery partners, customs brokers, and payment processors strictly to fulfill your shipment. All partners are contractually bound to protect your data.</p>
-    <p><strong>4. Your Rights</strong><br>Under the Data Privacy Act, you have the right to access, correct, delete, and object to the processing of your personal data. To exercise these rights, contact us at <strong>privacy@ute3n.ph</strong>.</p>
+    <p><strong>4. Your Rights</strong><br>Under the Data Privacy Act, you have the right to access, correct, delete, and object to the processing of your personal data. To exercise these rights, contact us at <strong>privacy@freightflow.ph</strong>.</p>
     <p><strong>5. Data Security</strong><br>We implement organizational, physical, and technical security measures to protect your data from unauthorized access, loss, or destruction.</p>
     <p><strong>6. Cookies</strong><br>We use cookies to enhance user experience. You can disable cookies in your browser settings.</p>
     <p><strong>7. Updates</strong><br>We may update this policy periodically. We encourage you to review it regularly.</p>
@@ -1389,6 +1736,7 @@
 
 <!-- ===== CHAT ===== -->
 <button id="chat-bubble" aria-label="Open chat">
+  <span class="bubble-pulse"></span>
   <i class="fas fa-comment-dots"></i>
 </button>
 <div id="chat-window">
@@ -1408,22 +1756,62 @@
 <!-- ===== JAVASCRIPT ===== -->
 <script>
   (function() {
-    // DARK MODE
+    // ---------- RIPPLE EFFECT ----------
+    function createRipple(e, element) {
+      const rect = element.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple-effect';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      element.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 700);
+    }
+    document.querySelectorAll('.btn-primary, .btn-secondary, .track-btn, .btn-submit, #chatSend, #themeToggle').forEach(el => {
+      el.addEventListener('click', function(e) {
+        createRipple(e, this);
+      });
+    });
+
+    // ---------- DARK MODE ----------
     const toggle = document.getElementById('themeToggle');
     const body = document.body;
     if (localStorage.getItem('darkMode') === 'true') {
       body.classList.add('dark-mode');
     }
-    toggle.addEventListener('click', () => {
+    toggle.addEventListener('click', function(e) {
       body.classList.toggle('dark-mode');
       localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
     });
 
-    // TRACKING
+    // ---------- SMOOTH SCROLL WITH HIGHLIGHT ----------
+    document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        if (target) {
+          document.querySelectorAll('.section-highlight').forEach(el => el.classList.remove('section-highlight'));
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => {
+            target.classList.add('section-highlight');
+            setTimeout(() => {
+              target.classList.remove('section-highlight');
+            }, 1500);
+          }, 600);
+        }
+      });
+    });
+
+    // ---------- TRACKING ----------
     const trackBtn = document.getElementById('trackBtn');
     const trackingInput = document.getElementById('trackingInput');
     const statusText = document.getElementById('statusText');
     const mapFrame = document.getElementById('mapFrame');
+    const mapContainer = document.getElementById('tracking-map');
     const statusData = [
       { text: '📍 Departed – Manila, PH', location: 'Manila' },
       { text: '🔄 In transit – Pampanga, PH', location: 'Pampanga' },
@@ -1438,13 +1826,15 @@
       statusText.textContent = data.text;
       const location = encodeURIComponent(data.location);
       mapFrame.src = `https://maps.google.com/maps?q=${location}&t=&z=10&ie=UTF8&iwloc=&output=embed`;
+      mapContainer.classList.add('map-updated');
+      setTimeout(() => mapContainer.classList.remove('map-updated'), 500);
     }
     trackBtn.addEventListener('click', updateTracking);
     trackingInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') updateTracking();
     });
 
-    // RATE CALCULATOR
+    // ---------- RATE CALCULATOR ----------
     const calcBtn = document.getElementById('calcBtn');
     const resultSpan = document.getElementById('calcResult');
     const weightInput = document.getElementById('weight');
@@ -1475,6 +1865,9 @@
                (originRegion === 'Mindanao' && destRegion === 'Visayas')) factor = 1.8;
       const total = weight * baseRate * factor;
       resultSpan.textContent = `₱ ${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+      resultSpan.classList.remove('updated');
+      void resultSpan.offsetWidth;
+      resultSpan.classList.add('updated');
     }
     calcBtn.addEventListener('click', calculateRate);
     document.querySelectorAll('.calc-group select, .calc-group input').forEach(el => {
@@ -1483,23 +1876,28 @@
     });
     calculateRate();
 
-    // CONTACT FORM
+    // ---------- CONTACT FORM ----------
     document.getElementById('contactForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const name = document.getElementById('contactName').value.trim() || 'Friend';
-      alert(`Thank you, ${name}! Your message has been sent. We’ll get back to you soon.`);
+      alert(`Thank you, ${name}! Your message has been sent. We'll get back to you soon.`);
       this.reset();
     });
 
-    // CHAT
+    // ---------- CHAT ----------
     const chatBubble = document.getElementById('chat-bubble');
     const chatWindow = document.getElementById('chat-window');
     const chatClose = document.getElementById('chatClose');
     const chatMessages = document.getElementById('chatMessages');
     const chatInput = document.getElementById('chatInput');
     const chatSend = document.getElementById('chatSend');
-    function openChat() { chatWindow.classList.add('open'); setTimeout(() => chatInput.focus(), 200); }
-    function closeChat() { chatWindow.classList.remove('open'); }
+    function openChat() {
+      chatWindow.classList.add('open');
+      setTimeout(() => chatInput.focus(), 200);
+    }
+    function closeChat() {
+      chatWindow.classList.remove('open');
+    }
     chatBubble.addEventListener('click', openChat);
     chatClose.addEventListener('click', closeChat);
     function addMessage(text, sender) {
@@ -1529,7 +1927,7 @@
       if (e.key === 'Enter') handleSend();
     });
 
-    // MODALS
+    // ---------- MODALS ----------
     window.openModal = function(type) {
       const modal = document.getElementById(type === 'terms' ? 'termsModal' : 'privacyModal');
       if (modal) modal.classList.add('active');
@@ -1540,7 +1938,6 @@
       if (modal) modal.classList.remove('active');
       document.body.style.overflow = '';
     };
-    // Close modals by clicking outside
     document.querySelectorAll('.modal-overlay').forEach(el => {
       el.addEventListener('click', function(e) {
         if (e.target === this) {
@@ -1549,7 +1946,6 @@
         }
       });
     });
-    // Close modals with Escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-overlay.active').forEach(el => {
@@ -1558,6 +1954,32 @@
         document.body.style.overflow = '';
       }
     });
+
+    // ---------- INTERSECTION OBSERVER FOR ACTIVE NAV LINKS ----------
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.3
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    sections.forEach(section => observer.observe(section));
+
   })();
 </script>
 

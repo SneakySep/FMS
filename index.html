@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTE3N — Smart Logistics</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ---------- CSS Variables (Light & Dark) ---------- */
+    :root {
+      --primary: #0b3b5c;
+      --primary-light: #1a5a7a;
+      --accent: #00b4d8;
+      --accent-light: #90e0ef;
+      --bg: #f4f8fb;
+      --card-bg: #ffffff;
+      --text: #1e2a3a;
+      --text-light: #4a5a6e;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      --radius: 24px;
+      --transition: 0.25s ease;
+      --border-color: #dce5ed;
+      --input-bg: #fafcfd;
+      --map-bg: #e9f0f5;
+      --chat-bg: #ffffff;
+      --chat-msg-user: #00b4d8;
+      --chat-msg-bot: #e9f0f5;
+      --footer-bg: #e8edf2;
+    }
+
+    body.dark-mode {
+      --primary: #90e0ef;
+      --primary-light: #a8e6f3;
+      --accent: #48cae4;
+      --accent-light: #023e8a;
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --text: #e8edf2;
+      --text-light: #b0c4d9;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+      --border-color: #3a4a5a;
+      --input-bg: #2a2a2a;
+      --map-bg: #1e2a34;
+      --chat-bg: #1e1e1e;
+      --chat-msg-user: #48cae4;
+      --chat-msg-bot: #2a3a4a;
+      --footer-bg: #1a1a1a;
+    }
+
+    /* ---------- Reset & Base ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0 20px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 0 0;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .logo i {
+      color: var(--accent);
+      font-size: 2rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+    nav a:hover {
+      color: var(--primary);
+    }
+    nav a.contact-link {
+      background: var(--accent);
+      color: #fff;
+      padding: 8px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      transition: background var(--transition);
+    }
+    nav a.contact-link:hover {
+      background: #0096b8;
+      color: #fff;
+    }
+
+    /* ---------- Dark Mode Toggle ---------- */
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 40px;
+      padding: 8px 14px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text);
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-toggle:hover {
+      border-color: var(--accent);
+    }
+    .theme-toggle .moon-icon {
+      display: inline-block;
+    }
+    body.dark-mode .theme-toggle .sun-icon {
+      display: inline-block;
+    }
+    body.dark-mode .theme-toggle .moon-icon {
+      display: none;
+    }
+    .theme-toggle .sun-icon {
+      display: none;
+    }
+    body.dark-mode .theme-toggle .sun-icon {
+      display: inline-block;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 0 20px;
+      gap: 30px;
+    }
+    .hero-text {
+      flex: 1 1 400px;
+    }
+    .hero-text h1 {
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    .hero-text h1 span {
+      color: var(--accent);
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      color: var(--text-light);
+      max-width: 480px;
+      margin-bottom: 28px;
+    }
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.1s;
+      box-shadow: 0 8px 18px rgba(0, 180, 216, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      background: #0096b8;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: var(--card-bg);
+      border: 1.5px solid var(--text-light);
+      padding: 14px 36px;
+      border-radius: 60px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ---------- HERO IMAGE – Scrolling Carousel ---------- */
+    .hero-image {
+      flex: 1 1 400px;
+      min-width: 280px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: var(--card-bg);
+      position: relative;
+      height: 260px;
+    }
+
+    .carousel-track {
+      display: flex;
+      width: calc(200%);
+      height: 100%;
+      animation: scrollLeft 24s linear infinite;
+    }
+
+    .carousel-track:hover {
+      animation-play-state: paused;
+    }
+
+    .carousel-slide {
+      flex: 0 0 calc(100% / 4);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes scrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ---------- Bento Grid ---------- */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 40px 0 20px;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+    }
+    .section-title i {
+      color: var(--accent);
+      margin-right: 10px;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin: 20px 0 40px;
+    }
+
+    .bento-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 28px 22px;
+      box-shadow: var(--shadow);
+      transition: transform var(--transition), box-shadow var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .bento-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+    }
+    .bento-card .icon {
+      font-size: 2.4rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .bento-card h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+    .bento-card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    .bento-card .tag {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      align-self: flex-start;
+    }
+    .card-wide {
+      grid-column: span 2;
+    }
+    .card-tall {
+      grid-row: span 2;
+    }
+
+    /* ---------- Tracking with Google Maps ---------- */
+    .track-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      margin: 30px 0 40px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .track-section h2 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    .track-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+    .track-input {
+      flex: 2 1 260px;
+      padding: 14px 20px;
+      border-radius: 60px;
+      border: 1.5px solid var(--border-color);
+      font-size: 1rem;
+      outline: none;
+      transition: border var(--transition);
+      background: var(--input-bg);
+      color: var(--text);
+    }
+    .track-input:focus {
+      border-color: var(--accent);
+    }
+    .track-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .track-btn:hover {
+      background: var(--primary-light);
+    }
+
+    #tracking-map {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      margin-top: 24px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: var(--map-bg);
+    }
+
+    #mapFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      transition: opacity 0.3s;
+    }
+
+    .status-overlay {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 8px 24px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* ---------- Why FreightFlow? ---------- */
+    .why-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      margin: 30px 0 40px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.02);
+      text-align: center;
+    }
+    .why-section h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .why-section .sub {
+      color: var(--text-light);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .why-item {
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 28px 16px;
+      transition: transform var(--transition), box-shadow var(--transition);
+      border: 1px solid transparent;
+    }
+    .why-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    .why-item .icon {
+      font-size: 2.8rem;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .why-item h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .why-item p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    .why-item .stat {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    /* ---------- Rate Calculator ---------- */
+    .calc-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      margin: 30px 0 40px;
+      box-shadow: var(--shadow);
+    }
+    .calc-section h2 {
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .calc-section .sub {
+      color: var(--text-light);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    .calc-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-end;
+    }
+    .calc-group {
+      flex: 1 1 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .calc-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+    .calc-group select,
+    .calc-group input {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-color);
+      font-size: 1rem;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border var(--transition);
+    }
+    .calc-group select:focus,
+    .calc-group input:focus {
+      border-color: var(--accent);
+    }
+    .calc-result {
+      margin-top: 24px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--bg);
+      padding: 16px 28px;
+      border-radius: 16px;
+      display: inline-block;
+      border-left: 6px solid var(--accent);
+    }
+
+    /* ---------- Contact Form ---------- */
+    .contact-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      margin: 40px 0 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .contact-section h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .contact-section .sub {
+      color: var(--text-light);
+      margin-bottom: 28px;
+      font-size: 1.05rem;
+    }
+    .contact-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .contact-form .full-width {
+      grid-column: 1 / -1;
+    }
+    .contact-form label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1.5px solid var(--border-color);
+      font-size: 1rem;
+      outline: none;
+      transition: border var(--transition);
+      background: var(--input-bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: var(--accent);
+    }
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 130px;
+    }
+    .contact-form .btn-submit {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.1s;
+      box-shadow: 0 8px 20px rgba(0, 180, 216, 0.25);
+      justify-self: start;
+      grid-column: 1 / -1;
+    }
+    .contact-form .btn-submit:hover {
+      background: #0096b8;
+      transform: scale(1.02);
+    }
+    .contact-form .btn-submit i {
+      margin-right: 10px;
+    }
+
+    /* ---------- CHAT BUBBLE ---------- */
+    #chat-bubble {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      z-index: 999;
+      background: var(--accent);
+      color: #fff;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 8px 28px rgba(0, 180, 216, 0.4);
+      cursor: pointer;
+      transition: transform 0.2s, background var(--transition);
+      border: none;
+    }
+    #chat-bubble:hover {
+      transform: scale(1.08);
+      background: #0096b8;
+    }
+
+    /* ---------- CHAT WINDOW ---------- */
+    #chat-window {
+      position: fixed;
+      bottom: 110px;
+      left: 30px;
+      width: 380px;
+      max-width: calc(100vw - 60px);
+      max-height: 520px;
+      background: var(--chat-bg);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+    #chat-window.open {
+      display: flex;
+    }
+    .chat-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .chat-header i {
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .chat-header i:hover {
+      opacity: 1;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 340px;
+      background: var(--bg);
+    }
+    .chat-messages .msg {
+      max-width: 80%;
+      padding: 10px 16px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      animation: fadeIn 0.2s;
+    }
+    .chat-messages .msg.user {
+      align-self: flex-end;
+      background: var(--chat-msg-user);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-messages .msg.bot {
+      align-self: flex-start;
+      background: var(--chat-msg-bot);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chat-input-row {
+      display: flex;
+      padding: 12px 16px;
+      gap: 10px;
+      border-top: 1px solid var(--border-color);
+      background: var(--card-bg);
+    }
+    .chat-input-row input {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 40px;
+      border: 1.5px solid var(--border-color);
+      outline: none;
+      font-size: 0.95rem;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: border var(--transition);
+    }
+    .chat-input-row input:focus {
+      border-color: var(--accent);
+    }
+    .chat-input-row button {
+      background: var(--accent);
+      border: none;
+      border-radius: 40px;
+      padding: 0 20px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .chat-input-row button:hover {
+      background: #0096b8;
+    }
+
+    /* ---------- NEW: ENHANCED FOOTER ---------- */
+    .footer-section {
+      background: var(--footer-bg);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 40px 32px 20px;
+      margin-top: 40px;
+      border-top: 1px solid var(--border-color);
+      transition: background var(--transition);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.5fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .footer-brand h3 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .footer-brand h3 i {
+      color: var(--accent);
+    }
+    .footer-brand p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      max-width: 280px;
+      margin-bottom: 12px;
+    }
+    .footer-brand .address {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .footer-brand .address i {
+      color: var(--accent);
+      margin-top: 3px;
+    }
+
+    .footer-links h4,
+    .footer-contact h4,
+    .footer-social h4 {
+      color: var(--primary);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .footer-links ul,
+    .footer-contact ul {
+      list-style: none;
+    }
+    .footer-links ul li,
+    .footer-contact ul li {
+      margin-bottom: 10px;
+    }
+    .footer-links ul li a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color var(--transition);
+      font-size: 0.95rem;
+    }
+    .footer-links ul li a:hover {
+      color: var(--accent);
+    }
+    .footer-contact ul li {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-contact ul li i {
+      color: var(--accent);
+      width: 20px;
+      text-align: center;
+    }
+
+    .footer-social .social-icons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .footer-social .social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      color: var(--primary);
+      font-size: 1.3rem;
+      transition: all var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-decoration: none;
+    }
+    .footer-social .social-icons a:hover {
+      background: var(--accent);
+      color: #fff;
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+    .footer-bottom .legal-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .footer-bottom .legal-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color var(--transition);
+      cursor: pointer;
+    }
+    .footer-bottom .legal-links a:hover {
+      color: var(--accent);
+    }
+    .footer-bottom .copyright {
+      color: var(--text-light);
+    }
+
+    /* ---------- LEGAL MODALS ---------- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card-bg);
+      color: var(--text);
+      max-width: 700px;
+      width: 92%;
+      max-height: 85vh;
+      border-radius: var(--radius);
+      padding: 32px 36px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      overflow-y: auto;
+      position: relative;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-box h2 {
+      color: var(--primary);
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-right: 40px;
+    }
+    .modal-box h2 i {
+      color: var(--accent);
+    }
+    .modal-box .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      font-size: 1.8rem;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: color var(--transition);
+      background: none;
+      border: none;
+      line-height: 1;
+    }
+    .modal-box .close-modal:hover {
+      color: var(--accent);
+    }
+    .modal-box p {
+      color: var(--text-light);
+      margin-bottom: 14px;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+    .modal-box p strong {
+      color: var(--text);
+    }
+    .modal-box ul {
+      margin: 12px 0 16px 20px;
+      color: var(--text-light);
+    }
+    .modal-box ul li {
+      margin-bottom: 8px;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px) {
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .card-wide {
+        grid-column: span 1;
+      }
+      .card-tall {
+        grid-row: span 1;
+      }
+      .contact-form {
+        grid-template-columns: 1fr;
+      }
+      .contact-form .full-width {
+        grid-column: 1;
+      }
+      .contact-form .btn-submit {
+        grid-column: 1;
+        width: 100%;
+        text-align: center;
+      }
+      .why-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      #tracking-map {
+        height: 200px;
+      }
+      .status-overlay {
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        white-space: normal;
+      }
+      .hero-image {
+        height: 200px;
+      }
+      .carousel-slide {
+        flex: 0 0 calc(100% / 3);
+      }
+    }
+    @media (max-width: 600px) {
+      body { padding: 0 12px; }
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-text h1 { font-size: 2.2rem; }
+      header { flex-direction: column; align-items: stretch; }
+      nav { justify-content: center; }
+      .cta-group { flex-direction: column; }
+      .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+      .track-row { flex-direction: column; }
+      .track-input { width: 100%; }
+      .calc-form { flex-direction: column; }
+      .calc-group { width: 100%; }
+      .contact-section { padding: 24px 16px; }
+      .why-section { padding: 24px 16px; }
+      .why-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .footer-section { padding: 24px 16px; }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-bottom .legal-links {
+        justify-content: center;
+        gap: 16px;
+      }
+      #chat-window {
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+        bottom: 100px;
+        max-height: 70vh;
+      }
+      #chat-bubble {
+        bottom: 20px;
+        left: 20px;
+        width: 56px;
+        height: 56px;
+        font-size: 1.8rem;
+      }
+      #tracking-map {
+        height: 180px;
+      }
+      .status-overlay {
+        bottom: 10px;
+        font-size: 0.7rem;
+        padding: 4px 12px;
+      }
+      .hero-image {
+        height: 160px;
+      }
+      .carousel-slide {
+        flex: 0 0 calc(100% / 2);
+      }
+      .modal-box {
+        padding: 24px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <i class="fas fa-ship"></i>
+      <span>UTE3N</span>
+    </div>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#tracking">Tracking</a>
+      <a href="#why">Why Us</a>
+      <a href="#contact" class="contact-link">Contact</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <i class="fas fa-sun sun-icon"></i>
+        <i class="fas fa-moon moon-icon"></i>
+      </button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Ship Smarter, <span>Faster</span></h1>
+      <p>Reliable truck and van freight across the Philippines. Real‑time tracking and instant rates – all in one place.</p>
+      <div class="cta-group">
+        <a href="#contact" class="btn-primary"><i class="fas fa-paper-plane"></i> Get a Quote</a>
+        <a href="#tracking" class="btn-secondary"><i class="fas fa-search"></i> Track Shipment</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="carousel-track">
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop" alt="Freight truck" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=600&h=400&fit=crop" alt="Shipping containers" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=600&h=400&fit=crop" alt="Cargo ship" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&h=400&fit=crop" alt="Truck mountain road" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop" alt="Freight truck" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=600&h=400&fit=crop" alt="Shipping containers" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=600&h=400&fit=crop" alt="Cargo ship" loading="lazy" /></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&h=400&fit=crop" alt="Truck mountain road" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <h2 class="section-title" id="services"><i class="fas fa-th-large"></i> Our Services</h2>
+  <div class="bento-grid">
+    <div class="bento-card card-wide">
+      <div class="icon"><i class="fas fa-truck"></i></div>
+      <h3>Van & Truck Freight</h3>
+      <p>Reliable door‑to‑door delivery using vans, L300s, wing vans, and 10‑wheelers across Luzon, Visayas, and Mindanao.</p>
+      <span class="tag">Popular</span>
+    </div>
+    <div class="bento-card">
+      <div class="icon"><i class="fas fa-boxes"></i></div>
+      <h3>LTL & FTL</h3>
+      <p>Less‑than‑truckload and full‑truckload options to fit your cargo size and budget.</p>
+    </div>
+    <div class="bento-card">
+      <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
+      <h3>Live Tracking</h3>
+      <p>Real‑time GPS tracking with instant status updates and Google Maps integration.</p>
+      <span class="tag">New</span>
+    </div>
+    <div class="bento-card card-tall">
+      <div class="icon"><i class="fas fa-calculator"></i></div>
+      <h3>Instant Rate Calculator</h3>
+      <p>Get instant estimates based on vehicle type, weight, and distance in the Philippines.</p>
+      <span class="tag">Try it</span>
+    </div>
+    <div class="bento-card">
+      <div class="icon"><i class="fas fa-warehouse"></i></div>
+      <h3>Warehousing</h3>
+      <p>Storage and distribution services in key Philippine economic zones.</p>
+    </div>
+    <div class="bento-card">
+      <div class="icon"><i class="fas fa-file-invoice"></i></div>
+      <h3>Customs Brokerage</h3>
+      <p>Hassle‑free import/export documentation for your international shipments.</p>
+    </div>
+  </div>
+
+  <!-- TRACKING -->
+  <section class="track-section" id="tracking">
+    <h2><i class="fas fa-map-pin" style="color:var(--accent);"></i> Live Tracking</h2>
+    <div class="track-row">
+      <input type="text" class="track-input" id="trackingInput" placeholder="Enter tracking number (e.g. UTE3N-12345)" value="UTE3N-98765" />
+      <button class="track-btn" id="trackBtn"><i class="fas fa-play"></i> Track Now</button>
+    </div>
+    <div id="tracking-map">
+      <iframe id="mapFrame" src="https://maps.google.com/maps?q=Manila&t=&z=10&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+      <div class="status-overlay" id="statusText">📍 In transit – Manila, PH</div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section class="why-section" id="why">
+    <h2><i class="fas fa-star" style="color:var(--accent);"></i> Why UTE3N?</h2>
+    <p class="sub">We combine local expertise with modern logistics to move your goods safely, on time, every time.</p>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
+        <h3>Nationwide Coverage</h3>
+        <p>From Luzon to Visayas and Mindanao – we reach every major city and province.</p>
+        <span class="stat">80+ Provinces</span>
+      </div>
+      <div class="why-item">
+        <div class="icon"><i class="fas fa-truck-moving"></i></div>
+        <h3>Modern Fleet</h3>
+        <p>Vans, L300s, wing vans, and 10‑wheelers – all well‑maintained for safe delivery.</p>
+        <span class="stat">120+ Vehicles</span>
+      </div>
+      <div class="why-item">
+        <div class="icon"><i class="fas fa-satellite-dish"></i></div>
+        <h3>Real‑Time Tracking</h3>
+        <p>GPS‑enabled with live updates so you always know where your cargo is.</p>
+        <span class="stat">100% Visibility</span>
+      </div>
+      <div class="why-item">
+        <div class="icon"><i class="fas fa-peso-sign"></i></div>
+        <h3>Affordable & Transparent</h3>
+        <p>No hidden fees – get instant, upfront rates based on your exact needs.</p>
+        <span class="stat">Best Price Guarantee</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section class="calc-section">
+    <h2><i class="fas fa-calculator" style="color:var(--accent);"></i> Instant Rate Calculator</h2>
+    <p class="sub">Domestic truck and van freight across the Philippines. Get a quick estimate in Philippine Pesos (₱).</p>
+    <div class="calc-form">
+      <div class="calc-group">
+        <label for="origin">Origin</label>
+        <select id="origin">
+          <option value="Metro Manila">Metro Manila</option>
+          <option value="Pampanga">Pampanga</option>
+          <option value="Laguna">Laguna</option>
+          <option value="Cavite">Cavite</option>
+          <option value="Batangas">Batangas</option>
+          <option value="Cebu">Cebu</option>
+          <option value="Iloilo">Iloilo</option>
+          <option value="Davao">Davao</option>
+        </select>
+      </div>
+      <div class="calc-group">
+        <label for="dest">Destination</label>
+        <select id="dest">
+          <option value="Pampanga">Pampanga</option>
+          <option value="Metro Manila">Metro Manila</option>
+          <option value="Laguna">Laguna</option>
+          <option value="Cavite">Cavite</option>
+          <option value="Batangas">Batangas</option>
+          <option value="Cebu">Cebu</option>
+          <option value="Iloilo">Iloilo</option>
+          <option value="Davao">Davao</option>
+        </select>
+      </div>
+      <div class="calc-group">
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" value="200" min="1" step="10" />
+      </div>
+      <div class="calc-group">
+        <label for="vehicle">Vehicle Type</label>
+        <select id="vehicle">
+          <option value="van">Van (₱60/kg)</option>
+          <option value="l300">L300 / Closed Van (₱45/kg)</option>
+          <option value="wing">Wing Van (₱35/kg)</option>
+          <option value="truck10">10‑Wheeler Truck (₱25/kg)</option>
+        </select>
+      </div>
+      <button class="btn-primary" id="calcBtn" style="padding:12px 32px; flex:0 0 auto;">Calculate</button>
+    </div>
+    <div class="calc-result" id="calcResult">₱ 12,000.00</div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact">
+    <h2><i class="fas fa-envelope" style="color:var(--accent);"></i> Get in Touch</h2>
+    <p class="sub">Have a question or need a custom freight solution? Reach out to our team – we’ll reply within 24 hours.</p>
+    <form class="contact-form" id="contactForm">
+      <div class="full-width">
+        <label for="contactName">Full Name</label>
+        <input type="text" id="contactName" placeholder="Juan Dela Cruz" required />
+      </div>
+      <div>
+        <label for="contactEmail">Email Address</label>
+        <input type="email" id="contactEmail" placeholder="juan@example.com" required />
+      </div>
+      <div>
+        <label for="contactPhone">Phone Number</label>
+        <input type="tel" id="contactPhone" placeholder="+63 912 345 6789" />
+      </div>
+      <div class="full-width">
+        <label for="contactMessage">Your Message</label>
+        <textarea id="contactMessage" placeholder="Tell us about your shipping needs..." required></textarea>
+      </div>
+      <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
+    </form>
+  </section>
+
+</div> <!-- end container -->
+
+<!-- ===== ENHANCED FOOTER ===== -->
+<footer class="footer-section">
+  <div class="container" style="padding:0;">
+
+    <div class="footer-grid">
+      <!-- Brand -->
+      <div class="footer-brand">
+        <h3><i class="fas fa-ship"></i> UTE3N</h3>
+        <p>Reliable logistics partner for businesses across the Philippines. Moving your cargo with care and precision.</p>
+        <div class="address">
+          <i class="fas fa-location-dot"></i>
+          <span>#81 Virginia St. Gulod Novaliches Quezon City, Metro Manila, Philippines</span>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#tracking">Live Tracking</a></li>
+          <li><a href="#why">Why Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <ul>
+          <li><i class="fas fa-phone"></i> +63 (2) 666 666 6666</li>
+          <li><i class="fas fa-mobile-alt"></i> +63 917 123 4567</li>
+          <li><i class="fas fa-envelope"></i> info@ute3n.ph</li>
+          <li><i class="fas fa-clock"></i> Mon–Fri: 8:00 AM – 6:00 PM</li>
+        </ul>
+      </div>
+
+      <!-- Social -->
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p style="margin-top:16px; color:var(--text-light); font-size:0.85rem;">Safeguarding your cargo with ISO‑certified processes.</p>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="copyright">
+        &copy; 2026 UTE3N Logistics Inc. All rights reserved.
+      </div>
+      <div class="legal-links">
+        <a onclick="openModal('terms')">Terms & Conditions</a>
+        <a onclick="openModal('privacy')">Privacy Policy</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<!-- ===== TERMS MODAL ===== -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('terms')">&times;</button>
+    <h2><i class="fas fa-scale-balanced"></i> Terms & Conditions</h2>
+    <p><strong>Effective Date:</strong> July 27, 2026</p>
+    <p>Welcome to UTE3N. By using our website and services, you agree to the following terms, which are governed by the laws of the Republic of the Philippines.</p>
+    <p><strong>1. Acceptance of Terms</strong><br>By accessing this website, you confirm that you have read, understood, and accept these Terms & Conditions.</p>
+    <p><strong>2. Services</strong><br>UTE3N provides domestic trucking and logistics services. While we strive for timely delivery, all transit times are estimates and not guarantees.</p>
+    <p><strong>3. User Obligations</strong><br>You agree to provide accurate information and to use our services solely for lawful purposes. You are responsible for the legality and safety of your cargo.</p>
+    <p><strong>4. Limitation of Liability</strong><br>To the fullest extent permitted by Philippine law (Civil Code of the Philippines), UTE3N's liability for loss or damage to cargo is limited to the freight charges paid for the affected shipment. We are not liable for indirect, incidental, or consequential damages.</p>
+    <p><strong>5. Force Majeure</strong><br>We are not liable for delays or failures caused by events beyond our control, including natural disasters, government actions, strikes, or pandemics.</p>
+    <p><strong>6. Governing Law & Dispute Resolution</strong><br>These terms are governed by the laws of the Philippines. Any dispute shall be resolved amicably; if unresolved, disputes shall be brought exclusively to the competent courts of Pasig City.</p>
+    <p><strong>7. Amendments</strong><br>We reserve the right to update these terms at any time. Changes will be posted on this page.</p>
+  </div>
+</div>
+
+<!-- ===== PRIVACY MODAL ===== -->
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box">
+    <button class="close-modal" onclick="closeModal('privacy')">&times;</button>
+    <h2><i class="fas fa-shield-halved"></i> Privacy Policy</h2>
+    <p><strong>Effective Date:</strong> July 27, 2026</p>
+    <p>UTE3N Logistics Inc. respects your privacy. This Policy explains how we collect, use, and protect your personal data in compliance with the <strong>Philippine Data Privacy Act of 2012 (R.A. 10173)</strong>.</p>
+    <p><strong>1. Information We Collect</strong><br>We collect personal information you provide to us, such as your name, email address, phone number, shipping addresses, and payment details. We also collect non-personal data like browser type and IP address for analytics.</p>
+    <p><strong>2. How We Use Your Data</strong><br>Your data is used to process shipments, provide tracking updates, communicate with you, process payments, and improve our services. We do not sell or rent your personal data to third parties.</p>
+    <p><strong>3. Sharing of Information</strong><br>We may share your data with trusted delivery partners, customs brokers, and payment processors strictly to fulfill your shipment. All partners are contractually bound to protect your data.</p>
+    <p><strong>4. Your Rights</strong><br>Under the Data Privacy Act, you have the right to access, correct, delete, and object to the processing of your personal data. To exercise these rights, contact us at <strong>privacy@ute3n.ph</strong>.</p>
+    <p><strong>5. Data Security</strong><br>We implement organizational, physical, and technical security measures to protect your data from unauthorized access, loss, or destruction.</p>
+    <p><strong>6. Cookies</strong><br>We use cookies to enhance user experience. You can disable cookies in your browser settings.</p>
+    <p><strong>7. Updates</strong><br>We may update this policy periodically. We encourage you to review it regularly.</p>
+  </div>
+</div>
+
+<!-- ===== CHAT ===== -->
+<button id="chat-bubble" aria-label="Open chat">
+  <i class="fas fa-comment-dots"></i>
+</button>
+<div id="chat-window">
+  <div class="chat-header">
+    <span><i class="fas fa-headset" style="margin-right:10px;"></i>Customer Support</span>
+    <i class="fas fa-times" id="chatClose"></i>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg bot">👋 Hello! How can we help you with your freight needs?</div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Type your message..." />
+    <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  (function() {
+    // DARK MODE
+    const toggle = document.getElementById('themeToggle');
+    const body = document.body;
+    if (localStorage.getItem('darkMode') === 'true') {
+      body.classList.add('dark-mode');
+    }
+    toggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+    });
+
+    // TRACKING
+    const trackBtn = document.getElementById('trackBtn');
+    const trackingInput = document.getElementById('trackingInput');
+    const statusText = document.getElementById('statusText');
+    const mapFrame = document.getElementById('mapFrame');
+    const statusData = [
+      { text: '📍 Departed – Manila, PH', location: 'Manila' },
+      { text: '🔄 In transit – Pampanga, PH', location: 'Pampanga' },
+      { text: '📍 Arrived – Cebu, PH', location: 'Cebu' },
+      { text: '📦 Out for delivery – Davao, PH', location: 'Davao' },
+      { text: '✅ Delivered – Manila, PH', location: 'Manila' }
+    ];
+    let statusIndex = 0;
+    function updateTracking() {
+      statusIndex = (statusIndex + 1) % statusData.length;
+      const data = statusData[statusIndex];
+      statusText.textContent = data.text;
+      const location = encodeURIComponent(data.location);
+      mapFrame.src = `https://maps.google.com/maps?q=${location}&t=&z=10&ie=UTF8&iwloc=&output=embed`;
+    }
+    trackBtn.addEventListener('click', updateTracking);
+    trackingInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') updateTracking();
+    });
+
+    // RATE CALCULATOR
+    const calcBtn = document.getElementById('calcBtn');
+    const resultSpan = document.getElementById('calcResult');
+    const weightInput = document.getElementById('weight');
+    const vehicleSelect = document.getElementById('vehicle');
+    const originSelect = document.getElementById('origin');
+    const destSelect = document.getElementById('dest');
+    const regionMap = {
+      'Metro Manila': 'Luzon', 'Pampanga': 'Luzon', 'Laguna': 'Luzon',
+      'Cavite': 'Luzon', 'Batangas': 'Luzon', 'Cebu': 'Visayas',
+      'Iloilo': 'Visayas', 'Davao': 'Mindanao'
+    };
+    const vehicleRates = { 'van': 60, 'l300': 45, 'wing': 35, 'truck10': 25 };
+    function calculateRate() {
+      const weight = parseFloat(weightInput.value) || 0;
+      const vehicle = vehicleSelect.value;
+      const origin = originSelect.value;
+      const dest = destSelect.value;
+      const baseRate = vehicleRates[vehicle] || 60;
+      const originRegion = regionMap[origin] || 'Luzon';
+      const destRegion = regionMap[dest] || 'Luzon';
+      let factor = 1.0;
+      if (originRegion === destRegion) factor = 1.0;
+      else if ((originRegion === 'Luzon' && destRegion === 'Visayas') ||
+               (originRegion === 'Visayas' && destRegion === 'Luzon')) factor = 1.5;
+      else if ((originRegion === 'Luzon' && destRegion === 'Mindanao') ||
+               (originRegion === 'Mindanao' && destRegion === 'Luzon')) factor = 2.0;
+      else if ((originRegion === 'Visayas' && destRegion === 'Mindanao') ||
+               (originRegion === 'Mindanao' && destRegion === 'Visayas')) factor = 1.8;
+      const total = weight * baseRate * factor;
+      resultSpan.textContent = `₱ ${total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+    }
+    calcBtn.addEventListener('click', calculateRate);
+    document.querySelectorAll('.calc-group select, .calc-group input').forEach(el => {
+      el.addEventListener('change', calculateRate);
+      el.addEventListener('input', calculateRate);
+    });
+    calculateRate();
+
+    // CONTACT FORM
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value.trim() || 'Friend';
+      alert(`Thank you, ${name}! Your message has been sent. We’ll get back to you soon.`);
+      this.reset();
+    });
+
+    // CHAT
+    const chatBubble = document.getElementById('chat-bubble');
+    const chatWindow = document.getElementById('chat-window');
+    const chatClose = document.getElementById('chatClose');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+    function openChat() { chatWindow.classList.add('open'); setTimeout(() => chatInput.focus(), 200); }
+    function closeChat() { chatWindow.classList.remove('open'); }
+    chatBubble.addEventListener('click', openChat);
+    chatClose.addEventListener('click', closeChat);
+    function addMessage(text, sender) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${sender}`;
+      msgDiv.textContent = text;
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    function handleSend() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      chatInput.value = '';
+      setTimeout(() => {
+        const replies = [
+          'Thanks for your message! Our team will get back to you shortly.',
+          'We appreciate your inquiry. How can we assist you further?',
+          'Got it! We\'re looking into it for you.',
+          'Thank you for reaching out. Is there anything else we can help with?'
+        ];
+        addMessage(replies[Math.floor(Math.random() * replies.length)], 'bot');
+      }, 700);
+    }
+    chatSend.addEventListener('click', handleSend);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    // MODALS
+    window.openModal = function(type) {
+      const modal = document.getElementById(type === 'terms' ? 'termsModal' : 'privacyModal');
+      if (modal) modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeModal = function(type) {
+      const modal = document.getElementById(type === 'terms' ? 'termsModal' : 'privacyModal');
+      if (modal) modal.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+    // Close modals by clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+    // Close modals with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(el => {
+          el.classList.remove('active');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

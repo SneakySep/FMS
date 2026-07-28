@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftFreight - Fast. Reliable. Worldwide.</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet.js CSS (Free Dark Map Engine) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Tailwind Config Customization -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0066ff',
+                            darkblue: '#0052cc',
+                            navy: '#001529',
+                            navycard: '#002244',
+                            lightbg: '#f4f7fa',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-slate-900 font-sans antialiased overflow-x-hidden">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="sticky top-0 bg-white/95 backdrop-blur-md z-40 border-b border-slate-100 shadow-sm transition-all">
+        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-gradient-to-tr from-brand-darkblue to-brand-blue text-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                    <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>
+                        <path d="M2 17L12 22L22 17" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 2V12" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="leading-none">
+                    <h1 class="text-lg font-black tracking-wider text-slate-900 uppercase">SWIFT<span class="text-brand-blue">FREIGHT</span></h1>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Global Logistics PH</span>
+                </div>
+            </a>
+
+            <ul class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-700">
+                <li><a href="#home" class="hover:text-brand-blue transition-colors">Home</a></li>
+                <li><a href="#partners" class="hover:text-brand-blue transition-colors">Carriers</a></li>
+                <li><a href="#services" class="hover:text-brand-blue transition-colors">Services</a></li>
+                <li><a href="#tracking" class="hover:text-brand-blue transition-colors">Live Tracking</a></li>
+                <li><a href="#why-us" class="hover:text-brand-blue transition-colors">Why SwiftFreight</a></li>
+                <li><a href="#calculator" class="hover:text-brand-blue transition-colors">Rate Calculator</a></li>
+                <li><a href="#contact" class="hover:text-brand-blue transition-colors">Contact</a></li>
+            </ul>
+
+            <button onclick="scrollToCalc()" class="bg-brand-blue hover:bg-brand-darkblue text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-all shadow-sm hover:-translate-y-0.5 hover:shadow-md">
+                Get a Quote
+            </button>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="relative w-full min-h-[620px] lg:min-h-[720px] flex items-center justify-center overflow-hidden bg-slate-950 text-white"
+             onmouseenter="stopHeroTimer()" onmouseleave="startHeroTimer()">
+        
+        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
+            <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=80" alt="Trucking Freight" class="w-full h-full object-cover">
+        </div>
+        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80" alt="Smart Warehousing" class="w-full h-full object-cover">
+        </div>
+        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1559297434-fae8a1916a79?auto=format&fit=crop&w=1600&q=80" alt="Ocean Cargo" class="w-full h-full object-cover">
+        </div>
+        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 pointer-events-none">
+            <img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1600&q=80" alt="Air Cargo" class="w-full h-full object-cover">
+        </div>
+
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/65 to-slate-950/30 z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/30 z-10"></div>
+
+        <div class="relative z-20 max-w-7xl mx-auto px-6 w-full py-24">
+            <div class="max-w-2xl reveal">
+                <div class="inline-flex items-center gap-2 bg-brand-blue/90 backdrop-blur-md text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/20 shadow-lg">
+                    <i id="heroBadgeIcon" class="fa-solid fa-truck-fast"></i>
+                    <span id="heroBadgeText">Cross-Border Trucking</span>
+                </div>
+
+                <h2 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] mb-6 drop-shadow-lg">
+                    Fast. Reliable.<br>Worldwide.
+                </h2>
+                
+                <p class="text-slate-200 text-base sm:text-xl mb-10 max-w-xl leading-relaxed font-normal drop-shadow">
+                    End-to-end freight solutions that move your business forward.
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="scrollToCalc()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-base px-8 py-3.5 rounded-lg shadow-xl shadow-blue-600/30 transition-all hover:-translate-y-0.5">
+                        Get a Quote
+                    </button>
+                    <a href="#services" class="bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 font-semibold text-base px-8 py-3.5 rounded-lg transition-all hover:-translate-y-0.5">
+                        Our Services
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 right-6 lg:right-12 z-20 flex items-center gap-4 bg-black/40 backdrop-blur-md p-2.5 px-4 rounded-full border border-white/15 shadow-2xl">
+            <button onclick="prevHeroSlide()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+
+            <div class="flex items-center gap-2">
+                <button onclick="setHeroSlide(0)" class="hero-dot w-6 h-2 rounded-full bg-white transition-all duration-300"></button>
+                <button onclick="setHeroSlide(1)" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></button>
+                <button onclick="setHeroSlide(2)" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></button>
+                <button onclick="setHeroSlide(3)" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></button>
+            </div>
+
+            <button onclick="nextHeroSlide()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/30 text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- GLOBAL CARRIERS SHOWCASE -->
+    <section id="partners" class="py-12 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="text-center text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">
+                Trusted Network Partners & Global Carriers
+            </p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center justify-items-center opacity-75 grayscale hover:grayscale-0 transition-all">
+                <div class="flex items-center gap-2 font-black text-slate-800 text-lg hover:text-sky-600 transition-colors cursor-pointer">
+                    <svg class="w-7 h-7 text-sky-500" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15 9H22L16.5 13.5L18.5 20.5L12 16L5.5 20.5L7.5 13.5L2 9H9L12 2Z"/>
+                    </svg>
+                    <span>MAERSK</span>
+                </div>
+                <div class="font-black text-xl tracking-tighter text-slate-800 cursor-pointer hover:opacity-100">
+                    <span class="text-purple-700">Fed</span><span class="text-orange-500">Ex</span>
+                </div>
+                <div class="font-black text-2xl italic text-red-600 tracking-widest cursor-pointer hover:scale-105 transition-transform">
+                    DHL
+                </div>
+                <div class="flex items-center gap-2 font-bold text-slate-800 text-base cursor-pointer">
+                    <i class="fa-solid fa-anchor text-blue-800 text-lg"></i>
+                    <span>COSCO</span>
+                </div>
+                <div class="flex items-center gap-1.5 font-bold text-slate-800 text-sm tracking-widest cursor-pointer">
+                    <i class="fa-solid fa-plane-departure text-sky-600"></i>
+                    <span>BOEING</span>
+                </div>
+                <div class="flex items-center gap-2 font-black text-slate-800 text-base cursor-pointer">
+                    <span class="bg-red-600 text-white text-xs px-1.5 py-0.5 rounded">DB</span>
+                    <span>SCHENKER</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section id="services" class="py-20 px-6 max-w-7xl mx-auto text-center">
+        <span class="text-brand-blue text-xs font-bold tracking-widest uppercase block mb-2">OUR SERVICES</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-12 tracking-tight">Comprehensive Freight Solutions</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-left">
+            <div class="reveal p-6 bg-white border border-slate-200 rounded-2xl hover:-translate-y-2 hover:shadow-xl hover:border-blue-300 transition-all duration-300 group">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 group-hover:bg-brand-blue group-hover:text-white rounded-xl flex items-center justify-center p-3 mb-5 transition-all duration-300 shadow-sm">
+                    <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+                        <path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.1"/>
+                        <path d="M10 10V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6"/>
+                        <path d="M12 2v2"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mb-2">Ocean Freight</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">FCL, LCL and more. Global coverage with competitive rates.</p>
+            </div>
+
+            <div class="reveal p-6 bg-white border border-slate-200 rounded-2xl hover:-translate-y-2 hover:shadow-xl hover:border-sky-300 transition-all duration-300 group">
+                <div class="w-12 h-12 bg-sky-50 text-sky-600 group-hover:bg-sky-500 group-hover:text-white rounded-xl flex items-center justify-center p-3 mb-5 transition-all duration-300 shadow-sm">
+                    <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.1-2 .7l-.5.7 5.2 3.6-3.1 3.1-2.1-.7c-.5-.2-1 .1-1.2.6l-.3.8 2.8 1.9 1.9 2.8.8-.3c.5-.2.8-.7.6-1.2l-.7-2.1 3.1-3.1 3.6 5.2.7-.5c.6-.4.9-1.2.7-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mb-2">Air Freight</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Fast, secure and reliable air freight services worldwide.</p>
+            </div>
+
+            <div class="reveal p-6 bg-white border border-slate-200 rounded-2xl hover:-translate-y-2 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 group">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white rounded-xl flex items-center justify-center p-3 mb-5 transition-all duration-300 shadow-sm">
+                    <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                        <path d="M15 18H9"/>
+                        <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+                        <circle cx="6.5" cy="17.5" r="2.5"/>
+                        <circle cx="16.5" cy="17.5" r="2.5"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mb-2">Land Freight</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Domestic and cross-border trucking solutions you can trust.</p>
+            </div>
+
+            <div class="reveal p-6 bg-white border border-slate-200 rounded-2xl hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 group">
+                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white rounded-xl flex items-center justify-center p-3 mb-5 transition-all duration-300 shadow-sm">
+                    <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/>
+                        <path d="M6 18h12v-7H6v7Z"/>
+                        <path d="M10 18v-4h4v4"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mb-2">Warehousing</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Safe, secure and strategically located warehousing.</p>
+            </div>
+
+            <div class="reveal p-6 bg-white border border-slate-200 rounded-2xl hover:-translate-y-2 hover:shadow-xl hover:border-amber-300 transition-all duration-300 group">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white rounded-xl flex items-center justify-center p-3 mb-5 transition-all duration-300 shadow-sm">
+                    <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mb-2">Customs Brokerage</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Expert clearance services to keep your cargo moving.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE TRACKING SECTION -->
+    <section id="tracking" class="bg-brand-navy text-white py-20 px-6 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-5 reveal">
+                <span class="text-sky-400 text-xs font-bold tracking-widest uppercase block mb-2">LIVE TRACKING</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">Track Your Shipment In Real Time</h2>
+                <p class="text-slate-400 text-sm mb-8 leading-relaxed">Enter your tracking number to get the latest updates on your shipment.</p>
+                
+                <div class="bg-white p-1.5 rounded-lg flex gap-2 shadow-lg">
+                    <input type="text" id="trackingInput" placeholder="Enter Tracking Number" class="w-full px-4 py-2 text-slate-900 text-sm focus:outline-none rounded-md">
+                    <button onclick="trackShipment()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-sm px-5 py-2.5 rounded-md whitespace-nowrap transition-colors">
+                        Track Now
+                    </button>
+                </div>
+                <button onclick="fillDemoTracking()" class="mt-4 text-xs font-semibold text-sky-400 hover:underline inline-flex items-center gap-1">
+                    View Demo Tracking &rarr;
+                </button>
+            </div>
+
+            <div class="lg:col-span-7 reveal relative h-[420px] rounded-2xl border border-white/10 overflow-hidden shadow-2xl bg-brand-navycard z-0">
+                <div id="map" class="w-full h-full z-0"></div>
+
+                <div class="absolute top-4 left-4 bg-brand-navycard/90 backdrop-blur-md p-3 rounded-xl border border-white/15 text-xs text-white z-[400] shadow-xl flex items-center gap-3">
+                    <div class="w-3 h-3 bg-cyan-400 rounded-full animate-pulse-glow"></div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Active Route</span>
+                        <strong class="text-white text-xs">SF-889420-CN (Shanghai &rarr; LA)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPLIT SECTION: WHY US & CALCULATOR -->
+    <section id="why-us" class="bg-brand-lightbg py-20 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="reveal bg-white p-8 lg:p-10 rounded-2xl border border-slate-200">
+                <span class="text-brand-blue text-xs font-bold tracking-widest uppercase block mb-1">WHY SWIFTFREIGHT</span>
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-6">More Than Just a Shipping Partner</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+                    <div class="sm:col-span-4 h-full min-h-[160px]">
+                        <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=400&q=80" alt="Logistics Manager" class="w-full h-full object-cover rounded-xl">
+                    </div>
+                    <div class="sm:col-span-8 flex flex-col gap-4">
+                        <div class="flex gap-3 items-start">
+                            <i class="fa-solid fa-circle-check text-brand-blue text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900">Global Network</h4>
+                                <p class="text-xs text-slate-500">Strong partnerships worldwide to deliver wherever you need.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <i class="fa-solid fa-circle-check text-brand-blue text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900">Reliable Service</h4>
+                                <p class="text-xs text-slate-500">On-time delivery with real-time updates you can count on.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <i class="fa-solid fa-circle-check text-brand-blue text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900">Competitive Rates</h4>
+                                <p class="text-xs text-slate-500">Cost-effective solutions without compromising quality.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 items-start">
+                            <i class="fa-solid fa-circle-check text-brand-blue text-base mt-0.5"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-900">Dedicated Support</h4>
+                                <p class="text-xs text-slate-500">Our experts are here to support your business 24/7.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calculator" class="reveal bg-white p-8 lg:p-10 rounded-2xl border border-slate-200">
+                <span class="text-brand-blue text-xs font-bold tracking-widest uppercase block mb-1">RATE CALCULATOR</span>
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-6">Get an Instant Quote</h3>
+                
+                <form onsubmit="calculateQuote(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">From</label>
+                        <input type="text" id="origin" placeholder="Origin City or Port" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">To</label>
+                        <input type="text" id="destination" placeholder="Destination City or Port" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Shipment Type</label>
+                        <select id="shipmentType" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue bg-white">
+                            <option value="ocean">Ocean Freight</option>
+                            <option value="air">Air Freight</option>
+                            <option value="land">Land Freight</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Container Type</label>
+                        <select id="containerType" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue bg-white">
+                            <option value="20ft">20ft Standard Container</option>
+                            <option value="40ft">40ft Standard Container</option>
+                            <option value="lcl">LCL (Less than Container Load)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Weight (kg)</label>
+                        <input type="number" id="weight" placeholder="Enter Weight" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Volume (m³)</label>
+                        <input type="number" id="volume" placeholder="Enter Volume" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue">
+                    </div>
+
+                    <div class="sm:col-span-2 flex flex-col sm:flex-row justify-between items-center gap-4 mt-2">
+                        <button type="submit" class="w-full sm:w-auto bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-sm px-6 py-2.5 rounded-md transition-colors">
+                            Calculate Rate
+                        </button>
+                        <a href="#contact" class="text-xs text-brand-blue font-semibold hover:underline">
+                            Request a Custom Quote &rarr;
+                        </a>
+                    </div>
+                </form>
+
+                <div id="calcResult" class="hidden mt-4 p-3 bg-sky-50 border border-sky-200 text-sky-800 rounded-lg text-center text-xs font-semibold"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT HUB SECTION WITH FORM -->
+    <section id="contact" class="py-24 px-6 bg-slate-950 text-white relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-brand-blue/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute -bottom-20 right-10 w-80 h-80 bg-sky-500/15 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="reveal max-w-7xl mx-auto relative z-10 bg-slate-900/80 border border-white/10 rounded-3xl p-8 lg:p-12 backdrop-blur-xl shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-5 flex flex-col justify-between h-full">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-brand-blue/20 border border-brand-blue/30 text-sky-400 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+                        <i class="fa-solid fa-headset"></i> GET IN TOUCH
+                    </div>
+
+                    <h3 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+                        Let's Move Your Business Forward
+                    </h3>
+                    
+                    <p class="text-slate-400 text-sm leading-relaxed mb-8">
+                        Have questions or need a custom logistics solution? Our dedicated team is available around the clock to support your supply chain.
+                    </p>
+                </div>
+
+                <div class="relative group my-4">
+                    <div class="relative h-[220px] w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80" alt="Modern Logistics Headquarters" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                    </div>
+
+                    <div class="absolute -bottom-4 right-4 bg-slate-900/95 border border-white/15 p-3.5 rounded-xl backdrop-blur-md shadow-2xl flex items-center gap-3">
+                        <div class="w-8 h-8 bg-brand-blue/20 text-brand-blue rounded-lg flex items-center justify-center text-sm font-bold border border-brand-blue/30">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Global Network</span>
+                            <strong class="text-white text-xs">24/7 Operations Center</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                    <a href="tel:+11234567890" class="group bg-white/5 hover:bg-brand-blue/20 border border-white/10 hover:border-brand-blue/50 p-4 rounded-xl transition-all">
+                        <i class="fa-solid fa-phone text-sky-400 text-sm mb-2 block"></i>
+                        <h5 class="text-[10px] text-slate-400 font-semibold">Call Us</h5>
+                        <p class="text-xs font-bold text-white group-hover:text-sky-300 transition-colors">+1 (123) 456-7890</p>
+                    </a>
+
+                    <a href="mailto:info@swiftfreight.com" class="group bg-white/5 hover:bg-brand-blue/20 border border-white/10 hover:border-brand-blue/50 p-4 rounded-xl transition-all">
+                        <i class="fa-solid fa-envelope text-sky-400 text-sm mb-2 block"></i>
+                        <h5 class="text-[10px] text-slate-400 font-semibold">Email Us</h5>
+                        <p class="text-xs font-bold text-white group-hover:text-sky-300 transition-colors truncate">info@swiftfreight.com</p>
+                    </a>
+
+                    <div class="group bg-white/5 hover:bg-brand-blue/20 border border-white/10 hover:border-brand-blue/50 p-4 rounded-xl transition-all">
+                        <i class="fa-solid fa-location-dot text-sky-400 text-sm mb-2 block"></i>
+                        <h5 class="text-[10px] text-slate-400 font-semibold">HQ Location</h5>
+                        <p class="text-xs font-bold text-white group-hover:text-sky-300 transition-colors">Manila / Houston</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7">
+                <form onsubmit="handleContactSubmit(event)" class="bg-slate-950/80 border border-white/10 p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-md">
+                    <h4 class="text-xl font-extrabold text-white mb-1">Send Us a Direct Message</h4>
+                    <p class="text-slate-400 text-xs mb-6">Fill out the form below and a freight specialist will respond within 15 minutes.</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Full Name *</label>
+                            <input type="text" id="contactName" required placeholder="Juan Dela Cruz" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Email Address *</label>
+                            <input type="email" id="contactEmail" required placeholder="juan@company.ph" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Phone Number</label>
+                            <input type="tel" id="contactPhone" placeholder="+63 (917) 000-0000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Service Required</label>
+                            <select id="contactService" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue">
+                                <option value="ocean">Ocean Freight</option>
+                                <option value="air">Air Freight</option>
+                                <option value="land">Land Freight / Trucking</option>
+                                <option value="warehousing">Warehousing & Storage</option>
+                                <option value="customs">Customs Brokerage (BOC Clearance)</option>
+                                <option value="general">General Inquiry</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Shipment Details / Message *</label>
+                        <textarea id="contactMessage" rows="4" required placeholder="Tell us about your cargo requirements, origin, destination, timeline, or any questions..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"></textarea>
+                    </div>
+
+                    <button type="submit" id="contactSubmitBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Send Inquiry Message
+                    </button>
+
+                    <div id="contactFormStatus" class="hidden mt-4 p-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-xl text-center text-xs font-medium"></div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER WITH PHILIPPINE LEGAL COMPLIANCE LINKS -->
+    <footer class="bg-brand-navy text-slate-400 py-16 px-6 text-xs">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
+            <div class="lg:col-span-2">
+                <a href="#home" class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 bg-brand-blue text-white rounded-lg flex items-center justify-center p-1.5">
+                        <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>
+                            <path d="M2 17L12 22L22 17" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="leading-none">
+                        <h1 class="text-base font-black tracking-wider text-white uppercase">SWIFT<span class="text-brand-blue">FREIGHT</span></h1>
+                        <span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Global Logistics PH</span>
+                    </div>
+                </a>
+
+                <p class="text-slate-400 max-w-xs leading-relaxed mb-6">
+                    SwiftFreight Logistics Inc. provides reliable, efficient and cost-effective freight solutions worldwide compliant with Philippine commercial standards.
+                </p>
+                <div class="flex gap-3">
+                    <a href="#" class="w-8 h-8 rounded-full bg-white/5 hover:bg-brand-blue text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-white/5 hover:bg-brand-blue text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-white/5 hover:bg-brand-blue text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-white/5 hover:bg-brand-blue text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-xs mb-4 uppercase tracking-wider">QUICK LINKS</h4>
+                <ul class="space-y-2.5">
+                    <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                    <li><a href="#services" class="hover:text-white transition-colors">Services</a></li>
+                    <li><a href="#tracking" class="hover:text-white transition-colors">Live Tracking</a></li>
+                    <li><a href="#calculator" class="hover:text-white transition-colors">Rate Calculator</a></li>
+                    <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-xs mb-4 uppercase tracking-wider">LEGAL & PRIVACY (PH)</h4>
+                <ul class="space-y-2.5">
+                    <li><a href="javascript:void(0)" onclick="openPrivacyModal()" class="hover:text-white text-sky-400 font-semibold transition-colors flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[10px]"></i> Privacy Policy (RA 10173)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openTermsModal()" class="hover:text-white text-sky-400 font-semibold transition-colors flex items-center gap-1.5"><i class="fa-solid fa-file-contract text-[10px]"></i> Terms & Conditions (PH)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openPrivacyModal()" class="hover:text-white transition-colors">Data Privacy Rights</a></li>
+                    <li><a href="javascript:void(0)" onclick="openTermsModal()" class="hover:text-white transition-colors">Customs Clearance Policy</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-xs mb-4 uppercase tracking-wider">NEWSLETTER</h4>
+                <p class="mb-3 leading-relaxed">Stay updated with the latest news and shipping insights.</p>
+                <form onsubmit="subscribeNewsletter(event)" class="flex bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                    <input type="email" placeholder="Enter your email" required class="bg-transparent px-3 py-2 text-white text-xs w-full focus:outline-none">
+                    <button type="submit" class="bg-brand-blue hover:bg-brand-darkblue text-white px-3 py-2 transition-colors">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-slate-500">
+            <p>&copy; 2026 SwiftFreight Logistics Philippines Inc. All rights reserved.</p>
+            <div class="flex gap-4">
+                <a href="javascript:void(0)" onclick="openPrivacyModal()" class="hover:text-slate-300">Privacy Policy</a>
+                <span>•</span>
+                <a href="javascript:void(0)" onclick="openTermsModal()" class="hover:text-slate-300">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FLOATING CHAT WIDGET -->
+    <div onclick="toggleChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-blue hover:bg-brand-darkblue text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-blue-500/30 cursor-pointer z-50 transition-transform hover:scale-110">
+        <i class="fa-solid fa-comments"></i>
+    </div>
+
+    <div id="chatBox" class="fixed bottom-24 right-6 w-[360px] max-w-[calc(100vw-3rem)] h-[480px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 opacity-0 pointer-events-none translate-y-6">
+        <div class="bg-brand-navy text-white p-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold">SwiftSupport PH</h4>
+                    <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="chatBody" class="flex-1 p-4 bg-slate-50 overflow-y-auto flex flex-col gap-3">
+            <div class="bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed">
+                Mabuhay! Welcome to SwiftFreight Philippines. How can I assist you with your shipment or customs clearance today?
+            </div>
+        </div>
+
+        <div class="p-3 border-t border-slate-200 bg-white flex gap-2">
+            <input type="text" id="chatInput" onkeypress="handleChatKeyPress(event)" placeholder="Type a message..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-brand-blue">
+            <button onclick="sendMessage()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-4 py-2 rounded-lg text-xs transition-colors">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       MODAL 1: PRIVACY POLICY (DATA PRIVACY ACT OF 2012 / RA 10173 COMPLIANT)
+       ========================================================================== -->
+    <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brand-blue text-lg"></i>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Privacy Policy</h3>
+                        <span class="text-[10px] text-slate-400">Compliant with Republic Act No. 10173 (Philippine Data Privacy Act of 2012)</span>
+                    </div>
+                </div>
+                <button onclick="closePrivacyModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
+                <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
+                <p>SwiftFreight Logistics Philippines Inc. ("SwiftFreight", "we", "us", "our") is committed to protecting your personal data in strict compliance with <strong>Republic Act No. 10173</strong>, otherwise known as the <strong>Data Privacy Act of 2012 (DPA)</strong>, its Implementing Rules and Regulations (IRR), and circulars issued by the <strong>National Privacy Commission (NPC)</strong> of the Philippines.</p>
+
+                <h4 class="font-bold text-white text-sm pt-2">1. Personal Information Collected</h4>
+                <p>We collect personal information necessary to provide logistics, freight forwarding, customs clearance, and delivery services, including:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Full Name, Company Name, and Job Title</li>
+                    <li>Contact details (Philippine and international mobile numbers, email, physical addresses)</li>
+                    <li>Consignee and Origin/Destination address details</li>
+                    <li>Government-issued IDs or TIN for Bureau of Customs (BOC) clearance</li>
+                    <li>IP address, device identifiers, and tracking query histories</li>
+                </ul>
+
+                <h4 class="font-bold text-white text-sm pt-2">2. Purpose of Data Processing</h4>
+                <p>Your personal data is processed lawfully for:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Processing, shipping, and tracking freight orders</li>
+                    <li>Customs clearance and compliance with the Customs Modernization and Tariff Act (RA 10863)</li>
+                    <li>Generating real-time quotes and billing invoices</li>
+                    <li>Customer support communication via phone, email, or live chat</li>
+                </ul>
+
+                <h4 class="font-bold text-white text-sm pt-2">3. Rights of Data Subjects Under Philippine Law</h4>
+                <p>Under Section 16 of RA 10173, as a data subject, you possess the following statutory rights:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Right to be Informed:</strong> To know if personal data is being processed.</li>
+                    <li><strong>Right to Access:</strong> To request copies of your personal records.</li>
+                    <li><strong>Right to Object:</strong> To object to automated processing or direct marketing.</li>
+                    <li><strong>Right to Erasure or Blocking:</strong> To suspend or remove improper data.</li>
+                    <li><strong>Right to Rectification:</strong> To correct inaccurate information.</li>
+                    <li><strong>Right to Damages & NPC Complaint:</strong> To seek indemnity or file a complaint with the National Privacy Commission.</li>
+                </ul>
+
+                <h4 class="font-bold text-white text-sm pt-2">4. Data Protection Officer (DPO) Contact</h4>
+                <p>For inquiries or to exercise your rights under the Data Privacy Act, contact our Compliance Officer:</p>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10 text-[11px]">
+                    <p><strong>Data Protection Officer:</strong> Legal & Compliance Dept.</p>
+                    <p><strong>Email:</strong> dpo@swiftfreight.ph</p>
+                    <p><strong>Address:</strong> SwiftFreight Tower, Bonifacio Global City, Taguig City, Metro Manila, Philippines</p>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
+                <button onclick="closePrivacyModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">I Understand</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       MODAL 2: TERMS AND CONDITIONS (PHILIPPINE COMMERCIAL & TRANSPORT LAW)
+       ========================================================================== -->
+    <div id="termsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-contract text-brand-blue text-lg"></i>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Terms and Conditions</h3>
+                        <span class="text-[10px] text-slate-400">Governed by the Laws of the Republic of the Philippines</span>
+                    </div>
+                </div>
+                <button onclick="closeTermsModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
+                <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
+
+                <h4 class="font-bold text-white text-sm">1. Governing Law & Jurisdiction</h4>
+                <p>These Terms and Conditions shall be governed by and construed in accordance with the laws of the <strong>Republic of the Philippines</strong>, including the <strong>Civil Code of the Philippines (Articles 1732-1763 on Common Carriers)</strong>, the <strong>Electronic Commerce Act of 2000 (RA 8792)</strong>, and the <strong>Customs Modernization and Tariff Act (RA 10863)</strong>. Any litigation arising hereunder shall be subject to the exclusive jurisdiction of the competent courts of Makati City or Manila, Philippines.</p>
+
+                <h4 class="font-bold text-white text-sm pt-2">2. Common Carrier Status & Limitation of Liability</h4>
+                <p>Pursuant to Article 1744 of the Civil Code of the Philippines, SwiftFreight exercises extraordinary diligence in the vigilance over goods transported. However, SwiftFreight's liability for loss, damage, or delay shall be strictly limited to:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>The declared value specified in the Air Waybill (AWB) or Bill of Lading (BOL).</li>
+                    <li>In the absence of a declared higher value, the maximum liability per package shall not exceed US $100 or PHP 5,000 equivalent, whichever is governed by applicable international conventions (Warsaw / Montreal Convention or Hague-Visby Rules).</li>
+                </ul>
+
+                <h4 class="font-bold text-white text-sm pt-2">3. Customs Clearance & Bureau of Customs (BOC) Compliance</h4>
+                <p>Shippers and consignees are responsible for providing accurate manifest data, commercial invoices, and import permits required by the <strong>Philippine Bureau of Customs (BOC)</strong> and other regulatory bodies (e.g., DTI, FDA, NTC). Prohibited or illegal goods specified under Philippine Penal laws will be seized immediately and reported to authorities.</p>
+
+                <h4 class="font-bold text-white text-sm pt-2">4. Claims and Notice Period</h4>
+                <p>Notice of claim for damaged or lost cargo must be filed in writing with SwiftFreight within <strong>fourteen (14) days</strong> from the date of delivery, or scheduled delivery, failing which no action shall lie against SwiftFreight.</p>
+
+                <h4 class="font-bold text-white text-sm pt-2">5. Electronic Signatures and Contracts</h4>
+                <p>In accordance with <strong>RA 8792 (E-Commerce Act of 2000)</strong>, electronic bookings, rate estimations, digital signatures, and waybills generated on this website carry full legal validity and binding enforceability under Philippine law.</p>
+            </div>
+
+            <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
+                <button onclick="closeTermsModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">Accept Terms</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

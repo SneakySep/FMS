@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftFreight - Document Vault</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Tailwind Config Customization -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0066ff',
+                            darkblue: '#0052cc',
+                            navy: '#0b1528',
+                            sidebar: '#080e1e',
+                            lightbg: '#f8fafc',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-[#080e1e] text-slate-300 min-h-screen flex flex-col justify-between p-4 border-r border-slate-800 shrink-0">
+        <div class="space-y-6">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 px-2 py-2">
+                <div class="w-10 h-10 bg-brand-blue text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/30">
+                    SF
+                </div>
+                <div class="leading-none">
+                    <h1 class="text-base font-black text-white tracking-wider">SwiftFreight</h1>
+                    <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">CUSTOMER PORTAL</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-6 text-xs font-medium">
+                <div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">OVERVIEW</span>
+                    <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                        <i class="fa-solid fa-border-all text-sm"></i> Dashboard
+                    </a>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Freight</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="shipments.html" class="flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-box text-sm"></i> Shipments</span>
+                                <span class="bg-amber-500/20 text-amber-400 font-bold px-1.5 py-0.5 rounded text-[10px]">12</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tracking.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-location-dot text-sm"></i> Live Tracking
+                            </a>
+                        </li>
+                        <li>
+                            <a href="sla-monitoring.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-clock-rotate-left text-sm"></i> SLA Monitoring
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Records</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="documents.html" class="flex items-center gap-3 px-3 py-2.5 bg-brand-blue/20 text-white rounded-xl font-semibold border border-brand-blue/30 shadow-sm">
+                                <i class="fa-solid fa-file-lines text-brand-blue text-sm"></i> Documents
+                            </a>
+                        </li>
+                        <li>
+                            <a href="invoices.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Invoices & Billing
+                            </a>
+                        </li>
+                        <li>
+                            <a href="analytics.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-chart-column text-sm"></i> BI Analytics
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Support</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="tickets.html" class="flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-comments text-sm"></i> Support Tickets</span>
+                                <span class="bg-amber-500/20 text-amber-400 font-bold px-1.5 py-0.5 rounded text-[10px]">2</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="settings.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                                <i class="fa-solid fa-gear text-sm"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Sidebar Bottom Footer -->
+        <div class="space-y-4 pt-4 border-t border-slate-800/80">
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs">
+                <div class="flex justify-between items-center text-[10px] font-semibold text-slate-400 mb-1.5">
+                    <span>SLA compliance</span>
+                    <span class="text-emerald-400 font-bold">94%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-emerald-500 h-full w-[94%] rounded-full"></div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between p-2 bg-slate-900/80 border border-slate-800 rounded-xl">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 bg-brand-blue/20 text-brand-blue font-bold rounded-lg flex items-center justify-center text-xs border border-brand-blue/30">
+                        CH
+                    </div>
+                    <div class="leading-tight">
+                        <h4 class="text-xs font-bold text-white">Charlie Hub.Inc</h4>
+                        <span class="text-[10px] text-slate-400">J. Sison • Acct #8841</span>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" title="Logout" class="text-slate-400 hover:text-red-400 p-1.5 transition-colors">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col min-w-0">
+        
+        <!-- TOP HEADER BAR -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center">
+            <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Documents</h2>
+
+            <div class="flex-1 max-w-md mx-8">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="docSearchInput" onkeyup="searchDocVault()" placeholder="Track, a waybill, invoice, or document..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
+                    <i class="fa-solid fa-bell text-xs"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
+                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
+                </button>
+                <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
+                    + Book Shipment
+                </button>
+            </div>
+        </header>
+
+        <!-- DOCUMENTS CONTENT BODY -->
+        <div class="p-8 space-y-6 max-w-7xl w-full mx-auto">
+            
+            <!-- DOCUMENT CATEGORY FILTER TABS -->
+            <div class="flex flex-wrap items-center gap-2 p-1.5 bg-slate-200/50 rounded-2xl w-fit text-xs font-semibold">
+                <button onclick="filterDocuments('all', this)" class="doc-filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all">All</button>
+                <button onclick="filterDocuments('bol', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Bills of Lading</button>
+                <button onclick="filterDocuments('customs', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Customs Forms</button>
+                <button onclick="filterDocuments('pod', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Proof of Delivery</button>
+            </div>
+
+            <!-- DOCUMENT VAULT CARD -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900">Document Vault</h3>
+                        <p class="text-xs text-slate-400">All shipment paperwork in one place</p>
+                    </div>
+                    <button onclick="triggerUploadDoc()" class="text-xs font-semibold text-brand-blue hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                    </button>
+                </div>
+
+                <!-- DOCUMENT LIST -->
+                <div class="space-y-3" id="docListContainer">
+                    
+                    <!-- Document 1: Bill of Lading -->
+                    <div class="doc-item flex items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl hover:bg-blue-50/40 transition-colors group cursor-pointer" 
+                         data-category="bol" 
+                         onclick="alert('Downloading Bill of Lading — WB-208841 (PDF)...')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-brand-blue flex items-center justify-center text-sm shadow-sm">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-900 group-hover:text-brand-blue transition-colors">Bill of Lading — WB-208841</h4>
+                                <span class="text-[10px] text-slate-400 font-medium">PDF · Uploaded Jul 26</span>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 group-hover:text-brand-blue p-2 transition-colors">
+                            <i class="fa-solid fa-arrow-down-long text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Document 2: Customs Declaration -->
+                    <div class="doc-item flex items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl hover:bg-blue-50/40 transition-colors group cursor-pointer" 
+                         data-category="customs" 
+                         onclick="alert('Downloading Customs Declaration — WB-208835 (PDF)...')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-brand-blue flex items-center justify-center text-sm shadow-sm">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-900 group-hover:text-brand-blue transition-colors">Customs Declaration — WB-208835</h4>
+                                <span class="text-[10px] text-slate-400 font-medium">PDF · Uploaded Jul 25</span>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 group-hover:text-brand-blue p-2 transition-colors">
+                            <i class="fa-solid fa-arrow-down-long text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Document 3: Proof of Delivery -->
+                    <div class="doc-item flex items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl hover:bg-blue-50/40 transition-colors group cursor-pointer" 
+                         data-category="pod" 
+                         onclick="alert('Downloading Proof of Delivery — WB-208790 (PDF)...')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-brand-blue flex items-center justify-center text-sm shadow-sm">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-900 group-hover:text-brand-blue transition-colors">Proof of Delivery — WB-208790</h4>
+                                <span class="text-[10px] text-slate-400 font-medium">PDF · Uploaded Jul 25</span>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 group-hover:text-brand-blue p-2 transition-colors">
+                            <i class="fa-solid fa-arrow-down-long text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Document 4: Packing List -->
+                    <div class="doc-item flex items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl hover:bg-blue-50/40 transition-colors group cursor-pointer" 
+                         data-category="customs" 
+                         onclick="alert('Downloading Packing List — WB-208712 (XLSX)...')">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-brand-blue flex items-center justify-center text-sm shadow-sm">
+                                <i class="fa-solid fa-file-excel"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-900 group-hover:text-brand-blue transition-colors">Packing List — WB-208712</h4>
+                                <span class="text-[10px] text-slate-400 font-medium">XLSX · Uploaded Jul 24</span>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 group-hover:text-brand-blue p-2 transition-colors">
+                            <i class="fa-solid fa-arrow-down-long text-xs"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FLOATING CHAT SUPPORT WIDGET -->
+    <div onclick="toggleChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-blue hover:bg-brand-darkblue text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-blue-500/30 cursor-pointer z-50 transition-transform hover:scale-110">
+        <i class="fa-solid fa-comments"></i>
+    </div>
+
+    <div id="chatBox" class="fixed bottom-24 right-6 w-[360px] max-w-[calc(100vw-3rem)] h-[480px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 opacity-0 pointer-events-none translate-y-6">
+        <div class="bg-brand-navy text-white p-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold">SwiftSupport PH</h4>
+                    <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="chatBody" class="flex-1 p-4 bg-slate-50 overflow-y-auto flex flex-col gap-3">
+            <div class="bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed">
+                Mabuhay! Need help locating or uploading a Bill of Lading or Customs Clearance form? Chat with us here.
+            </div>
+        </div>
+
+        <div class="p-3 border-t border-slate-200 bg-white flex gap-2">
+            <input type="text" id="chatInput" onkeypress="handleChatKeyPress(event)" placeholder="Type a message..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-blue">
+            <button onclick="sendMessage()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-4 py-2 rounded-lg text-xs transition-colors">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden File Input for Upload Simulation -->
+    <input type="file" id="hiddenFileInput" class="hidden" onchange="handleFileSelected(event)">
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>

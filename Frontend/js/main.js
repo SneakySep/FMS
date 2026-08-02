@@ -133,7 +133,7 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 /* --------------------------------------------------------------------------
-   4. PHILIPPINE LEGAL MODALS (PRIVACY POLICY & TERMS)
+   4. PHILIPPINE LEGAL MODALS
    -------------------------------------------------------------------------- */
 function openPrivacyModal() {
     const modal = document.getElementById('privacyModal');
@@ -155,7 +155,6 @@ function closeTermsModal() {
     if (modal) modal.classList.remove('modal-open');
 }
 
-// Close modals when pressing ESC or clicking backdrop
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closePrivacyModal();
@@ -164,7 +163,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 /* --------------------------------------------------------------------------
-   5. CONTACT FORM SUBMISSION LOGIC
+   5. CONTACT FORM SUBMISSION (WITH COMPANY NAME)
    -------------------------------------------------------------------------- */
 async function handleContactSubmit(e) {
     e.preventDefault();
@@ -178,14 +177,15 @@ async function handleContactSubmit(e) {
     const payload = {
         name: document.getElementById('contactName').value,
         email: document.getElementById('contactEmail').value,
+        company: document.getElementById('contactCompany').value,
         phone: document.getElementById('contactPhone').value,
         service: document.getElementById('contactService').value,
         message: document.getElementById('contactMessage').value
     };
 
     /* ----------------------------------------------------------------------
-       BACKEND API INTEGRATION COMMENT:
-       In production, post to your Philippine Express/Node.js API endpoint:
+       BACKEND CONTACT FORM INTEGRATION POINT:
+       In production, post to your Express/Node.js backend endpoint:
        fetch('/api/v1/contact/ph', { method: 'POST', body: JSON.stringify(payload) })
        ---------------------------------------------------------------------- */
 

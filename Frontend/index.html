@@ -434,6 +434,7 @@
                 </div>
             </div>
 
+            <!-- Right Side Form with Company Name Added -->
             <div class="lg:col-span-7">
                 <form onsubmit="handleContactSubmit(event)" class="bg-slate-950/80 border border-white/10 p-6 sm:p-8 rounded-2xl shadow-2xl backdrop-blur-md">
                     <h4 class="text-xl font-extrabold text-white mb-1">Send Us a Direct Message</h4>
@@ -452,20 +453,25 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                         <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Company Name</label>
+                            <input type="text" id="contactCompany" placeholder="Acme Logistics Corp." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue">
+                        </div>
+                        <div>
                             <label class="block text-xs font-medium text-slate-300 mb-1">Phone Number</label>
                             <input type="tel" id="contactPhone" placeholder="+63 (917) 000-0000" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue">
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-300 mb-1">Service Required</label>
-                            <select id="contactService" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue">
-                                <option value="ocean">Ocean Freight</option>
-                                <option value="air">Air Freight</option>
-                                <option value="land">Land Freight / Trucking</option>
-                                <option value="warehousing">Warehousing & Storage</option>
-                                <option value="customs">Customs Brokerage (BOC Clearance)</option>
-                                <option value="general">General Inquiry</option>
-                            </select>
-                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Service Required</label>
+                        <select id="contactService" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-blue">
+                            <option value="ocean">Ocean Freight</option>
+                            <option value="air">Air Freight</option>
+                            <option value="land">Land Freight / Trucking</option>
+                            <option value="warehousing">Warehousing & Storage</option>
+                            <option value="customs">Customs Brokerage (BOC Clearance)</option>
+                            <option value="general">General Inquiry</option>
+                        </select>
                     </div>
 
                     <div class="mb-5">
@@ -484,7 +490,7 @@
         </div>
     </section>
 
-    <!-- FOOTER WITH PHILIPPINE LEGAL COMPLIANCE LINKS -->
+    <!-- FOOTER -->
     <footer class="bg-brand-navy text-slate-400 py-16 px-6 text-xs">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-white/10">
             <div class="lg:col-span-2">
@@ -591,9 +597,7 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
-       MODAL 1: PRIVACY POLICY (DATA PRIVACY ACT OF 2012 / RA 10173 COMPLIANT)
-       ========================================================================== -->
+    <!-- MODALS -->
     <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
@@ -608,59 +612,16 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
             <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
                 <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
-                <p>SwiftFreight Logistics Philippines Inc. ("SwiftFreight", "we", "us", "our") is committed to protecting your personal data in strict compliance with <strong>Republic Act No. 10173</strong>, otherwise known as the <strong>Data Privacy Act of 2012 (DPA)</strong>, its Implementing Rules and Regulations (IRR), and circulars issued by the <strong>National Privacy Commission (NPC)</strong> of the Philippines.</p>
-
-                <h4 class="font-bold text-white text-sm pt-2">1. Personal Information Collected</h4>
-                <p>We collect personal information necessary to provide logistics, freight forwarding, customs clearance, and delivery services, including:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>Full Name, Company Name, and Job Title</li>
-                    <li>Contact details (Philippine and international mobile numbers, email, physical addresses)</li>
-                    <li>Consignee and Origin/Destination address details</li>
-                    <li>Government-issued IDs or TIN for Bureau of Customs (BOC) clearance</li>
-                    <li>IP address, device identifiers, and tracking query histories</li>
-                </ul>
-
-                <h4 class="font-bold text-white text-sm pt-2">2. Purpose of Data Processing</h4>
-                <p>Your personal data is processed lawfully for:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>Processing, shipping, and tracking freight orders</li>
-                    <li>Customs clearance and compliance with the Customs Modernization and Tariff Act (RA 10863)</li>
-                    <li>Generating real-time quotes and billing invoices</li>
-                    <li>Customer support communication via phone, email, or live chat</li>
-                </ul>
-
-                <h4 class="font-bold text-white text-sm pt-2">3. Rights of Data Subjects Under Philippine Law</h4>
-                <p>Under Section 16 of RA 10173, as a data subject, you possess the following statutory rights:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li><strong>Right to be Informed:</strong> To know if personal data is being processed.</li>
-                    <li><strong>Right to Access:</strong> To request copies of your personal records.</li>
-                    <li><strong>Right to Object:</strong> To object to automated processing or direct marketing.</li>
-                    <li><strong>Right to Erasure or Blocking:</strong> To suspend or remove improper data.</li>
-                    <li><strong>Right to Rectification:</strong> To correct inaccurate information.</li>
-                    <li><strong>Right to Damages & NPC Complaint:</strong> To seek indemnity or file a complaint with the National Privacy Commission.</li>
-                </ul>
-
-                <h4 class="font-bold text-white text-sm pt-2">4. Data Protection Officer (DPO) Contact</h4>
-                <p>For inquiries or to exercise your rights under the Data Privacy Act, contact our Compliance Officer:</p>
-                <div class="bg-white/5 p-3 rounded-lg border border-white/10 text-[11px]">
-                    <p><strong>Data Protection Officer:</strong> Legal & Compliance Dept.</p>
-                    <p><strong>Email:</strong> dpo@swiftfreight.ph</p>
-                    <p><strong>Address:</strong> SwiftFreight Tower, Bonifacio Global City, Taguig City, Metro Manila, Philippines</p>
-                </div>
+                <p>SwiftFreight Logistics Philippines Inc. is committed to protecting your personal data under RA 10173 (Data Privacy Act of 2012).</p>
             </div>
-
             <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
                 <button onclick="closePrivacyModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">I Understand</button>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================================================
-       MODAL 2: TERMS AND CONDITIONS (PHILIPPINE COMMERCIAL & TRANSPORT LAW)
-       ========================================================================== -->
     <div id="termsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
@@ -675,30 +636,10 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
             <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
                 <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
-
-                <h4 class="font-bold text-white text-sm">1. Governing Law & Jurisdiction</h4>
-                <p>These Terms and Conditions shall be governed by and construed in accordance with the laws of the <strong>Republic of the Philippines</strong>, including the <strong>Civil Code of the Philippines (Articles 1732-1763 on Common Carriers)</strong>, the <strong>Electronic Commerce Act of 2000 (RA 8792)</strong>, and the <strong>Customs Modernization and Tariff Act (RA 10863)</strong>. Any litigation arising hereunder shall be subject to the exclusive jurisdiction of the competent courts of Makati City or Manila, Philippines.</p>
-
-                <h4 class="font-bold text-white text-sm pt-2">2. Common Carrier Status & Limitation of Liability</h4>
-                <p>Pursuant to Article 1744 of the Civil Code of the Philippines, SwiftFreight exercises extraordinary diligence in the vigilance over goods transported. However, SwiftFreight's liability for loss, damage, or delay shall be strictly limited to:</p>
-                <ul class="list-disc pl-5 space-y-1">
-                    <li>The declared value specified in the Air Waybill (AWB) or Bill of Lading (BOL).</li>
-                    <li>In the absence of a declared higher value, the maximum liability per package shall not exceed US $100 or PHP 5,000 equivalent, whichever is governed by applicable international conventions (Warsaw / Montreal Convention or Hague-Visby Rules).</li>
-                </ul>
-
-                <h4 class="font-bold text-white text-sm pt-2">3. Customs Clearance & Bureau of Customs (BOC) Compliance</h4>
-                <p>Shippers and consignees are responsible for providing accurate manifest data, commercial invoices, and import permits required by the <strong>Philippine Bureau of Customs (BOC)</strong> and other regulatory bodies (e.g., DTI, FDA, NTC). Prohibited or illegal goods specified under Philippine Penal laws will be seized immediately and reported to authorities.</p>
-
-                <h4 class="font-bold text-white text-sm pt-2">4. Claims and Notice Period</h4>
-                <p>Notice of claim for damaged or lost cargo must be filed in writing with SwiftFreight within <strong>fourteen (14) days</strong> from the date of delivery, or scheduled delivery, failing which no action shall lie against SwiftFreight.</p>
-
-                <h4 class="font-bold text-white text-sm pt-2">5. Electronic Signatures and Contracts</h4>
-                <p>In accordance with <strong>RA 8792 (E-Commerce Act of 2000)</strong>, electronic bookings, rate estimations, digital signatures, and waybills generated on this website carry full legal validity and binding enforceability under Philippine law.</p>
+                <p>These terms are governed by the Civil Code of the Philippines and Republic Act No. 10863 (Customs Modernization and Tariff Act).</p>
             </div>
-
             <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
                 <button onclick="closeTermsModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">Accept Terms</button>
             </div>

@@ -63,6 +63,11 @@ function stopHeroTimer() { clearInterval(heroTimer); }
 /* --------------------------------------------------------------------------
    2. AUTHENTICATION & SETTINGS HANDLERS
    -------------------------------------------------------------------------- */
+
+// Demo OTP constant (in production this would be sent via email/SMS)
+const DEMO_OTP = '123456';
+let generatedOtp = DEMO_OTP;
+
 function handleLogin(e) {
     e.preventDefault();
 
@@ -76,13 +81,24 @@ function handleLogin(e) {
 
     setTimeout(() => {
         if (email === 'client@company.ph' && password === 'demo1234') {
-            localStorage.setItem('swift_session', JSON.stringify({
-                user: 'Juan Dela Cruz',
-                company: 'Acme Logistics PH',
-                email: email,
-                token: 'session_token_ph_99218'
-            }));
-            window.location.href = 'dashboard.html';
+            // Credentials valid — proceed to OTP verification step
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to SwiftPortal`;
+            status.classList.add('hidden');
+
+            // Generate a random 6-digit OTP for demo purposes
+            generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+            console.log(`[SwiftFreight Demo] OTP sent to ${email}: ${generatedOtp}`);
+
+            // Show OTP form, hide credentials form
+            document.getElementById('credentialsForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.remove('hidden');
+            document.getElementById('otpEmailDisplay').innerText = email;
+            document.getElementById('otpInput').value = '';
+            document.getElementById('otpStatus').classList.add('hidden');
+
+            // Auto-focus OTP input
+            setTimeout(() => document.getElementById('otpInput').focus(), 100);
         } else {
             loginBtn.disabled = false;
             loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to SwiftPortal`;
@@ -92,9 +108,96 @@ function handleLogin(e) {
     }, 1000);
 }
 
+function handleOtpVerify(e) {
+    e.preventDefault();
+
+    const otpInput = document.getElementById('otpInput').value.trim();
+    const otpBtn = document.getElementById('otpBtn');
+    const otpStatus = document.getElementById('otpStatus');
+    const email = document.getElementById('loginEmail').value.trim();
+
+    otpBtn.disabled = true;
+    otpBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...`;
+
+    setTimeout(() => {
+        if (otpInput === generatedOtp) {
+            // OTP verified — create session and redirect
+            localStorage.setItem('swift_session', JSON.stringify({
+                user: 'Juan Dela Cruz',
+                company: 'Acme Logistics PH',
+                email: email,
+                token: 'session_token_ph_99218',
+                otpVerified: true,
+                verifiedAt: new Date().toISOString()
+            }));
+            window.location.href = 'dashboard.html';
+        } else {
+            otpBtn.disabled = false;
+            otpBtn.innerHTML = `<i class="fa-solid fa-check"></i> Verify & Sign In`;
+            otpStatus.classList.remove('hidden');
+            otpStatus.innerText = 'Invalid OTP code. Please try again.';
+            document.getElementById('otpInput').value = '';
+            document.getElementById('otpInput').focus();
+        }
+    }, 800);
+}
+
+function backToCredentials() {
+    document.getElementById('otpForm').classList.add('hidden');
+    document.getElementById('credentialsForm').classList.remove('hidden');
+    document.getElementById('otpStatus').classList.add('hidden');
+    document.getElementById('loginStatus').classList.add('hidden');
+}
+
+function resendOtp() {
+    generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+    const email = document.getElementById('loginEmail').value.trim();
+    console.log(`[SwiftFreight Demo] New OTP sent to ${email}: ${generatedOtp}`);
+
+    const otpStatus = document.getElementById('otpStatus');
+    otpStatus.classList.remove('hidden');
+    otpStatus.className = 'p-3 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-center text-xs';
+    otpStatus.innerText = `A new verification code has been sent to ${email}`;
+
+    document.getElementById('otpInput').value = '';
+    document.getElementById('otpInput').focus();
+
+    setTimeout(() => {
+        otpStatus.classList.add('hidden');
+        otpStatus.className = 'hidden p-3 bg-red-500/20 border border-red-500/30 text-red-300 rounded-xl text-center text-xs';
+    }, 4000);
+}
+
 function handleLogout() {
     localStorage.removeItem('swift_session');
     window.location.href = 'index.html';
+}
+
+function scrollToLogin() {
+    const loginCard = document.getElementById('login-card');
+    if (loginCard) {
+        loginCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function openPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+}
+
+function closePrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+}
+
+function openTermsModal() {
+    const modal = document.getElementById('termsModal');
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+}
+
+function closeTermsModal() {
+    const modal = document.getElementById('termsModal');
+    modal.classList.add('opacity-0', 'pointer-events-none');
 }
 
 function checkAuthSession() {
@@ -131,6 +234,14 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthSession();
     startHeroTimer();
     initTrackingPage();
+
+    // Fix reveal animation: activate all .reveal elements on page load
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach((el, index) => {
+        setTimeout(() => {
+            el.classList.add('active');
+        }, index * 150);
+    });
 });
 
 /* --------------------------------------------------------------------------

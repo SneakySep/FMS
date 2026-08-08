@@ -1,0 +1,33 @@
+# =====================================================================
+# SwiftFreight / FMS — security-focused .gitignore
+# Goal: never commit secrets, credentials, or database artifacts.
+# =====================================================================
+
+# ---- Secrets & environment files ----
+.env
+.env.*
+!.env.example
+
+# ---- Local DB config that may contain real credentials ----
+config/database.local.php
+config/*.env
+*.local.php
+
+# ---- SQL dumps / exports (can contain real data) ----
+*.sql
+*.dump
+*.bak
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- IDE / OS noise ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Runtime / build artifacts ----
+*.cache
+node_modules/

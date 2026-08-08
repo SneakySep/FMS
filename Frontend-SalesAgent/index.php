@@ -44,7 +44,7 @@
         <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             
             <!-- Logo -->
-            <a href="indexphp" class="flex items-center gap-3 group">
+            <a href="index.php" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 bg-gradient-to-tr from-brand-darkblue to-brand-blue text-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
                     <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
                         <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>
@@ -78,42 +78,10 @@
 
         <!-- Foreground Content -->
         <div class="relative z-20 max-w-7xl mx-auto px-6 w-full py-12 lg:py-16">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                
-                <!-- Left Column: AGENT HERO TEXT -->
-                <div class="lg:col-span-7 reveal">
-                    <div class="inline-flex items-center gap-2 bg-brand-blue/90 backdrop-blur-md text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/20 shadow-lg">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <span>Sales Agent Console</span>
-                    </div>
+            <div class="flex justify-center">
 
-                    <h2 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] mb-6 drop-shadow-lg">
-                        Control. Manage.<br>Deliver.
-                    </h2>
-                    
-                    <p class="text-slate-200 text-base sm:text-lg mb-8 max-w-lg leading-relaxed font-normal drop-shadow">
-                        Manage freight operations and control what your customers see — shipments, documents, invoices, and support in one console.
-                    </p>
-
-                    <!-- Stats Badges -->
-                    <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/20 max-w-md">
-                        <div>
-                            <strong class="text-white text-2xl font-extrabold block drop-shadow">12</strong>
-                            <span class="text-slate-300 text-xs">Active Shipments</span>
-                        </div>
-                        <div>
-                            <strong class="text-white text-2xl font-extrabold block drop-shadow">94%</strong>
-                            <span class="text-slate-300 text-xs">SLA Compliance</span>
-                        </div>
-                        <div>
-                            <strong class="text-white text-2xl font-extrabold block drop-shadow">1</strong>
-                            <span class="text-slate-300 text-xs">Open Breach</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Agent Login Card -->
-                <div id="login-card" class="lg:col-span-5 reveal">
+                <!-- Agent Login Card -->
+                <div id="login-card" class="w-full max-w-md reveal">
                     <div class="bg-slate-950/80 border border-white/15 p-8 sm:p-10 rounded-3xl backdrop-blur-2xl shadow-2xl relative">
                         
                         <div class="text-center mb-8">

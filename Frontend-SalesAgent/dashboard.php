@@ -1,263 +1,311 @@
 <?php
-$pageTitle = 'SwiftFreight - Agent Dashboard';
+$pageTitle = 'Dashboard - SwiftFreight Agent Portal';
 $activePage = 'dashboard';
 $chatMessage = trim(<<<'MSG'
-Mabuhay! Internal SwiftFreight support channel — how can we help?
+Mabuhay! Internal SwiftFreight support channel; how can we help?
 MSG);
 include 'includes/head.php';
 include 'includes/sidebar.php';
 ?>
 
+<main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
+        <!-- TOP NAVBAR -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-2xl font-bold italic text-slate-900 tracking-wide">Dashboard</h2>
 
-    <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 flex flex-col min-w-0">
-
-        <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center">
-            <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Agent Overview</h2>
-
-            <div class="flex-1 max-w-md mx-8">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" placeholder="Search waybill, customer, or ticket..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
+            <div class="flex items-center gap-4">
+                <!-- Search Input -->
+                <div class="relative w-80">
+                    <i class="fa-solid fa-magnifying-glass w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input 
+                        type="text" 
+                        placeholder="Search leads, customer, quotes..." 
+                        class="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-slate-700"
+                    >
                 </div>
-            </div>
 
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                <!-- Notification Bell -->
+                <button class="p-2 rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 relative">
+                    <i class="fa-solid fa-bell w-4 h-4"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
-                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="openNewShipmentModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    + New Shipment
-                </button>
+
+                <!-- New Quote Button -->
+                <a href="quotes.php" class="bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm px-4 py-2 rounded-md transition inline-flex items-center gap-1.5 shadow-sm">
+<i class="fa-solid fa-plus w-4"></i>
+<span>New Quote</span>
+</a>
             </div>
         </header>
 
-        <!-- DASHBOARD CONTENT BODY -->
-        <div class="p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <!-- DASHBOARD BODY CONTAINER -->
+        <div class="p-8 space-y-6 max-w-[1400px]">
 
-            <!-- KPI CARDS GRID -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                <!-- Card 1: Active Shipments -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 reveal">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-500 block">Active Shipments</span>
-                        <div class="w-8 h-8 bg-blue-100 text-brand-blue rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <!-- TOP 4 STAT CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Card 1: Active Leads -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between relative">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold text-gray-500">Active Leads</span>
+                        <div class="w-7 h-7 rounded-md bg-purple-100 text-purple-600 flex items-center justify-center">
+                            <i class="fa-solid fa-user w-4 h-4"></i>
+                        </div>
                     </div>
-                    <strong id="dashboardActiveShipments" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="shipmentsphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage shipments <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="mt-4">
+                        <div class="text-4xl font-bold text-slate-900">14</div>
+                        <div class="flex items-center gap-1 text-xs text-emerald-600 font-medium mt-2">
+                            <i class="fa-solid fa-arrow-trend-up w-2.5 h-2.5 fill-emerald-600"></i>
+                            <span>3 new this week</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Card 2: In Transit -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 reveal">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-500 block">In Transit</span>
-                        <div class="w-8 h-8 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-route"></i></div>
+                <!-- Card 2: AI Escalations Pending -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between relative">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold text-gray-500">AI Escalations Pending</span>
+                        <div class="w-7 h-7 rounded-md bg-rose-100 text-rose-500 flex items-center justify-center">
+                            <i class="fa-solid fa-triangle-exclamation w-4 h-4"></i>
+                        </div>
                     </div>
-                    <strong id="dashboardInTransit" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="trackingphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Track fleet <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="mt-4">
+                        <div class="text-4xl font-bold text-slate-900">3</div>
+                        <div class="text-xs text-rose-600 font-semibold mt-2">
+                            needs response &lt; 4h
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Card 3: Delayed / At Risk -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 reveal">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-500 block">Delayed / At Risk</span>
-                        <div class="w-8 h-8 bg-red-100 text-red-500 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <!-- Card 3: Meetings Today -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between relative">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold text-gray-500">Meetings Today</span>
+                        <div class="w-7 h-7 rounded-md bg-sky-100 text-sky-500 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-days w-4 h-4"></i>
+                        </div>
                     </div>
-                    <strong id="dashboardDelayed" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="sla-monitoringphp" class="text-xs font-semibold text-red-500 hover:underline inline-flex items-center gap-1">Review SLA <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="mt-4">
+                        <div class="text-4xl font-bold text-slate-900">2</div>
+                        <div class="text-xs text-gray-500 font-medium mt-2">
+                            Next: 2:30 PM
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Card 4: Open Breaches -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3 reveal">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-500 block">Open SLA Breaches</span>
-                        <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-clock"></i></div>
+                <!-- Card 4: Contracts Closed (MTD) -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between relative">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-semibold text-gray-500">Contracts Closed (MTD)</span>
+                        <div class="w-7 h-7 rounded-md bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                            <i class="fa-solid fa-check w-4 h-4"></i>
+                        </div>
                     </div>
-                    <strong id="dashboardOpenBreachesKpi" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="sla-monitoringphp" class="text-xs font-semibold text-amber-600 hover:underline inline-flex items-center gap-1">Resolve breaches <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="mt-4">
+                        <div class="text-4xl font-bold text-slate-900">6</div>
+                        <div class="flex items-center gap-1 text-xs text-emerald-600 font-medium mt-2">
+                            <i class="fa-solid fa-arrow-trend-up w-2.5 h-2.5 fill-emerald-600"></i>
+                            <span>₱482,000 value</span>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
-            <!-- QUICK ACTIONS + RECENT TICKETS ROW -->
+            <!-- LOWER GRID SECTION (2 Columns) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                <!-- QUICK ACTIONS PANEL (5 Cols) -->
-                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 reveal">
+                <!-- LEFT COLUMN (Pipeline Snapshot) - 7 cols -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between">
                     <div>
-                        <h3 class="text-base font-extrabold text-slate-900">Quick Actions</h3>
-                        <p class="text-xs text-slate-400">Control center for the customer portal</p>
-                    </div>
-
-                    <div class="space-y-2.5">
-                        <button onclick="openNewShipmentModal()" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-brand-blue text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-plus"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-extrabold text-slate-900">Create Shipment</h4>
-                                    <p class="text-[10px] text-slate-400">Push a new waybill to the customer portal</p>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                        </button>
-
-                        <button onclick="location.href='customersphp'; openNewCustomerModal()" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-user-plus"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-extrabold text-slate-900">New Customer Account</h4>
-                                    <p class="text-[10px] text-slate-400">Provision portal access for a client</p>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                        </button>
-
-                        <button onclick="location.href='sla-monitoringphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-amber-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-clock"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-extrabold text-slate-900">Resolve SLA Breaches</h4>
-                                    <p class="text-[10px] text-slate-400">Handle open commitments at risk</p>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                        </button>
-
-                        <button onclick="location.href='ticketsphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-sky-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-headset"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-extrabold text-slate-900">Respond to Tickets</h4>
-                                    <p class="text-[10px] text-slate-400">Reply to customer support requests</p>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                        </button>
-
-                        <button onclick="location.href='documentsphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-violet-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-file-circle-plus"></i></div>
-                                <div>
-                                    <h4 class="text-xs font-extrabold text-slate-900">Upload Document</h4>
-                                    <p class="text-[10px] text-slate-400">Publish a document to the customer vault</p>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- RECENT TICKETS (7 Cols) -->
-                <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5 reveal">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="text-base font-extrabold text-slate-900">Recent Support Tickets</h3>
-                            <p class="text-xs text-slate-400">Live from the Notification Hub</p>
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="text-2xl font-bold text-slate-900">Pipeline Snapshot</h3>
+                            <a href="pipelines.php" class="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                                Open board <i class="fa-solid fa-arrow-right w-3.5 h-3.5"></i>
+                            </a>
                         </div>
-                        <a href="ticketsphp" class="text-xs font-semibold text-brand-blue hover:underline">View all</a>
+                        <p class="text-xs text-gray-400 mb-6">Leads by stage, this month</p>
+
+                        <!-- STAGES BARS -->
+                        <div class="space-y-5">
+                            <!-- Stage 1 -->
+                            <div>
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 mb-1.5">
+                                    <span>New Inquiry</span>
+                                    <span class="text-gray-400 text-xs font-normal">4</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                                    <div class="bg-purple-400 h-full rounded-full" style="width: 40%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stage 2 -->
+                            <div>
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 mb-1.5">
+                                    <span>Qualifying</span>
+                                    <span class="text-gray-400 text-xs font-normal">3</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                                    <div class="bg-amber-400 h-full rounded-full" style="width: 25%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stage 3 -->
+                            <div>
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 mb-1.5">
+                                    <span>Quote Sent</span>
+                                    <span class="text-gray-400 text-xs font-normal">5</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                                    <div class="bg-purple-400 h-full rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stage 4 -->
+                            <div>
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 mb-1.5">
+                                    <span>Negotiation</span>
+                                    <span class="text-gray-400 text-xs font-normal">2</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                                    <div class="bg-amber-400 h-full rounded-full" style="width: 18%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stage 5 -->
+                            <div>
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 mb-1.5">
+                                    <span>Won (MTD)</span>
+                                    <span class="text-gray-400 text-xs font-normal">6</span>
+                                </div>
+                                <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN (AI Escalation Queue & My Contracts) - 5 cols -->
+                <div class="lg:col-span-5 space-y-6">
+
+                    <!-- AI Escalation Queue -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm">
+                        <div class="flex justify-between items-start mb-0.5">
+                            <h3 class="text-base font-bold text-slate-900">AI Escalation Queue</h3>
+                            <a href="ai-escalations.php" class="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                                View All <i class="fa-solid fa-arrow-right w-3.5 h-3.5"></i>
+                            </a>
+                        </div>
+                        <p class="text-[11px] text-gray-400 mb-4">Below-threshold inquiries needing you</p>
+
+                        <div class="space-y-3.5">
+                            <!-- Queue Item 1 -->
+                            <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-b-0 last:pb-0">
+                                <div class="p-2 bg-rose-100 text-rose-500 rounded-md mt-0.5">
+                                    <i class="fa-solid fa-triangle-exclamation w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="text-xs font-bold text-slate-900">Meridian Textiles Co.</h4>
+                                        <span class="bg-rose-100 text-rose-600 text-[11px] font-semibold px-1.5 py-0.5 rounded">0.58</span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500 leading-tight mt-0.5">
+                                        Asking about reefer container availability for a rush Cebu shipment.
+                                    </p>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">TCK-3381 · escalated 22m ago</span>
+                                </div>
+                            </div>
+
+                            <!-- Queue Item 2 -->
+                            <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-b-0 last:pb-0">
+                                <div class="p-2 bg-rose-100 text-rose-500 rounded-md mt-0.5">
+                                    <i class="fa-solid fa-triangle-exclamation w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="text-xs font-bold text-slate-900">Robles Cargo Corp.</h4>
+                                        <span class="bg-amber-100 text-amber-700 text-[11px] font-semibold px-1.5 py-0.5 rounded">0.69</span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500 leading-tight mt-0.5">
+                                        Wants a custom SLA clause for customs clearance on future bookings.
+                                    </p>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">TCK-3378 · escalated 1h ago</span>
+                                </div>
+                            </div>
+
+                            <!-- Queue Item 3 -->
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-rose-100 text-rose-500 rounded-md mt-0.5">
+                                    <i class="fa-solid fa-triangle-exclamation w-4 h-4"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="text-xs font-bold text-slate-900">Iloilo AgriTrade</h4>
+                                        <span class="bg-rose-100 text-rose-600 text-[11px] font-semibold px-1.5 py-0.5 rounded">0.44</span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500 leading-tight mt-0.5">
+                                        Message flagged sensitive — mentions a damaged shipment and possible claim.
+                                    </p>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">TCK-3372 · escalated 3h ago</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="recentTicketsContainer" class="space-y-3"></div>
-                </div>
+                    <!-- My Contracts Card -->
+                    <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 mb-4">My Contracts</h3>
 
-            </div>
+                        <div class="space-y-3.5">
+                            <!-- Contract 1 -->
+                            <div class="flex justify-between items-center pb-2.5 border-b border-gray-100">
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Tan Bros. Distribution</h4>
+                                    <span class="text-[11px] text-gray-400">12-month · Pending Approval</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-bold text-slate-900">₱182,000</div>
+                                    <span class="bg-amber-100 text-amber-700 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">PENDING</span>
+                                </div>
+                            </div>
 
-            <!-- RECENT MANIFEST TABLE -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5 reveal">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="text-base font-extrabold text-slate-900">Recent Shipment Manifest</h3>
-                        <p class="text-xs text-slate-400">Controlled by the Sales Agent, shown to the customer</p>
+                            <!-- Contract 2 -->
+                            <div class="flex justify-between items-center pb-2.5 border-b border-gray-100">
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Northbay Logistics</h4>
+                                    <span class="text-[11px] text-gray-400">6-month · Draft</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-bold text-slate-900">₱96,500</div>
+                                    <span class="bg-sky-100 text-sky-600 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">DRAFT</span>
+                                </div>
+                            </div>
+
+                            <!-- Contract 3 -->
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-900">Ocean Peak Traders</h4>
+                                    <span class="text-[11px] text-gray-400">12-month · Active</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-bold text-slate-900">₱245,000</div>
+                                    <span class="bg-emerald-100 text-emerald-600 text-[10px] font-semibold px-1.5 py-0.5 rounded uppercase tracking-wider">ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <a href="shipmentsphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage all <i class="fa-solid fa-arrow-right"></i></a>
+
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
-                                <th class="pb-3">WAYBILL</th>
-                                <th class="pb-3">JOURNEY</th>
-                                <th class="pb-3">STATUS</th>
-                                <th class="pb-3 text-right">ETA</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashboardManifestBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
             </div>
 
         </div>
-    </main>
+    
+</main>
 
-    <?php include 'includes/chat-widget.php'; ?>
+<?php include 'includes/chat-widget.php'; ?>
 
-    <!-- NEW SHIPMENT MODAL -->
-    <div id="shipmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-8 space-y-6">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h3 class="text-base font-extrabold text-slate-900">Create New Shipment</h3>
-                    <p class="text-xs text-slate-400">This will be pushed to the customer portal instantly</p>
-                </div>
-                <button onclick="closeModal('shipmentModal')" class="text-slate-400 hover:text-slate-600 transition-colors">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
 
-            <form onsubmit="createNewShipment(event)" class="space-y-5">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Waybill Number</label>
-                        <input type="text" id="newWaybill" required class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Container Type</label>
-                        <input type="text" id="newShipmentType" required placeholder="e.g. 40ft container · Reefer" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors">
-                    </div>
-                </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Route</label>
-                    <input type="text" id="newRoute" required placeholder="Manila → Cebu" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Carrier</label>
-                        <input type="text" id="newCarrier" required placeholder="Trans-Pacific Lines" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
-                        <select id="newStatus" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors cursor-pointer">
-                            <option value="In Transit">In Transit</option>
-                            <option value="Customs">Customs</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Delayed">Delayed</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">ETA</label>
-                    <input type="text" id="newEta" required placeholder="Jul 29, 14:00" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:bg-white focus:border-brand-blue focus:outline-none transition-colors">
-                </div>
-
-                <div class="flex justify-end gap-3 pt-3">
-                    <button type="button" onclick="closeModal('shipmentModal')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors">Cancel</button>
-                    <button type="submit" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Create Shipment</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

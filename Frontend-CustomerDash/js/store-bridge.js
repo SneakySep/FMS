@@ -235,6 +235,27 @@ function bridgeRenderSettings(store) {
     });
 }
 
+function bridgeRenderAnalytics(store) {
+    if (!store || !Array.isArray(store.shipments)) return;
+
+    // "Top Routes" card (right column) — recompute from shared shipment data
+    const card = bridgeCardByTitle('Top Routes');
+    const list = card && card.querySelector('.divide-y');
+    if (list) {
+        const counts = {};
+        store.shipments.forEach(s => {
+            const route = s.route || 'Unassigned';
+            counts[route] = (counts[route] || 0) + 1;
+        });
+        const topRoutes = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        list.innerHTML = topRoutes.map(([route, count]) => `
+            <div class="py-3.5 flex justify-between items-center">
+                <strong class="text-slate-900 font-extrabold">${route}</strong>
+                <span class="font-mono text-slate-500 font-bold">${count}</span>
+            </div>`).join('');
+    }
+}
+
 function bridgeInit() {
     const store = getSharedStore();
     if (!store) return;
@@ -249,6 +270,7 @@ function bridgeInit() {
     else if (page === 'sla-monitoring.php') bridgeRenderSla(store);
     else if (page === 'tracking.php') bridgeRenderTracking(store);
     else if (page === 'settings.php') bridgeRenderSettings(store);
+    else if (page === 'analytics.php') bridgeRenderAnalytics(store);
 
     // Listen for live updates from the Sales Agent portal (same browser)
     window.addEventListener('storage', (e) => {
@@ -261,6 +283,7 @@ function bridgeInit() {
             else if (page === 'documents.php') bridgeRenderDocuments(fresh);
             else if (page === 'tickets.php') bridgeRenderTickets(fresh);
             else if (page === 'sla-monitoring.php') bridgeRenderSla(fresh);
+            else if (page === 'analytics.php') bridgeRenderAnalytics(fresh);
         }
     });
 }

@@ -170,7 +170,7 @@ function resendOtp() {
 
 function handleLogout() {
     localStorage.removeItem('swift_session');
-    window.location.href = 'indexphp';
+    window.location.href = 'index.php';
 }
 
 function scrollToLogin() {
@@ -213,7 +213,7 @@ function checkAuthSession() {
                             window.location.pathname.includes('settings.php');
 
     if (isProtectedPage && !session) {
-        window.location.href = 'indexphp';
+        window.location.href = 'index.php';
     }
 }
 
@@ -426,11 +426,90 @@ function initTrackingPage() {
     initTrackingLeafletMap('SF-WB-208841');
 }
 
+const PORT_COORDS = {
+    manila: [14.5995, 120.9842],
+    cebu: [10.3157, 123.8854],
+    davao: [7.1907, 125.4553],
+    iloilo: [10.7202, 122.5621],
+    'cagayan de oro': [8.4856, 124.6476],
+    bacolod: [10.6195, 122.9825]
+};
+
+/* Look up a shipment directly in the shared store (written by the Sales Agent
+   portal) so waybills the agent created render without hard-coded data. */
+function getStoreShipment(wbId) {
+    try {
+        const raw = localStorage.getItem('swift_dashboard_data');
+        if (!raw) return null;
+        const store = JSON.parse(raw);
+        return (store.shipments || []).find(s => s.id === wbId) || null;
+    } catch (e) {
+        return null;
+    }
+}
+
+/* Build tracking data for any waybill: prefer the static rich demo data,
+   otherwise generate a timeline + map from the shared store shipment. */
+function getWaybillTrackingData(wbId) {
+    if (trackingWaybills[wbId]) return trackingWaybills[wbId];
+
+    const shipment = getStoreShipment(wbId);
+    if (!shipment) return null;
+
+    const routeParts = (shipment.route || 'Manila → Cebu').split('→').map(p => p.trim());
+    const resolveCoord = (name) => {
+        if (!name) return null;
+        const key = name.toLowerCase();
+        return PORT_COORDS[key] || null;
+    };
+
+    const fromName = routeParts[0] || null;
+    const toName = routeParts[1] || null;
+    const from = resolveCoord(fromName);
+    const to = resolveCoord(toName);
+
+    const status = shipment.status || 'In Transit';
+    const eta = shipment.eta || 'TBA';
+    const statusLabel = status === 'Delivered' ? 'Cargo Delivered' : status;
+
+    const milestones = [
+        { title: 'Booking confirmed', date: 'On file', desc: 'Waybill generated; container/cargo reserved.', type: 'completed' },
+        { title: 'Picked up from origin', date: 'On file', desc: `Cargo collected from ${fromName || 'origin'} hub.`, type: 'completed' },
+        { title: `In transit — ${shipment.route || ''}`, date: eta, desc: status === 'Delivered' ? 'Transit complete.' : 'Vessel/cargo en route — see below.', type: status === 'In Transit' ? 'active' : 'completed' },
+        { title: 'Customs clearance', date: status === 'Delivered' ? 'Cleared' : 'Estimated ' + eta, desc: status === 'Customs' ? 'Under BOC inspection.' : 'Pending destination clearance.', type: status === 'Customs' ? 'active' : 'upcoming', stepNum: 4 },
+        { title: 'Out for delivery', date: 'Estimated ' + eta, desc: status === 'Delivered' ? 'Delivered to consignee.' : '', type: status === 'Delivered' ? 'completed' : 'upcoming', stepNum: 5 },
+        { title: 'Delivered', date: eta, desc: status === 'Delivered' ? 'Signed by recipient.' : '', type: status === 'Delivered' ? 'completed' : 'upcoming', stepNum: 6 }
+    ];
+
+    const waypoints = [];
+    if (from) {
+        waypoints.push({ pos: from, title: fromName, status: status === 'Delivered' ? 'Delivered' : 'Departed', date: 'On file', color: status === 'Delivered' ? '#10b981' : '#38bdf8' });
+    }
+    if (to) {
+        waypoints.push({ pos: to, title: toName, status: status === 'Delivered' ? 'Delivered' : status === 'In Transit' ? 'Scheduled' : status, date: eta, color: status === 'Delivered' ? '#10b981' : status === 'Delayed' ? '#ef4444' : '#f59e0b' });
+    }
+    if (!waypoints.length) {
+        waypoints.push({ pos: [12, 122], title: 'Philippines', status: statusLabel, date: eta, color: '#38bdf8' });
+    }
+
+    return {
+        route: shipment.route || '—',
+        statusBadge: '● ' + statusLabel,
+        nextCheckpoint: toName ? `${toName} (${eta})` : 'Destination — ETA ' + eta,
+        mapWaypoints: waypoints,
+        milestones: milestones
+    };
+}
+
 function renderWaybillTimeline(wbId) {
     const container = document.getElementById('timelineContainer');
-    if (!container || !trackingWaybills[wbId]) return;
+    if (!container) return;
 
-    const data = trackingWaybills[wbId];
+    const data = getWaybillTrackingData(wbId);
+    if (!data) {
+        container.innerHTML = '<div class="text-[11px] text-slate-400 py-2">No tracking data yet for this waybill.</div>';
+        return;
+    }
     container.innerHTML = '';
 
     data.milestones.forEach(m => {
@@ -456,8 +535,10 @@ function renderWaybillTimeline(wbId) {
         container.innerHTML += stepCard;
     });
 
-    document.getElementById('nextCheckpointText').innerText = data.nextCheckpoint;
-    document.getElementById('routeMapBadge').innerText = data.statusBadge;
+    const cpEl = document.getElementById('nextCheckpointText');
+    const badgeEl = document.getElementById('routeMapBadge');
+    if (cpEl) cpEl.innerText = data.nextCheckpoint;
+    if (badgeEl) badgeEl.innerText = data.statusBadge;
 }
 
 function initTrackingLeafletMap(wbId) {
@@ -468,7 +549,21 @@ function initTrackingLeafletMap(wbId) {
         trackingMap.remove();
     }
 
-    const data = trackingWaybills[wbId];
+    const data = getWaybillTrackingData(wbId);
+    if (!data) {
+        // Show the map shell without crashing for waybills with no data yet
+        trackingMap = L.map('trackingMap', {
+            center: [12, 122],
+            zoom: 5,
+            zoomControl: true,
+            attributionControl: false
+        });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            subdomains: 'abcd'
+        }).addTo(trackingMap);
+        return;
+    }
 
     trackingMap = L.map('trackingMap', {
         center: [12, 122],
@@ -503,7 +598,11 @@ function initTrackingLeafletMap(wbId) {
             .bindPopup(`<b style="color:#0066ff;">${wp.title}</b><br>${wp.status}`);
     });
 
-    trackingMap.fitBounds(trackingPolyline.getBounds(), { padding: [40, 40] });
+    if (data.mapWaypoints.length > 1) {
+        trackingMap.fitBounds(trackingPolyline.getBounds(), { padding: [40, 40] });
+    } else {
+        trackingMap.setView(latLngs[0] || [12, 122], 9);
+    }
 }
 
 function switchTrackWaybill(wbId) {

@@ -186,18 +186,16 @@ function resendOtp() {
 
 function handleLogout() {
     localStorage.removeItem('swift_agent_session');
-    window.location.href = 'indexphp';
+    window.location.href = 'index.php';
 }
 
 function checkAgentSession() {
     const session = localStorage.getItem('swift_agent_session');
-    const protectedPages = ['dashboard.php', 'shipments.php', 'tracking.php', 'sla-monitoring.php',
-                            'documents.php', 'invoices.php', 'analytics.php', 'tickets.php',
-                            'customers.php', 'settings.php'];
+    const protectedPages = ['dashboard.php', 'customers.php', 'settings.php', 'leads.php', 'pipelines.php', 'ai-escalations.php', 'quotes.php', 'contracts.php', 'meetings.php', 'chat.php'];
     const current = window.location.pathname.split('/').pop();
 
     if (protectedPages.includes(current) && !session) {
-        window.location.href = 'indexphp';
+        window.location.href = 'index.php';
     }
 }
 
@@ -854,33 +852,39 @@ function renderCustomersTable() {
     if (!tbody) return;
 
     const store = getStore();
+    const shipmentCount = store.shipments.length;
     tbody.innerHTML = '';
 
     store.customers.forEach(c => {
-        const shipmentCount = store.shipments.filter(s => s.id.startsWith('SF-WB')).length;
+        const initials = c.company
+            .split(' ')
+            .map(w => w[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase();
+
+        const statusPill = c.portalAccess
+            ? '<span class="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active</span>'
+            : '<span class="bg-rose-100 text-rose-700 text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Disabled</span>';
 
         tbody.innerHTML += `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="py-4">
+            <tr class="hover:bg-slate-50 transition">
+                <td class="py-4 px-6">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-brand-blue/10 text-brand-blue font-bold rounded-lg flex items-center justify-center text-xs border border-brand-blue/20">
-                            ${c.company.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-                        </div>
-                        <div>
-                            <strong class="text-xs font-extrabold text-slate-900 block">${c.company}</strong>
-                            <span class="text-[10px] text-slate-400">${c.contact} · Acct #${c.account}</span>
+                        <div class="w-8 h-8 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0">${initials}</div>
+                        <div class="min-w-0">
+                            <span class="text-sm font-bold text-slate-900 block">${c.company}</span>
+                            <span class="text-[11px] text-slate-400">Acct #${c.account} · ${c.email}</span>
                         </div>
                     </div>
                 </td>
-                <td class="py-4 font-mono text-xs text-slate-600">${c.email}</td>
-                <td class="py-4 text-xs text-slate-700 font-medium">${c.warehouse}</td>
-                <td class="py-4 text-center text-xs font-bold text-slate-900">${shipmentCount}</td>
-                <td class="py-4 text-center">
-                    <span class="${c.portalAccess ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'} font-semibold px-3 py-1 rounded-full text-[10px]">${c.portalAccess ? '● Active' : '○ Disabled'}</span>
-                </td>
-                <td class="py-4 text-right">
+                <td class="py-4 px-6 font-medium text-slate-700">${c.contact}</td>
+                <td class="py-4 px-6">${statusPill}</td>
+                <td class="py-4 px-6 font-medium text-slate-700">${shipmentCount}</td>
+                <td class="py-4 px-6 text-right font-bold text-slate-900">₱—</td>
+                <td class="py-4 px-6 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        <button onclick="toggleCustomerAccess('${c.id}')" class="text-xs font-semibold ${c.portalAccess ? 'text-amber-600 hover:underline' : 'text-emerald-600 hover:underline'}">
+                        <button onclick="toggleCustomerAccess('${c.id}')" class="text-xs font-semibold ${c.portalAccess ? 'text-amber-600 hover:text-amber-700' : 'text-emerald-600 hover:text-emerald-700'} transition">
                             ${c.portalAccess ? 'Disable' : 'Enable'}
                         </button>
                         <button onclick="deleteCustomer('${c.id}')" title="Delete" class="text-slate-400 hover:text-red-500 p-1 transition-colors">
@@ -1262,6 +1266,41 @@ function saveAgentDetails(e) {
         btn.innerHTML = `Save changes`;
         alert("Agent account details and notification preferences saved successfully!");
     }, 800);
+}
+
+function exportLeadsCsv() {
+    const tbody = document.getElementById('leadsTableBody');
+    if (!tbody) return false;
+
+    const headers = [];
+    const headerRow = tbody.closest('table') && tbody.closest('table').querySelector('thead tr');
+    if (headerRow) {
+        headerRow.querySelectorAll('th').forEach(th => headers.push(th.textContent.trim()));
+    }
+
+    const rows = [];
+    tbody.querySelectorAll('tr').forEach(tr => {
+        rows.push([...tr.querySelectorAll('td')].map(td => td.textContent.trim()));
+    });
+
+    if (!rows.length) {
+        alert('No leads to export.');
+        return false;
+    }
+
+    const escape = v => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = [headers, ...rows].map(r => r.map(escape).join(',')).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `swiftfreight-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    return false;
 }
 
 /* --------------------------------------------------------------------------

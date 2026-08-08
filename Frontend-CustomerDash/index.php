@@ -44,7 +44,7 @@
         <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             
             <!-- Logo -->
-            <a href="indexphp" class="flex items-center gap-3 group">
+            <a href="index.php" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 bg-gradient-to-tr from-brand-darkblue to-brand-blue text-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
                     <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
                         <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>

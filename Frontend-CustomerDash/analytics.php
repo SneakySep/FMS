@@ -155,5 +155,6 @@ include 'includes/sidebar.php';
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
+    <script src="js/store-bridge.js"></script>
 </body>
 </html>

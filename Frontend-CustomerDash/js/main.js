@@ -130,7 +130,7 @@ function handleOtpVerify(e) {
                 otpVerified: true,
                 verifiedAt: new Date().toISOString()
             }));
-            window.location.href = 'dashboard.html';
+            window.location.href = 'dashboard.php';
         } else {
             otpBtn.disabled = false;
             otpBtn.innerHTML = `<i class="fa-solid fa-check"></i> Verify & Sign In`;
@@ -170,7 +170,7 @@ function resendOtp() {
 
 function handleLogout() {
     localStorage.removeItem('swift_session');
-    window.location.href = 'index.html';
+    window.location.href = 'indexphp';
 }
 
 function scrollToLogin() {
@@ -202,18 +202,18 @@ function closeTermsModal() {
 
 function checkAuthSession() {
     const session = localStorage.getItem('swift_session');
-    const isProtectedPage = window.location.pathname.includes('dashboard.html') || 
-                            window.location.pathname.includes('shipments.html') || 
-                            window.location.pathname.includes('tracking.html') ||
-                            window.location.pathname.includes('sla-monitoring.html') ||
-                            window.location.pathname.includes('documents.html') ||
-                            window.location.pathname.includes('invoices.html') ||
-                            window.location.pathname.includes('analytics.html') ||
-                            window.location.pathname.includes('tickets.html') ||
-                            window.location.pathname.includes('settings.html');
+    const isProtectedPage = window.location.pathname.includes('dashboard.php') || 
+                            window.location.pathname.includes('shipments.php') || 
+                            window.location.pathname.includes('tracking.php') ||
+                            window.location.pathname.includes('sla-monitoring.php') ||
+                            window.location.pathname.includes('documents.php') ||
+                            window.location.pathname.includes('invoices.php') ||
+                            window.location.pathname.includes('analytics.php') ||
+                            window.location.pathname.includes('tickets.php') ||
+                            window.location.pathname.includes('settings.php');
 
     if (isProtectedPage && !session) {
-        window.location.href = 'index.html';
+        window.location.href = 'indexphp';
     }
 }
 

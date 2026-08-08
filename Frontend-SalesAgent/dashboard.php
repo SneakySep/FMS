@@ -1,120 +1,13 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftFreight - Agent Dashboard</title>
+<?php
+$pageTitle = 'SwiftFreight - Agent Dashboard';
+$activePage = 'dashboard';
+$chatMessage = trim(<<<'MSG'
+Mabuhay! Internal SwiftFreight support channel — how can we help?
+MSG);
+include 'includes/head.php';
+include 'includes/sidebar.php';
+?>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Custom CSS Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Tailwind Config Customization -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            blue: '#0066ff',
-                            darkblue: '#0052cc',
-                            navy: '#0b1528',
-                            sidebar: '#080e1e',
-                            lightbg: '#f8fafc',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex">
-
-    <!-- SIDEBAR NAVIGATION -->
-    <aside class="w-64 bg-[#080e1e] text-slate-300 min-h-screen flex flex-col justify-between p-4 border-r border-slate-800 shrink-0">
-        <div class="space-y-6">
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-3 px-2 py-2">
-                <div class="w-10 h-10 bg-brand-blue text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/30">
-                    SF
-                </div>
-                <div class="leading-none">
-                    <h1 class="text-sm font-black tracking-wider text-white uppercase">SWIFT<span class="text-brand-blue">FREIGHT</span></h1>
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Sales Agent Portal</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="space-y-1 text-xs font-semibold">
-                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-brand-blue text-white shadow-md shadow-blue-500/20 transition-all">
-                    <i class="fa-solid fa-gauge-high w-4"></i> Dashboard
-                </a>
-                <a href="shipments.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-boxes-stacked w-4"></i> Shipments
-                </a>
-                <a href="tracking.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-map-location-dot w-4"></i> Tracking
-                </a>
-                <a href="sla-monitoring.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-chart-line w-4"></i> SLA Monitoring
-                </a>
-                <a href="documents.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-folder-open w-4"></i> Document Vault
-                </a>
-                <a href="invoices.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-receipt w-4"></i> Invoices
-                </a>
-                <a href="analytics.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-chart-pie w-4"></i> Analytics
-                </a>
-                <a href="tickets.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-headset w-4"></i> Support Tickets
-                </a>
-                <a href="customers.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-users w-4"></i> Customers
-                </a>
-                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-800/60 transition-colors">
-                    <i class="fa-solid fa-gear w-4"></i> Settings
-                </a>
-            </nav>
-        </div>
-
-        <!-- Sidebar Footer: Agent Profile -->
-        <div class="space-y-3">
-            <div class="bg-slate-800/50 rounded-xl p-3">
-                <div class="flex justify-between items-center mb-1.5">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">SLA Compliance</span>
-                    <span id="dashboardOpenBreaches" class="text-[10px] font-extrabold text-emerald-400">0</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                    <div class="h-full bg-emerald-500 rounded-full" style="width:94%"></div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3 p-2">
-                <div class="w-9 h-9 bg-slate-700 text-white rounded-full flex items-center justify-center text-xs font-black relative">
-                    MS
-                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#080e1e]"></span>
-                </div>
-                <div class="leading-tight flex-1">
-                    <p class="text-xs font-bold text-white">Maria Santos</p>
-                    <p class="text-[10px] text-slate-400">Senior Sales Agent</p>
-                </div>
-                <button onclick="handleLogout()" title="Logout" class="text-slate-500 hover:text-red-400 transition-colors">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
-                </button>
-            </div>
-        </div>
-    </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col min-w-0">
@@ -157,7 +50,7 @@
                         <div class="w-8 h-8 bg-blue-100 text-brand-blue rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-boxes-stacked"></i></div>
                     </div>
                     <strong id="dashboardActiveShipments" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="shipments.html" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage shipments <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="shipmentsphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage shipments <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <!-- Card 2: In Transit -->
@@ -167,7 +60,7 @@
                         <div class="w-8 h-8 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-route"></i></div>
                     </div>
                     <strong id="dashboardInTransit" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="tracking.html" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Track fleet <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="trackingphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Track fleet <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <!-- Card 3: Delayed / At Risk -->
@@ -177,7 +70,7 @@
                         <div class="w-8 h-8 bg-red-100 text-red-500 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
                     </div>
                     <strong id="dashboardDelayed" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="sla-monitoring.html" class="text-xs font-semibold text-red-500 hover:underline inline-flex items-center gap-1">Review SLA <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="sla-monitoringphp" class="text-xs font-semibold text-red-500 hover:underline inline-flex items-center gap-1">Review SLA <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <!-- Card 4: Open Breaches -->
@@ -187,7 +80,7 @@
                         <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-clock"></i></div>
                     </div>
                     <strong id="dashboardOpenBreachesKpi" class="text-4xl font-black text-slate-900 block">0</strong>
-                    <a href="sla-monitoring.html" class="text-xs font-semibold text-amber-600 hover:underline inline-flex items-center gap-1">Resolve breaches <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="sla-monitoringphp" class="text-xs font-semibold text-amber-600 hover:underline inline-flex items-center gap-1">Resolve breaches <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
             </div>
@@ -214,7 +107,7 @@
                             <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
 
-                        <button onclick="location.href='customers.html'; openNewCustomerModal()" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
+                        <button onclick="location.href='customersphp'; openNewCustomerModal()" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-user-plus"></i></div>
                                 <div>
@@ -225,7 +118,7 @@
                             <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
 
-                        <button onclick="location.href='sla-monitoring.html'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
+                        <button onclick="location.href='sla-monitoringphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 bg-amber-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-clock"></i></div>
                                 <div>
@@ -236,7 +129,7 @@
                             <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
 
-                        <button onclick="location.href='tickets.html'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
+                        <button onclick="location.href='ticketsphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 bg-sky-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-headset"></i></div>
                                 <div>
@@ -247,7 +140,7 @@
                             <i class="fa-solid fa-chevron-right text-slate-300"></i>
                         </button>
 
-                        <button onclick="location.href='documents.html'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
+                        <button onclick="location.href='documentsphp'" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-100 rounded-xl transition-colors text-left">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 bg-violet-500 text-white rounded-lg flex items-center justify-center text-sm"><i class="fa-solid fa-file-circle-plus"></i></div>
                                 <div>
@@ -267,7 +160,7 @@
                             <h3 class="text-base font-extrabold text-slate-900">Recent Support Tickets</h3>
                             <p class="text-xs text-slate-400">Live from the Notification Hub</p>
                         </div>
-                        <a href="tickets.html" class="text-xs font-semibold text-brand-blue hover:underline">View all</a>
+                        <a href="ticketsphp" class="text-xs font-semibold text-brand-blue hover:underline">View all</a>
                     </div>
 
                     <div id="recentTicketsContainer" class="space-y-3"></div>
@@ -282,7 +175,7 @@
                         <h3 class="text-base font-extrabold text-slate-900">Recent Shipment Manifest</h3>
                         <p class="text-xs text-slate-400">Controlled by the Sales Agent, shown to the customer</p>
                     </div>
-                    <a href="shipments.html" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage all <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="shipmentsphp" class="text-xs font-semibold text-brand-blue hover:underline inline-flex items-center gap-1">Manage all <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -303,40 +196,7 @@
         </div>
     </main>
 
-    <!-- FLOATING CHAT SUPPORT WIDGET -->
-    <div onclick="toggleChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-blue hover:bg-brand-darkblue text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-blue-500/30 cursor-pointer z-50 transition-transform hover:scale-110">
-        <i class="fa-solid fa-comments"></i>
-    </div>
-
-    <div id="chatBox" class="fixed bottom-24 right-6 w-[360px] max-w-[calc(100vw-3rem)] h-[480px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 opacity-0 pointer-events-none translate-y-6">
-        <div class="bg-brand-navy text-white p-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-headset"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold">SwiftOps PH</h4>
-                    <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
-                </div>
-            </div>
-            <button onclick="toggleChat()" class="text-slate-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div id="chatBody" class="flex-1 p-4 bg-slate-50 overflow-y-auto flex flex-col gap-3">
-            <div class="bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed">
-                Mabuhay! Internal SwiftFreight support channel — how can we help?
-            </div>
-        </div>
-
-        <div class="p-3 border-t border-slate-200 bg-white flex gap-2">
-            <input type="text" id="chatInput" onkeypress="handleChatKeyPress(event)" placeholder="Type a message..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-blue">
-            <button onclick="sendMessage()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-4 py-2 rounded-lg text-xs transition-colors">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    <?php include 'includes/chat-widget.php'; ?>
 
     <!-- NEW SHIPMENT MODAL -->
     <div id="shipmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">

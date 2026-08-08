@@ -146,7 +146,7 @@ function handleAgentOtpVerify(e) {
                 otpVerified: true,
                 verifiedAt: new Date().toISOString()
             }));
-            window.location.href = 'dashboard.html';
+            window.location.href = 'dashboard.php';
         } else {
             otpBtn.disabled = false;
             otpBtn.innerHTML = `<i class="fa-solid fa-check"></i> Verify & Sign In`;
@@ -186,18 +186,18 @@ function resendOtp() {
 
 function handleLogout() {
     localStorage.removeItem('swift_agent_session');
-    window.location.href = 'index.html';
+    window.location.href = 'indexphp';
 }
 
 function checkAgentSession() {
     const session = localStorage.getItem('swift_agent_session');
-    const protectedPages = ['dashboard.html', 'shipments.html', 'tracking.html', 'sla-monitoring.html',
-                            'documents.html', 'invoices.html', 'analytics.html', 'tickets.html',
-                            'customers.html', 'settings.html'];
+    const protectedPages = ['dashboard.php', 'shipments.php', 'tracking.php', 'sla-monitoring.php',
+                            'documents.php', 'invoices.php', 'analytics.php', 'tickets.php',
+                            'customers.php', 'settings.php'];
     const current = window.location.pathname.split('/').pop();
 
     if (protectedPages.includes(current) && !session) {
-        window.location.href = 'index.html';
+        window.location.href = 'indexphp';
     }
 }
 

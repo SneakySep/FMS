@@ -241,26 +241,26 @@ function bridgeInit() {
 
     const page = window.location.pathname.split('/').pop();
 
-    if (page === 'dashboard.html') bridgeRenderDashboard(store);
-    else if (page === 'shipments.html') bridgeRenderShipments(store);
-    else if (page === 'invoices.html') bridgeRenderInvoices(store);
-    else if (page === 'documents.html') bridgeRenderDocuments(store);
-    else if (page === 'tickets.html') bridgeRenderTickets(store);
-    else if (page === 'sla-monitoring.html') bridgeRenderSla(store);
-    else if (page === 'tracking.html') bridgeRenderTracking(store);
-    else if (page === 'settings.html') bridgeRenderSettings(store);
+    if (page === 'dashboard.php') bridgeRenderDashboard(store);
+    else if (page === 'shipments.php') bridgeRenderShipments(store);
+    else if (page === 'invoices.php') bridgeRenderInvoices(store);
+    else if (page === 'documents.php') bridgeRenderDocuments(store);
+    else if (page === 'tickets.php') bridgeRenderTickets(store);
+    else if (page === 'sla-monitoring.php') bridgeRenderSla(store);
+    else if (page === 'tracking.php') bridgeRenderTracking(store);
+    else if (page === 'settings.php') bridgeRenderSettings(store);
 
     // Listen for live updates from the Sales Agent portal (same browser)
     window.addEventListener('storage', (e) => {
         if (e.key === CUSTOMER_STORE_KEY) {
             const fresh = getSharedStore();
             if (!fresh) return;
-            if (page === 'dashboard.html') bridgeRenderDashboard(fresh);
-            else if (page === 'shipments.html') bridgeRenderShipments(fresh);
-            else if (page === 'invoices.html') bridgeRenderInvoices(fresh);
-            else if (page === 'documents.html') bridgeRenderDocuments(fresh);
-            else if (page === 'tickets.html') bridgeRenderTickets(fresh);
-            else if (page === 'sla-monitoring.html') bridgeRenderSla(fresh);
+            if (page === 'dashboard.php') bridgeRenderDashboard(fresh);
+            else if (page === 'shipments.php') bridgeRenderShipments(fresh);
+            else if (page === 'invoices.php') bridgeRenderInvoices(fresh);
+            else if (page === 'documents.php') bridgeRenderDocuments(fresh);
+            else if (page === 'tickets.php') bridgeRenderTickets(fresh);
+            else if (page === 'sla-monitoring.php') bridgeRenderSla(fresh);
         }
     });
 }

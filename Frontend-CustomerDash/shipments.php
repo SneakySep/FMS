@@ -1,157 +1,13 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftFreight - Shipments History</title>
+<?php
+$pageTitle = 'SwiftFreight - Shipments History';
+$activePage = 'shipments';
+$chatMessage = trim(<<<'MSG'
+Mabuhay! Need assistance with a waybill or carrier status? Chat with us here.
+MSG);
+include 'includes/head.php';
+include 'includes/sidebar.php';
+?>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Custom CSS Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- Tailwind Config Customization -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            blue: '#0066ff',
-                            darkblue: '#0052cc',
-                            navy: '#0b1528',
-                            sidebar: '#080e1e',
-                            lightbg: '#f8fafc',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex">
-
-    <!-- SIDEBAR NAVIGATION -->
-    <aside class="w-64 bg-[#080e1e] text-slate-300 min-h-screen flex flex-col justify-between p-4 border-r border-slate-800 shrink-0">
-        <div class="space-y-6">
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-3 px-2 py-2">
-                <div class="w-10 h-10 bg-brand-blue text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/30">
-                    SF
-                </div>
-                <div class="leading-none">
-                    <h1 class="text-base font-black text-white tracking-wider">SwiftFreight</h1>
-                    <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">CUSTOMER PORTAL</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="space-y-6 text-xs font-medium">
-                <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">OVERVIEW</span>
-                    <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                        <i class="fa-solid fa-border-all text-sm"></i> Dashboard
-                    </a>
-                </div>
-
-                <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Freight</span>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="shipments.html" class="flex items-center justify-between px-3 py-2.5 bg-brand-blue/20 text-white rounded-xl font-semibold border border-brand-blue/30 shadow-sm">
-                                <span class="flex items-center gap-3"><i class="fa-solid fa-box text-brand-blue text-sm"></i> Shipments</span>
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-1.5 py-0.5 rounded text-[10px]">12</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="tracking.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-location-dot text-sm"></i> Live Tracking
-                            </a>
-                        </li>
-                        <li>
-                            <a href="sla-monitoring.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-clock-rotate-left text-sm"></i> SLA Monitoring
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Records</span>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="documents.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-file-lines text-sm"></i> Documents
-                            </a>
-                        </li>
-                        <li>
-                            <a href="invoices.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Invoices & Billing
-                            </a>
-                        </li>
-                        <li>
-                            <a href="analytics.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-chart-column text-sm"></i> BI Analytics
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3 block mb-2">Support</span>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="tickets.html" class="flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <span class="flex items-center gap-3"><i class="fa-solid fa-comments text-sm"></i> Support Tickets</span>
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-1.5 py-0.5 rounded text-[10px]">2</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="settings.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                                <i class="fa-solid fa-gear text-sm"></i> Settings
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-
-        <!-- Sidebar Bottom Footer -->
-        <div class="space-y-4 pt-4 border-t border-slate-800/80">
-            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs">
-                <div class="flex justify-between items-center text-[10px] font-semibold text-slate-400 mb-1.5">
-                    <span>SLA compliance</span>
-                    <span class="text-emerald-400 font-bold">94%</span>
-                </div>
-                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-emerald-500 h-full w-[94%] rounded-full"></div>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between p-2 bg-slate-900/80 border border-slate-800 rounded-xl">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 bg-brand-blue/20 text-brand-blue font-bold rounded-lg flex items-center justify-center text-xs border border-brand-blue/30">
-                        CH
-                    </div>
-                    <div class="leading-tight">
-                        <h4 class="text-xs font-bold text-white">Charlie Hub.Inc</h4>
-                        <span class="text-[10px] text-slate-400">J. Sison • Acct #8841</span>
-                    </div>
-                </div>
-                <button onclick="handleLogout()" title="Logout" class="text-slate-400 hover:text-red-400 p-1.5 transition-colors">
-                    <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
-                </button>
-            </div>
-        </div>
-    </aside>
 
     <!-- MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col min-w-0">
@@ -310,40 +166,7 @@
         </div>
     </main>
 
-    <!-- FLOATING CHAT SUPPORT WIDGET -->
-    <div onclick="toggleChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-blue hover:bg-brand-darkblue text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-blue-500/30 cursor-pointer z-50 transition-transform hover:scale-110">
-        <i class="fa-solid fa-comments"></i>
-    </div>
-
-    <div id="chatBox" class="fixed bottom-24 right-6 w-[360px] max-w-[calc(100vw-3rem)] h-[480px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden transition-all duration-300 opacity-0 pointer-events-none translate-y-6">
-        <div class="bg-brand-navy text-white p-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-headset"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold">SwiftSupport PH</h4>
-                    <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
-                </div>
-            </div>
-            <button onclick="toggleChat()" class="text-slate-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <div id="chatBody" class="flex-1 p-4 bg-slate-50 overflow-y-auto flex flex-col gap-3">
-            <div class="bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed">
-                Mabuhay! Need assistance with a waybill or carrier status? Chat with us here.
-            </div>
-        </div>
-
-        <div class="p-3 border-t border-slate-200 bg-white flex gap-2">
-            <input type="text" id="chatInput" onkeypress="handleChatKeyPress(event)" placeholder="Type a message..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-blue">
-            <button onclick="sendMessage()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-4 py-2 rounded-lg text-xs transition-colors">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    <?php include 'includes/chat-widget.php'; ?>
 
     <!-- Scripts -->
     <script src="js/main.js"></script>

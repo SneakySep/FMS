@@ -38,7 +38,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["role"] = $payload["role"] ?? "customer";
             }
 
-            header("Location: views/customer/dashboard.php");
+            if ($_SESSION["role"] === 'sales' || $_SESSION["role"] === 'sales_agent') {
+                header("Location: src/views/sales_agent/dashboard.php"); // Path ng Sales Dashboard mo
+
+            } else if($_SESSION["role"] === 'admin' || $_SESSION["role"] === 'administrator') {
+                header("Location: src/views/admin/dashboard.php"); // Path ng Admin Dashboard mo
+            } 
+            else if($_SESSION["role"] === 'customer') {
+                header("Location: src/views/customer/dashboard.php"); // Path ng Customer Dashboard mo
+            } 
+            else {
+                $error = "Unauthorized role. Please contact support.";
+            }
             exit();
         } 
         // 4. Handling ng Error

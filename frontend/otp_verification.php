@@ -16,16 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($otp_code)) {
         $error = "OTP should not empty.";
     } else {
-        // 1. I-build ang query parameters na hinahanap ng FastAPI router
+        // 1. Build query string para sa FastAPI router
         $query_string = http_build_query([
             'email' => $email,
             'otp_code' => $otp_code
         ]);
 
-        // 2. Idugtong ang query string sa endpoint URL
         $endpoint = '/api/auth/verify-otp?' . $query_string;
-
-        // 3. I-send ang request 
         $response = make_api_request($endpoint, 'POST', null, false);
 
         if ($response['status_code'] == 200 && isset($response['data']['access_token'])) {
@@ -36,37 +33,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION["user_id"]       = $data["user_id"] ?? null;
             $_SESSION["email"]         = $email;
 
-            // Decode JWT token para sa role kung hindi agad binigay sa response
-            $token_parts = explode('.', $data["access_token"]);
-            if (count($token_parts) === 3) {
-                $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $token_parts[1])), true);
-                $_SESSION["role"] = $data["role"] ?? ($payload["role"] ?? "customer");
-            } else {
-                $_SESSION["role"] = $data["role"] ?? "customer";
+            // 2. Decode JWT token para sa fallback role
+            $user_role = strtolower($data["role"] ?? "");
+            if (empty($user_role)) {
+                $token_parts = explode('.', $data["access_token"]);
+                if (count($token_parts) === 3) {
+                    $payload   = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $token_parts[1])), true);
+                    $user_role = strtolower($payload["role"] ?? "customer");
+                } else {
+                    $user_role = "customer";
+                }
+            }
+            $_SESSION["role"] = $user_role;
+
+            // 3. Fetch Profile sa Supabase gamit ang Header
+            $userId = $_SESSION["user_id"] ?? $data["user_id"] ?? null;
+
+            if ($userId) {
+                $headers = [
+                    'x-user-id: ' . $userId
+                ];
+
+                // BAGUHIN DITO: Palitan ng `false` ang 4th parameter ($is_form_data)
+                $profile_res = make_api_request('/api/v1/portal/profile', 'GET', null, false, $headers);
+
+                if ($profile_res['status_code'] == 200 && !empty($profile_res['data'])) {
+                    $profile = $profile_res['data'];
+                    
+                    $_SESSION['first_name'] = $profile['first_name'] ?? '';
+                    $_SESSION['last_name']  = $profile['last_name'] ?? '';
+                    $_SESSION['user_name']  = trim(($profile['first_name'] ?? '') . ' ' . ($profile['last_name'] ?? '')) ?: 'Sales Agent';
+                    $_SESSION['agent_id']   = $profile['agent_id'] ?? $profile['id'] ?? 'SA-014';
+
+                    if (!empty($profile['role'])) {
+                        $user_role = strtolower($profile['role']);
+                        $_SESSION['role'] = $user_role;
+                    }
+                }
             }
 
             // Linisin ang temporary session email
             unset($_SESSION["temp_email"]);
 
-            // Dynamic Redirect batay sa Role
-            if ($_SESSION["role"] === "admin") {
-                header("Location: src/views/admin/dashboard.php");
-            } else if ($_SESSION["role"] === "staff_sla"){
-                header("Location: src/views/staff-sla/dashboard.php");
-            }
-            
-            else {
-                header("Location: views/customer/dashboard.php");
+            // 4. Dynamic Redirect
+            if ($user_role === "admin") {
+                header("Location: /src/views/admin/dashboard.php");
+            } else if ($user_role === "sales_agent" || $user_role === "sales") {
+                header("Location: /src/views/sales_agent/dashboard.php");
+            } else {
+                header("Location: /src/views/customer/dashboard.php");
             }
             exit();
         } else {
             $err_data = $response['error'] ?? ($response['data']['detail'] ?? "Invalid OTP or Expired.");
-            $error = is_array($err_data) ? json_encode($err_data) : $err_data;
+            $error    = is_array($err_data) ? json_encode($err_data) : $err_data;
         }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -8,9 +8,10 @@ require_once dirname(__DIR__) . '/config/config.php';
  * @param string $method HTTP Method (GET, POST, PUT, DELETE)
  * @param array|null $data Payload data
  * @param bool $is_form_data True kung x-www-form-urlencoded, False kung JSON
+ * @param array $custom_headers Custom headers na gustong ibato (e.g. ['x-user-id: xxx'])
  * @return array ['status_code' => int, 'data' => array|null, 'error' => string|null]
  */
-function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_data = false) {
+function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_data = false, $custom_headers = []) {
     // Siguraduhing active ang session para mabasa ang Bearer Token
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -31,7 +32,12 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     if (isset($_SESSION['access_token']) && !empty($_SESSION['access_token'])) {
         $headers[] = 'Authorization: Bearer ' . $_SESSION['access_token'];
     }
-    
+
+    // Isama ang Anumang Custom Headers (tulad ng x-user-id)
+    if (!empty($custom_headers) && is_array($custom_headers)) {
+        $headers = array_merge($headers, $custom_headers);
+    }
+
     // Body / Payload Processing
     if ($data !== null) {
         if ($is_form_data) {
@@ -51,12 +57,12 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     
     curl_close($ch);
     
-    // Handler kapag offline down ang FastAPI Backend Server
+    // Handler kapag offline/down ang FastAPI Backend Server
     if ($response === false) {
         return [
             'status_code' => 500,
             'data' => null,
-            'error' => 'Hindi makakonekta sa Backend Server: ' . $curl_error
+            'error' => 'Couldn\'t connect to Backend Server: ' . $curl_error
         ];
     }
     

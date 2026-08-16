@@ -1,15 +1,15 @@
 <?php
-$pageTitle = 'Meetings - SwiftFreight Agent Portal';
+$pageTitle = 'Meetings - Priority Handling Logistics';
 $activePage = 'meetings';
 $chatMessage = trim(<<<'MSG'
-Mabuhay! Internal SwiftFreight support channel; how can we help?
+Mabuhay! Internal Priority Handling Logistics support channel; how can we help?
 MSG);
 include 'includes/head.php';
 include 'includes/sidebar.php';
 ?>
 
-<main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
-<header class="h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between flex-shrink-0">
+<main class="flex-1 flex flex-col min-w-0 bg-[#f4f7fa] dark:bg-[#0a1628]">
+<header class="h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between flex-shrink-0 dark:bg-[#112240] dark:border-slate-700/40">
       <!-- Title -->
       <h2 class="text-2xl font-bold italic tracking-tight text-slate-900">Meetings</h2>
 
@@ -17,9 +17,9 @@ include 'includes/sidebar.php';
       <div class="w-96">
         <div class="relative">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <i class="fa-solid fa-magnifying-glass text-sm"></i>
           </span>
-          <input type="text" placeholder="Search leads, customer, quotes..." class="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition">
+          <input type="text" placeholder="Search leads, customer, quotes..." class="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition">
         </div>
       </div>
 
@@ -27,20 +27,20 @@ include 'includes/sidebar.php';
       <div class="flex items-center space-x-4">
         <!-- Notification Bell -->
         <button class="relative p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <i class="fa-solid fa-bell text-lg"></i>
           <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
 
         <!-- + New Quote Button -->
-        <a href="quotes.php" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5">
+        <a href="quotes.php" class="bg-gradient-to-r from-brand-blue to-brand-darkblue hover:from-brand-darkblue hover:to-brand-navy text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5">
 <span>+ New Quote</span>
 </a>
       </div>
     </header>
-<div class="flex-1 overflow-y-auto p-8 bg-[#F8FAFC]">
+<div class="flex-1 overflow-y-auto p-8 bg-[#f4f7fa] dark:bg-[#0a1628]">
       
       <!-- Meetings Card Container -->
-      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 max-w-6xl">
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 w-full dark:bg-[#112240]">
         
         <!-- Card Header -->
         <div class="mb-6">
@@ -171,7 +171,6 @@ include 'includes/sidebar.php';
 </div>
 </main>
 
-<?php include 'includes/chat-widget.php'; ?>
 
 
 

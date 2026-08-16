@@ -1,4 +1,4 @@
-# SwiftFreight / FMS — deny direct web access to config files (Apache 2.4+, e.g. XAMPP).
+# Priority Handling Logistics / FMS — deny direct web access to config files (Apache 2.4+, e.g. XAMPP).
 # Credentials and the DB bootstrap must never be reachable over HTTP.
 <IfModule mod_authz_core.c>
     Require all denied

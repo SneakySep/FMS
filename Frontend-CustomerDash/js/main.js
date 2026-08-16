@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SWIFTFREIGHT PORTAL JAVASCRIPT LOGIC
+   PRIORITY HANDLING LOGISTICS PORTAL JAVASCRIPT LOGIC
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -83,12 +83,12 @@ function handleLogin(e) {
         if (email === 'client@company.ph' && password === 'demo1234') {
             // Credentials valid — proceed to OTP verification step
             loginBtn.disabled = false;
-            loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to SwiftPortal`;
+            loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to Client Portal`;
             status.classList.add('hidden');
 
             // Generate a random 6-digit OTP for demo purposes
             generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
-            console.log(`[SwiftFreight Demo] OTP sent to ${email}: ${generatedOtp}`);
+            console.log(`[Priority Handling Demo] OTP sent to ${email}: ${generatedOtp}`);
 
             // Show OTP form, hide credentials form
             document.getElementById('credentialsForm').classList.add('hidden');
@@ -101,7 +101,7 @@ function handleLogin(e) {
             setTimeout(() => document.getElementById('otpInput').focus(), 100);
         } else {
             loginBtn.disabled = false;
-            loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to SwiftPortal`;
+            loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to Client Portal`;
             status.classList.remove('hidden');
             status.innerText = 'Invalid credentials. Use client@company.ph / demo1234';
         }
@@ -122,7 +122,7 @@ function handleOtpVerify(e) {
     setTimeout(() => {
         if (otpInput === generatedOtp) {
             // OTP verified — create session and redirect
-            localStorage.setItem('swift_session', JSON.stringify({
+            localStorage.setItem('priority_session', JSON.stringify({
                 user: 'Juan Dela Cruz',
                 company: 'Acme Logistics PH',
                 email: email,
@@ -152,7 +152,7 @@ function backToCredentials() {
 function resendOtp() {
     generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
     const email = document.getElementById('loginEmail').value.trim();
-    console.log(`[SwiftFreight Demo] New OTP sent to ${email}: ${generatedOtp}`);
+    console.log(`[Priority Handling Demo] New OTP sent to ${email}: ${generatedOtp}`);
 
     const otpStatus = document.getElementById('otpStatus');
     otpStatus.classList.remove('hidden');
@@ -169,7 +169,7 @@ function resendOtp() {
 }
 
 function handleLogout() {
-    localStorage.removeItem('swift_session');
+    localStorage.removeItem('priority_session');
     window.location.href = 'index.php';
 }
 
@@ -201,7 +201,7 @@ function closeTermsModal() {
 }
 
 function checkAuthSession() {
-    const session = localStorage.getItem('swift_session');
+    const session = localStorage.getItem('priority_session');
     const isProtectedPage = window.location.pathname.includes('dashboard.php') || 
                             window.location.pathname.includes('shipments.php') || 
                             window.location.pathname.includes('tracking.php') ||
@@ -217,23 +217,98 @@ function checkAuthSession() {
     }
 }
 
-function saveAccountDetails(e) {
-    e.preventDefault();
-    const btn = document.getElementById('saveAccountBtn');
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...`;
+/* --------------------------------------------------------------------------
+   SETTINGS — deferred "Apply Changes" model
+   All edits (appearance/dark mode, account fields, notification sound) are
+   staged locally and only persisted when applySettings() is invoked.
+   -------------------------------------------------------------------------- */
+const DARK_MODE_KEY = 'priority_dark_mode';
+let pendingSettings = {
+    darkMode: null,   // null => unchanged
+    sound: null,     // null => unchanged
+    account: null    // null => unchanged (object of field values)
+};
 
-    setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = `Save changes`;
-        alert("Account details and notification preferences saved successfully!");
-    }, 800);
+function getStagedDarkMode() {
+    const isDark = document.documentElement.classList.contains('dark');
+    return (pendingSettings.darkMode === null) ? isDark : pendingSettings.darkMode;
+}
+
+function showApplyBar() {
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.remove('hidden');
+}
+
+function stageAppearanceDark(isOn) {
+    pendingSettings.darkMode = !!isOn;
+    showApplyBar();
+}
+
+function stageNotificationSound(value) {
+    pendingSettings.sound = value;
+    showApplyBar();
+}
+
+function stageAccountDetails(e) {
+    e.preventDefault();
+    pendingSettings.account = {
+        company: document.getElementById('settingCompany').value,
+        email: document.getElementById('settingEmail').value,
+        phone: document.getElementById('settingPhone').value,
+        warehouse: document.getElementById('settingWarehouse').value,
+        address: document.getElementById('settingAddress').value
+    };
+    showApplyBar();
+}
+
+function applySettings() {
+    // 1. Dark mode
+    if (pendingSettings.darkMode !== null) {
+        localStorage.setItem(DARK_MODE_KEY, pendingSettings.darkMode ? 'true' : 'false');
+        document.documentElement.classList.toggle('dark', pendingSettings.darkMode);
+    }
+    // 2. Notification sound
+    if (pendingSettings.sound !== null) {
+        saveNotificationSound(pendingSettings.sound);
+    }
+    // 3. Account details
+    if (pendingSettings.account !== null && typeof updateCustomerProfile === 'function') {
+        updateCustomerProfile(pendingSettings.account);
+    }
+
+    pendingSettings = { darkMode: null, sound: null, account: null };
+
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.add('hidden');
+
+    const btn = document.getElementById('saveAccountBtn');
+    if (btn) {
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Applied`;
+        setTimeout(() => { btn.disabled = false; btn.innerHTML = original; }, 1200);
+    }
+}
+
+function discardSettings() {
+    // Revert any staged UI state by reloading from persisted sources.
+    pendingSettings = { darkMode: null, sound: null, account: null };
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.add('hidden');
+    location.reload();
+}
+
+function initAppearanceSetting() {
+    const toggle = document.getElementById('appearanceDarkToggle');
+    if (toggle) toggle.checked = document.documentElement.classList.contains('dark');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthSession();
     startHeroTimer();
     initTrackingPage();
+    initNotificationSoundSetting();
+    initAppearanceSetting();
 
     // Fix reveal animation: activate all .reveal elements on page load
     const revealElements = document.querySelectorAll('.reveal');
@@ -264,7 +339,7 @@ function createNewTicket() {
             </div>
         `;
         container.insertAdjacentHTML('afterbegin', newTicketHtml);
-        alert(`Ticket TCK-${randomNum} created successfully! Routed to SwiftSupport PH.`);
+        alert(`Ticket TCK-${randomNum} created successfully! Routed to Priority Support PH.`);
     }
 }
 
@@ -354,7 +429,7 @@ function triggerUploadDoc() {
 function handleFileSelected(e) {
     const file = e.target.files[0];
     if (file) {
-        alert(`Successfully uploaded "${file.name}" to your SwiftFreight Document Vault.`);
+        alert(`Successfully uploaded "${file.name}" to your Priority Handling Document Vault.`);
     }
 }
 
@@ -365,7 +440,7 @@ let trackingMap;
 let trackingPolyline;
 
 const trackingWaybills = {
-    'SF-WB-208841': {
+    'PH-WB-208841': {
         route: 'Manila → Cebu',
         statusBadge: '● Vessel In Transit',
         nextCheckpoint: 'Cebu Port Terminal (Jul 29)',
@@ -382,7 +457,7 @@ const trackingWaybills = {
             { title: "Delivered", date: "Estimated Jul 29, 14:00", desc: "", type: "upcoming", stepNum: 6 }
         ]
     },
-    'SF-WB-208835': {
+    'PH-WB-208835': {
         route: 'Cebu → Manila',
         statusBadge: '● BOC Clearance',
         nextCheckpoint: 'MICP Manila (Jul 30)',
@@ -399,7 +474,7 @@ const trackingWaybills = {
             { title: "Delivered", date: "Estimated Jul 30, 16:00", desc: "", type: "upcoming", stepNum: 6 }
         ]
     },
-    'SF-WB-208790': {
+    'PH-WB-208790': {
         route: 'Davao → Manila',
         statusBadge: '● Cargo Delivered',
         nextCheckpoint: 'Destination Reached',
@@ -422,8 +497,8 @@ function initTrackingPage() {
     const timelineContainer = document.getElementById('timelineContainer');
     if (!timelineContainer) return;
 
-    renderWaybillTimeline('SF-WB-208841');
-    initTrackingLeafletMap('SF-WB-208841');
+    renderWaybillTimeline('PH-WB-208841');
+    initTrackingLeafletMap('PH-WB-208841');
 }
 
 const PORT_COORDS = {
@@ -439,7 +514,7 @@ const PORT_COORDS = {
    portal) so waybills the agent created render without hard-coded data. */
 function getStoreShipment(wbId) {
     try {
-        const raw = localStorage.getItem('swift_dashboard_data');
+        const raw = localStorage.getItem('priority_dashboard_data');
         if (!raw) return null;
         const store = JSON.parse(raw);
         return (store.shipments || []).find(s => s.id === wbId) || null;
@@ -579,7 +654,7 @@ function initTrackingLeafletMap(wbId) {
 
     const latLngs = data.mapWaypoints.map(w => w.pos);
     trackingPolyline = L.polyline(latLngs, {
-        color: '#0066ff',
+        color: '#1D2E6A',
         weight: 3.5,
         opacity: 0.9,
         dashArray: '8, 8'
@@ -595,7 +670,7 @@ function initTrackingLeafletMap(wbId) {
 
         L.marker(wp.pos, { icon: customIcon })
             .addTo(trackingMap)
-            .bindPopup(`<b style="color:#0066ff;">${wp.title}</b><br>${wp.status}`);
+            .bindPopup(`<b style="color:#1D2E6A;">${wp.title}</b><br>${wp.status}`);
     });
 
     if (data.mapWaypoints.length > 1) {
@@ -654,13 +729,47 @@ function exportShipmentsCSV() {
 }
 
 /* --------------------------------------------------------------------------
-   8. FLOATING CHAT WIDGET
+   8. FLOATING CHAT WIDGET (with notification sound support)
    -------------------------------------------------------------------------- */
+const NOTIFICATION_SOUND_KEY = 'priority_notif_sound';
+const DEFAULT_NOTIFICATION_SOUND = 'notification-1.mp3';
+
+function getNotificationSound() {
+    return localStorage.getItem(NOTIFICATION_SOUND_KEY) || DEFAULT_NOTIFICATION_SOUND;
+}
+
+function saveNotificationSound(sound) {
+    localStorage.setItem(NOTIFICATION_SOUND_KEY, sound || DEFAULT_NOTIFICATION_SOUND);
+}
+
+function playNotificationSound(sound) {
+    try {
+        const audio = new Audio('audio/' + (sound || getNotificationSound()));
+        audio.volume = 0.6;
+        audio.play().catch(() => {});
+    } catch (e) {
+        console.warn('[Notification Sound] Unable to play audio:', e);
+    }
+}
+
+function previewNotificationSound() {
+    const select = document.getElementById('notifSoundSelect');
+    playNotificationSound(select ? select.value : null);
+}
+
+function initNotificationSoundSetting() {
+    const select = document.getElementById('notifSoundSelect');
+    if (select) select.value = getNotificationSound();
+}
+
 function toggleChat() {
     const chatBox = document.getElementById('chatBox');
+    if (!chatBox) return;
+    const wasClosed = chatBox.classList.contains('opacity-0');
     chatBox.classList.toggle('opacity-0');
     chatBox.classList.toggle('pointer-events-none');
     chatBox.classList.toggle('translate-y-6');
+    if (wasClosed) playNotificationSound();
 }
 
 function handleChatKeyPress(e) {
@@ -685,8 +794,9 @@ function sendMessage() {
     setTimeout(() => {
         const botMsg = document.createElement('div');
         botMsg.className = 'bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed';
-        botMsg.innerText = "Mabuhay! A SwiftFreight support specialist will assist you with your portal inquiry shortly.";
+        botMsg.innerText = "Mabuhay! A Priority Handling support specialist will assist you with your portal inquiry shortly.";
         chatBody.appendChild(botMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
+        playNotificationSound();
     }, 700);
 }

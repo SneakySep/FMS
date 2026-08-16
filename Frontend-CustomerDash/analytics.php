@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - BI Analytics';
+$pageTitle = 'Priority Handling Logistics - BI Analytics';
 $activePage = 'analytics';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need assistance with route analytics or shipment volume reports? Chat with us here.

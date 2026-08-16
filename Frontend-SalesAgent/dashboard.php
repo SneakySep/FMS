@@ -1,14 +1,14 @@
 <?php
-$pageTitle = 'Dashboard - SwiftFreight Agent Portal';
+$pageTitle = 'Dashboard - Priority Handling Logistics';
 $activePage = 'dashboard';
 $chatMessage = trim(<<<'MSG'
-Mabuhay! Internal SwiftFreight support channel; how can we help?
+Mabuhay! Internal Priority Handling Logistics support channel; how can we help?
 MSG);
 include 'includes/head.php';
 include 'includes/sidebar.php';
 ?>
 
-<main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
+<main class="flex-1 flex flex-col min-w-0 bg-[#f4f7fa] dark:bg-[#0a1628]">
         <!-- TOP NAVBAR -->
         <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
             <h2 class="text-2xl font-bold italic text-slate-900 tracking-wide">Dashboard</h2>
@@ -20,7 +20,7 @@ include 'includes/sidebar.php';
                     <input 
                         type="text" 
                         placeholder="Search leads, customer, quotes..." 
-                        class="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-slate-700"
+                        class="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue text-slate-700"
                     >
                 </div>
 
@@ -31,7 +31,7 @@ include 'includes/sidebar.php';
                 </button>
 
                 <!-- New Quote Button -->
-                <a href="quotes.php" class="bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm px-4 py-2 rounded-md transition inline-flex items-center gap-1.5 shadow-sm">
+                <a href="quotes.php" class="bg-brand-blue hover:bg-brand-darkblue text-white font-medium text-sm px-4 py-2 rounded-md transition inline-flex items-center gap-1.5 shadow-sm">
 <i class="fa-solid fa-plus w-4"></i>
 <span>New Quote</span>
 </a>
@@ -39,7 +39,7 @@ include 'includes/sidebar.php';
         </header>
 
         <!-- DASHBOARD BODY CONTAINER -->
-        <div class="p-8 space-y-6 max-w-[1400px]">
+        <div class="p-8 space-y-6 w-full">
 
             <!-- TOP 4 STAT CARDS -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -47,7 +47,7 @@ include 'includes/sidebar.php';
                 <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between relative">
                     <div class="flex justify-between items-start">
                         <span class="text-xs font-semibold text-gray-500">Active Leads</span>
-                        <div class="w-7 h-7 rounded-md bg-purple-100 text-purple-600 flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-md bg-brand-blue/15 text-brand-blue flex items-center justify-center">
                             <i class="fa-solid fa-user w-4 h-4"></i>
                         </div>
                     </div>
@@ -118,7 +118,7 @@ include 'includes/sidebar.php';
                     <div>
                         <div class="flex justify-between items-start mb-1">
                             <h3 class="text-2xl font-bold text-slate-900">Pipeline Snapshot</h3>
-                            <a href="pipelines.php" class="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                            <a href="pipelines.php" class="text-xs font-semibold text-brand-blue hover:text-brand-darkblue flex items-center gap-1">
                                 Open board <i class="fa-solid fa-arrow-right w-3.5 h-3.5"></i>
                             </a>
                         </div>
@@ -133,7 +133,7 @@ include 'includes/sidebar.php';
                                     <span class="text-gray-400 text-xs font-normal">4</span>
                                 </div>
                                 <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
-                                    <div class="bg-purple-400 h-full rounded-full" style="width: 40%"></div>
+                                    <div class="bg-brand-blue h-full rounded-full" style="width: 40%"></div>
                                 </div>
                             </div>
 
@@ -155,7 +155,7 @@ include 'includes/sidebar.php';
                                     <span class="text-gray-400 text-xs font-normal">5</span>
                                 </div>
                                 <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden">
-                                    <div class="bg-purple-400 h-full rounded-full" style="width: 45%"></div>
+                                    <div class="bg-brand-blue h-full rounded-full" style="width: 45%"></div>
                                 </div>
                             </div>
 
@@ -191,7 +191,7 @@ include 'includes/sidebar.php';
                     <div class="bg-white p-5 rounded-xl border border-gray-200/80 shadow-sm">
                         <div class="flex justify-between items-start mb-0.5">
                             <h3 class="text-base font-bold text-slate-900">AI Escalation Queue</h3>
-                            <a href="ai-escalations.php" class="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                            <a href="ai-escalations.php" class="text-xs font-semibold text-brand-blue hover:text-brand-darkblue flex items-center gap-1">
                                 View All <i class="fa-solid fa-arrow-right w-3.5 h-3.5"></i>
                             </a>
                         </div>
@@ -302,7 +302,6 @@ include 'includes/sidebar.php';
     
 </main>
 
-<?php include 'includes/chat-widget.php'; ?>
 
 
 

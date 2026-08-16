@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Document Vault';
+$pageTitle = 'Priority Handling Logistics - Document Vault';
 $activePage = 'documents';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need help locating or uploading a Bill of Lading or Customs Clearance form? Chat with us here.

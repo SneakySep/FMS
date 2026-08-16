@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Invoices & Billing';
+$pageTitle = 'Priority Handling Logistics - Invoices & Billing';
 $activePage = 'invoices';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need assistance with invoice statements, payments, or official receipts? Chat with us here.
@@ -103,7 +103,7 @@ include 'includes/sidebar.php';
                                     INV-2026-0841
                                 </td>
                                 <td class="py-4 font-mono text-slate-600">
-                                    SF-WB-208841
+                                    PH-WB-208841
                                 </td>
                                 <td class="py-4 font-extrabold text-slate-900">
                                     ₱24,000
@@ -122,7 +122,7 @@ include 'includes/sidebar.php';
                                     INV-2026-0835
                                 </td>
                                 <td class="py-4 font-mono text-slate-600">
-                                    SF-WB-208835
+                                    PH-WB-208835
                                 </td>
                                 <td class="py-4 font-extrabold text-slate-900">
                                     ₱24,200
@@ -141,7 +141,7 @@ include 'includes/sidebar.php';
                                     INV-2026-0790
                                 </td>
                                 <td class="py-4 font-mono text-slate-600">
-                                    SF-WB-208790
+                                    PH-WB-208790
                                 </td>
                                 <td class="py-4 font-extrabold text-slate-900">
                                     ₱18,750
@@ -160,7 +160,7 @@ include 'includes/sidebar.php';
                                     INV-2026-0712
                                 </td>
                                 <td class="py-4 font-mono text-slate-600">
-                                    SF-WB-208712
+                                    PH-WB-208712
                                 </td>
                                 <td class="py-4 font-extrabold text-slate-900">
                                     ₱31,000

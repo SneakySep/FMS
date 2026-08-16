@@ -1,23 +1,25 @@
 /* ==========================================================================
-   SWIFTFREIGHT JAVASCRIPT LOGIC
+   PRIORITY HANDLING LOGISTICS JAVASCRIPT LOGIC
+   Multi-page dashboard frontend (Home | About | Services | Forms | FAQs |
+   Why Us | Careers | Contact) + Promos pop-up ad.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. LEAFLET MAP INTEGRATION
+   1. LEAFLET MAP INTEGRATION (Home + Contact dashboards)
    -------------------------------------------------------------------------- */
 let leafletMap;
 let routePolyline;
 
 const waypoints = [
-    { pos: [31.2304, 121.4737], title: "Shanghai, CN", status: "Departed", date: "May 24, 2024 • 08:30", color: "#38bdf8" },
+    { pos: [14.5995, 120.9842], title: "Manila, PH", status: "Origin", date: "May 24, 2024 • 08:30", color: "#38bdf8" },
     { pos: [1.3521, 103.8198], title: "Singapore, SG", status: "In Transit", date: "May 28, 2024 • 14:20", color: "#f59e0b" },
-    { pos: [14.5995, 120.9842], title: "Manila, PH", status: "Customs Clearance", date: "May 30, 2024 • 11:00", color: "#a855f7" },
+    { pos: [31.2304, 121.4737], title: "Shanghai, CN", status: "Customs Clearance", date: "May 30, 2024 • 11:00", color: "#a855f7" },
     { pos: [34.0522, -118.2437], title: "Los Angeles, USA", status: "Estimated Arrival", date: "June 01, 2024 • 07:00", color: "#10b981" }
 ];
 
 function initLeafletMap() {
     const mapElement = document.getElementById('map');
-    if (!mapElement) return;
+    if (!mapElement || typeof L === 'undefined') return;
 
     leafletMap = L.map('map', {
         center: [20, 150],
@@ -33,7 +35,7 @@ function initLeafletMap() {
 
     const latLngs = waypoints.map(w => w.pos);
     routePolyline = L.polyline(latLngs, {
-        color: '#0066ff',
+        color: '#1D2E6A',
         weight: 3.5,
         opacity: 0.9,
         dashArray: '8, 8'
@@ -64,7 +66,7 @@ function initLeafletMap() {
 document.addEventListener('DOMContentLoaded', initLeafletMap);
 
 /* --------------------------------------------------------------------------
-   2. HERO SLIDESHOW / CAROUSEL LOGIC
+   2. HERO SLIDESHOW / CAROUSEL (Home dashboard)
    -------------------------------------------------------------------------- */
 let currentHeroSlide = 0;
 const slides = document.querySelectorAll('.hero-slide');
@@ -72,16 +74,16 @@ const dots = document.querySelectorAll('.hero-dot');
 let heroTimer;
 
 const slideMetadata = [
-    { name: 'Cross-Border Trucking', icon: 'fa-truck-fast' },
+    { name: 'Courier & Freight Forwarding', icon: 'fa-truck-fast' },
     { name: 'Smart Warehousing', icon: 'fa-warehouse' },
-    { name: 'Ocean Freight Logistics', icon: 'fa-ship' },
+    { name: 'International Shipping', icon: 'fa-ship' },
     { name: 'Express Air Freight', icon: 'fa-plane' }
 ];
 
 function showHeroSlide(index) {
     if (!slides.length) return;
     currentHeroSlide = (index + slides.length) % slides.length;
-    
+
     slides.forEach((slide, i) => {
         if (i === currentHeroSlide) {
             slide.classList.remove('opacity-0', 'pointer-events-none');
@@ -119,8 +121,7 @@ function startHeroTimer() {
 }
 function stopHeroTimer() { clearInterval(heroTimer); }
 
-startHeroTimer();
-
+if (slides.length) startHeroTimer();
 /* --------------------------------------------------------------------------
    3. SCROLL REVEAL ANIMATIONS
    -------------------------------------------------------------------------- */
@@ -155,21 +156,77 @@ function closeTermsModal() {
     if (modal) modal.classList.remove('modal-open');
 }
 
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closePrivacyModal();
-        closeTermsModal();
-    }
-});
+/* --------------------------------------------------------------------------
+   5. PROMOS POP-UP AD (modal + floating badge + nav triggers)
+   -------------------------------------------------------------------------- */
+function openPromoModal() {
+    const modal = document.getElementById('promoModal');
+    if (!modal) return;
+    modal.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePromoModal() {
+    const modal = document.getElementById('promoModal');
+    if (!modal) return;
+    modal.classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
+
+function initPromoModal() {
+    const modal = document.getElementById('promoModal');
+    if (!modal) return;
+
+    /* Close when the dark backdrop is clicked */
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePromoModal();
+    });
+
+    /* Any [data-promo-trigger] element opens the ad */
+    document.querySelectorAll('[data-promo-trigger]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPromoModal();
+        });
+    });
+}
+
+if (document.getElementById('promoModal')) initPromoModal();
 
 /* --------------------------------------------------------------------------
-   5. CONTACT FORM SUBMISSION (WITH COMPANY NAME)
+   6. MOBILE MENU
+   -------------------------------------------------------------------------- */
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const icon = document.getElementById('mobileMenuIcon');
+    if (!menu) return;
+    menu.classList.toggle('hidden');
+    if (icon) {
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-xmark');
+    }
+}
+
+/* Global Escape closes everything */
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (document.getElementById('mobileMenu') && !document.getElementById('mobileMenu').classList.contains('hidden')) {
+            toggleMobileMenu();
+        }
+        closePrivacyModal();
+        closeTermsModal();
+        closePromoModal();
+    }
+});
+/* --------------------------------------------------------------------------
+   7. CONTACT FORM SUBMISSION (WITH COMPANY NAME)
    -------------------------------------------------------------------------- */
 async function handleContactSubmit(e) {
     e.preventDefault();
 
     const btn = document.getElementById('contactSubmitBtn');
     const status = document.getElementById('contactFormStatus');
+    if (!btn || !status) return;
 
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending Message...`;
@@ -179,7 +236,6 @@ async function handleContactSubmit(e) {
         email: document.getElementById('contactEmail').value,
         company: document.getElementById('contactCompany').value,
         phone: document.getElementById('contactPhone').value,
-        service: document.getElementById('contactService').value,
         message: document.getElementById('contactMessage').value
     };
 
@@ -194,7 +250,7 @@ async function handleContactSubmit(e) {
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Inquiry Message`;
 
         status.classList.remove('hidden');
-        status.innerText = "✓ Maraming Salamat! Your message has been received. A SwiftFreight specialist will contact you shortly.";
+        status.innerText = "✓ Maraming Salamat! Your message has been received. A Priority Handling Logistics specialist will contact you shortly.";
 
         e.target.reset();
 
@@ -205,17 +261,30 @@ async function handleContactSubmit(e) {
 }
 
 /* --------------------------------------------------------------------------
-   6. LIVE TRACKING SEARCH & DEMO
+   8. LIVE TRACKING SEARCH & DEMO
    -------------------------------------------------------------------------- */
 function fillDemoTracking() {
-    document.getElementById('trackingInput').value = "SF-889420-CN";
+    const input = document.getElementById('trackingInput');
+    if (!input) return;
+    input.value = "PH-2024-001";
     trackShipment();
 }
 
 async function trackShipment() {
-    const trackingNum = document.getElementById('trackingInput').value.trim();
+    const input = document.getElementById('trackingInput');
+    if (!input) {
+        alert("Live tracking is available on the Home or Forms dashboard.");
+        return;
+    }
+    const trackingNum = input.value.trim();
     if (!trackingNum) {
         alert("Please enter a tracking number.");
+        return;
+    }
+
+    // Belt-and-suspenders validation (HTML pattern already enforces this on submit).
+    if (!/^[A-Za-z0-9\-]{4,30}$/.test(trackingNum)) {
+        alert("Tracking numbers must be 4–30 characters using letters, numbers, or dashes (e.g. PH-2024-001).");
         return;
     }
 
@@ -225,34 +294,74 @@ async function trackShipment() {
 
     alert(`Fetching realtime position for tracking ID: ${trackingNum}\nCurrent Status: In Transit (Customs Clearance Manila, PH)`);
 }
-
 /* --------------------------------------------------------------------------
-   7. RATE CALCULATOR LOGIC
+   9. RATE CALCULATOR LOGIC
    -------------------------------------------------------------------------- */
 async function calculateQuote(e) {
     e.preventDefault();
 
-    const origin = document.getElementById('origin').value;
-    const destination = document.getElementById('destination').value;
-    const weight = parseFloat(document.getElementById('weight').value);
-    const shipmentType = document.getElementById('shipmentType').value;
-
-    let multiplier = shipmentType === 'air' ? 4.8 : (shipmentType === 'land' ? 1.3 : 2.2);
-    let estimatedCost = (weight * multiplier + 200).toFixed(2);
-
+    const origin = document.getElementById('origin');
+    const destination = document.getElementById('destination');
+    const weightEl = document.getElementById('weight');
     const resultDiv = document.getElementById('calcResult');
+    if (!origin || !destination || !weightEl || !resultDiv) return;
+
+    const originVal = origin.value.trim();
+    const destVal = destination.value.trim();
+    const weight = parseFloat(weightEl.value);
+
+    // Guard against invalid / non-positive / out-of-range weight and empty fields.
+    if (!originVal || !destVal || !isFinite(weight) || weight <= 0) {
+        resultDiv.classList.remove('hidden');
+        resultDiv.className = 'mt-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg text-center text-xs font-semibold';
+        resultDiv.textContent = 'Please enter a valid origin, destination, and a positive weight (kg) to estimate your rate.';
+        return;
+    }
+
+    const multiplier = 2.2;
+    const estimatedCost = (weight * multiplier + 200).toFixed(2);
+
+    // Build the result with textContent / createElement to avoid HTML injection from user input.
     resultDiv.classList.remove('hidden');
-    resultDiv.innerHTML = `Estimated Quote: <strong>${origin}</strong> to <strong>${destination}</strong> = <span class="text-brand-blue text-sm">$${estimatedCost} USD</span>`;
+    resultDiv.className = 'mt-4 p-3 bg-sky-50 border border-sky-200 text-sky-800 rounded-lg text-center text-xs font-semibold';
+    resultDiv.replaceChildren(
+        document.createTextNode('Estimated Quote: '),
+        Object.assign(document.createElement('strong'), { textContent: originVal }),
+        document.createTextNode(' to '),
+        Object.assign(document.createElement('strong'), { textContent: destVal }),
+        document.createTextNode(' = '),
+        Object.assign(document.createElement('span'), { className: 'text-brand-blue text-sm', textContent: '$' + estimatedCost + ' USD' })
+    );
 }
 
 /* --------------------------------------------------------------------------
-   8. FLOATING CHAT WIDGET
+   10. FLOATING CHAT WIDGET (with notification sound)
    -------------------------------------------------------------------------- */
+// Default notification sound played whenever the chat support widget is used
+const DEFAULT_NOTIFICATION_SOUND = 'notification-1.mp3';
+
+function getNotificationSound() {
+    return DEFAULT_NOTIFICATION_SOUND;
+}
+
+function playNotificationSound() {
+    try {
+        const audio = new Audio('audio/' + getNotificationSound());
+        audio.volume = 0.6;
+        audio.play().catch(() => {});
+    } catch (e) {
+        console.warn('[Notification Sound] Unable to play audio:', e);
+    }
+}
+
 function toggleChat() {
     const chatBox = document.getElementById('chatBox');
+    if (!chatBox) return;
+    const wasClosed = chatBox.classList.contains('opacity-0');
     chatBox.classList.toggle('opacity-0');
     chatBox.classList.toggle('pointer-events-none');
     chatBox.classList.toggle('translate-y-6');
+    if (wasClosed) playNotificationSound();
 }
 
 function handleChatKeyPress(e) {
@@ -261,6 +370,7 @@ function handleChatKeyPress(e) {
 
 function sendMessage() {
     const input = document.getElementById('chatInput');
+    if (!input) return;
     const text = input.value.trim();
     if (!text) return;
 
@@ -280,6 +390,7 @@ function sendMessage() {
         botMsg.innerText = getBotReply(text);
         chatBody.appendChild(botMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
+        playNotificationSound();
     }, 700);
 }
 
@@ -288,20 +399,23 @@ function getBotReply(input) {
     if (low.includes('track') || low.includes('status')) {
         return "You can view real-time updates on our live map by typing your tracking code above.";
     } else if (low.includes('price') || low.includes('quote')) {
-        return "Please check our Rate Calculator section above for an instant estimate.";
+        return "Please check our Rate Calculator on the Forms dashboard for an instant estimate.";
+    } else if (low.includes('promo') || low.includes('free') || low.includes('gift')) {
+        return "Great news! New clients can claim FREE gifts — click the PROMO button on any page to see the details.";
     } else {
-        return "Maraming salamat! A SwiftFreight Philippine customer specialist will assist you shortly.";
+        return "Maraming salamat! A Priority Handling Logistics specialist will assist you shortly.";
     }
 }
 
 /* --------------------------------------------------------------------------
-   9. UTILITIES
+   11. UTILITIES
    -------------------------------------------------------------------------- */
 function subscribeNewsletter(e) {
     e.preventDefault();
-    alert("Thank you for subscribing to SwiftFreight insights!");
+    alert("Thank you for subscribing to Priority Handling Logistics insights!");
 }
 
 function scrollToCalc() {
-    document.getElementById('calculator').scrollIntoView({ behavior: 'smooth' });
+    const calc = document.getElementById('calculator');
+    if (calc) calc.scrollIntoView({ behavior: 'smooth' });
 }

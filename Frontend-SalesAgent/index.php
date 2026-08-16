@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftFreight - Sales Agent Portal</title>
+    <title>Priority Handling Logistics - Sales Agent Portal</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,10 +22,10 @@
                 extend: {
                     colors: {
                         brand: {
-                            blue: '#0066ff',
-                            darkblue: '#0052cc',
-                            navy: '#001529',
-                            navycard: '#002244',
+                            blue: '#1D2E6A',
+                            darkblue: '#152252',
+                            navy: '#0a1628',
+                            navycard: '#112240',
                             lightbg: '#f4f7fa',
                         }
                     },
@@ -39,6 +39,24 @@
 </head>
 <body class="bg-slate-950 text-slate-900 font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden">
 
+    <!-- TOP CONTACT BAR -->
+    <div class="bg-brand-navy text-white text-[11px] relative z-40">
+        <div class="max-w-7xl mx-auto px-6 py-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+            <div class="flex items-center gap-x-5 gap-y-1 flex-wrap">
+                <a href="tel:+6328437484" class="hover:text-sky-300 transition-colors">
+                    <i class="fa-solid fa-phone text-sky-400 mr-1.5"></i>(632) 843-7484
+                </a>
+                <a href="mailto:cs@priority-ph.com" class="hover:text-sky-300 transition-colors">
+                    <i class="fa-solid fa-envelope text-sky-400 mr-1.5"></i>cs@priority-ph.com
+                </a>
+            </div>
+            <div class="hidden sm:flex items-center gap-x-5">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-sky-400"></i> Makati City, Philippines</span>
+                <span class="text-emerald-400 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px]"></i> Open 24/7</span>
+            </div>
+        </div>
+    </div>
+
     <!-- TOP HEADER / NAVBAR -->
     <header class="sticky top-0 bg-slate-950/95 backdrop-blur-md z-40 border-b border-white/10 shadow-sm transition-all">
         <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -46,16 +64,11 @@
             <!-- Logo -->
             <a href="index.php" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 bg-gradient-to-tr from-brand-darkblue to-brand-blue text-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                    <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>
-                        <path d="M2 17L12 22L22 17" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 12L12 17L22 12" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 2V12" stroke-linecap="round"/>
-                    </svg>
+                    <i class="fa-solid fa-cube text-lg"></i>
                 </div>
                 <div class="leading-none">
-                    <h1 class="text-lg font-black tracking-wider text-white uppercase">SWIFT<span class="text-brand-blue">FREIGHT</span></h1>
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Agent Portal</span>
+                    <h1 class="text-lg font-black tracking-wider text-white uppercase">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Logistics Inc. • Since 2005</span>
                 </div>
             </a>
 
@@ -92,7 +105,7 @@
                             <p class="text-slate-400 text-xs mt-1">Enter your internal credentials to access the console</p>
                         </div>
 
-                        <!-- Step 1: Credentials Form -->
+                        
                         <form id="credentialsForm" onsubmit="handleAgentLogin(event)" class="space-y-5">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
@@ -100,9 +113,9 @@
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs">
                                         <i class="fa-solid fa-envelope"></i>
                                     </span>
-                                    <input type="email" id="loginEmail" required value="agent@swiftfreight.ph" 
+                                    <input type="email" id="loginEmail" required value="agent@priority-ph.com" 
                                            class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all"
-                                           placeholder="name@swiftfreight.ph">
+                                           placeholder="name@priority-ph.com">
                                 </div>
                             </div>
 
@@ -119,13 +132,6 @@
                                            class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all"
                                            placeholder="••••••••">
                                 </div>
-                            </div>
-
-                            <div class="flex items-center justify-between py-1">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked class="w-4 h-4 rounded bg-white/5 border-white/10 text-brand-blue focus:ring-0">
-                                    <span class="text-xs text-slate-400">Remember credentials</span>
-                                </label>
                             </div>
 
                             <button type="submit" id="loginBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
@@ -177,7 +183,7 @@
                         <!-- Demo Credentials Box -->
                         <div class="mt-6 p-3.5 bg-white/5 border border-white/10 rounded-xl text-center">
                             <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold block mb-1">Demo Agent Credentials</span>
-                            <p class="text-xs text-slate-300">Email: <span class="font-mono text-sky-400">agent@swiftfreight.ph</span> | Password: <span class="font-mono text-sky-400">demo1234</span></p>
+                            <p class="text-xs text-slate-300">Email: <span class="font-mono text-sky-400">agent@priority-ph.com</span> | Password: <span class="font-mono text-sky-400">demo1234</span></p>
                         </div>
 
                     </div>
@@ -191,7 +197,7 @@
     <!-- FOOTER -->
     <footer class="bg-slate-950 text-slate-500 py-8 px-6 text-xs border-t border-white/10">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p>&copy; 2026 SwiftFreight Logistics Philippines Inc. All rights reserved.</p>
+            <p>&copy; 2026 Priority Handling Logistics Inc. All rights reserved.</p>
             <div class="flex gap-6">
                 <a href="javascript:void(0)" onclick="openPrivacyModal()" class="hover:text-white transition-colors">Privacy Policy (RA 10173)</a>
                 <a href="javascript:void(0)" onclick="openTermsModal()" class="hover:text-white transition-colors">Terms of Service (PH Law)</a>
@@ -203,7 +209,7 @@
     <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-2xl w-full p-6 text-slate-200 text-xs space-y-3">
             <h3 class="text-base font-bold text-white">Privacy Policy (RA 10173 Compliance)</h3>
-            <p>SwiftFreight processes agent console accounts strictly under the Philippine Data Privacy Act of 2012.</p>
+            <p>Priority Handling Logistics Inc. processes agent console accounts strictly under the Philippine Data Privacy Act of 2012.</p>
             <button onclick="closePrivacyModal()" class="mt-4 bg-brand-blue text-white px-4 py-2 rounded-lg font-semibold">Close</button>
         </div>
     </div>

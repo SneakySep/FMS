@@ -1,5 +1,5 @@
 # =====================================================================
-# SwiftFreight / FMS — security-focused .gitignore
+# Priority Handling Logistics / FMS — security-focused .gitignore
 # Goal: never commit secrets, credentials, or database artifacts.
 # =====================================================================
 

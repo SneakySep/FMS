@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Live Tracking';
+$pageTitle = 'Priority Handling Logistics - Live Tracking';
 $activePage = 'tracking';
 $extraHead = '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />';
 $chatMessage = trim(<<<'MSG'
@@ -53,9 +53,9 @@ include 'includes/sidebar.php';
                     <!-- Waybill Selector Dropdown -->
                     <div class="flex items-center gap-2">
                         <select id="waybillSelect" onchange="switchTrackWaybill(this.value)" class="bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs font-bold px-3 py-2 rounded-xl focus:outline-none focus:border-brand-blue cursor-pointer">
-                            <option value="SF-WB-208841">SF-WB-208841 (Manila → Cebu)</option>
-                            <option value="SF-WB-208835">SF-WB-208835 (Cebu → Manila)</option>
-                            <option value="SF-WB-208790">SF-WB-208790 (Davao → Manila)</option>
+                            <option value="PH-WB-208841">PH-WB-208841 (Manila → Cebu)</option>
+                            <option value="PH-WB-208835">PH-WB-208835 (Cebu → Manila)</option>
+                            <option value="PH-WB-208790">PH-WB-208790 (Davao → Manila)</option>
                         </select>
                     </div>
                 </div>

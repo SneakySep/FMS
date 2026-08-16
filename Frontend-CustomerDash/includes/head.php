@@ -1,5 +1,5 @@
 <?php
-$pageTitle = $pageTitle ?? 'SwiftFreight';
+$pageTitle = $pageTitle ?? 'Priority Handling Logistics';
 $extraHead = $extraHead ?? '';
 ?><!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -21,15 +21,17 @@ $extraHead = $extraHead ?? '';
     <!-- Tailwind Config Customization -->
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            blue: '#0066ff',
-                            darkblue: '#0052cc',
-                            navy: '#0b1528',
-                            sidebar: '#080e1e',
-                            lightbg: '#f8fafc',
+                            blue: '#1D2E6A',
+                            darkblue: '#152252',
+                            navy: '#0a1628',
+                            navycard: '#112240',
+                            sidebar: '#0a1628',
+                            lightbg: '#f4f7fa',
                         }
                     },
                     fontFamily: {
@@ -40,6 +42,17 @@ $extraHead = $extraHead ?? '';
         }
     </script>
 
+    <!-- Dark Mode Initialization (runs before body render to prevent flash) -->
+    <script>
+        (function() {
+            const DARK_MODE_KEY = 'priority_dark_mode';
+            const isDark = localStorage.getItem(DARK_MODE_KEY) === 'true';
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <?php echo $extraHead; ?>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex">
+<body class="bg-[#f4f7fa] dark:bg-[#0a1628] text-slate-800 dark:text-slate-200 font-sans antialiased min-h-screen flex">

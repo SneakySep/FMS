@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftFreight - Fast. Reliable. Worldwide.</title>
+    <title>Priority Handling Logistics - Fast. Reliable. Worldwide.</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,10 +22,10 @@
                 extend: {
                     colors: {
                         brand: {
-                            blue: '#0066ff',
-                            darkblue: '#0052cc',
-                            navy: '#001529',
-                            navycard: '#002244',
+                            blue: '#1D2E6A',
+                            darkblue: '#152252',
+                            navy: '#0a1628',
+                            navycard: '#112240',
                             lightbg: '#f4f7fa',
                         }
                     },
@@ -39,6 +39,24 @@
 </head>
 <body class="bg-white text-slate-900 font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden">
 
+    <!-- TOP CONTACT BAR -->
+    <div class="bg-brand-navy text-white text-[11px] relative z-40">
+        <div class="max-w-7xl mx-auto px-6 py-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+            <div class="flex items-center gap-x-5 gap-y-1 flex-wrap">
+                <a href="tel:+6328437484" class="hover:text-sky-300 transition-colors">
+                    <i class="fa-solid fa-phone text-sky-400 mr-1.5"></i>(632) 843-7484
+                </a>
+                <a href="mailto:cs@priority-ph.com" class="hover:text-sky-300 transition-colors">
+                    <i class="fa-solid fa-envelope text-sky-400 mr-1.5"></i>cs@priority-ph.com
+                </a>
+            </div>
+            <div class="hidden sm:flex items-center gap-x-5">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-sky-400"></i> Makati City, Philippines</span>
+                <span class="text-emerald-400 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-circle text-[6px]"></i> Open 24/7</span>
+            </div>
+        </div>
+    </div>
+
     <!-- TOP HEADER / NAVBAR (WHITE BACKGROUND) -->
     <header class="sticky top-0 bg-white/95 backdrop-blur-md z-40 border-b border-slate-200 shadow-sm transition-all">
         <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -46,16 +64,11 @@
             <!-- Logo -->
             <a href="index.php" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 bg-gradient-to-tr from-brand-darkblue to-brand-blue text-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                    <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-white" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" fill-opacity="0.2"/>
-                        <path d="M2 17L12 22L22 17" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M2 12L12 17L22 12" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 2V12" stroke-linecap="round"/>
-                    </svg>
+                    <i class="fa-solid fa-cube text-lg"></i>
                 </div>
                 <div class="leading-none">
-                    <h1 class="text-lg font-black tracking-wider text-slate-900 uppercase">SWIFT<span class="text-brand-blue">FREIGHT</span></h1>
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Enterprise Portal</span>
+                    <h1 class="text-lg font-black tracking-wider text-slate-900 uppercase">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Logistics Inc. • Since 2005</span>
                 </div>
             </a>
 
@@ -107,11 +120,11 @@
                     </div>
 
                     <h2 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] mb-6 drop-shadow-lg">
-                        Fast. Reliable.<br>Worldwide.
+                        Delivering Nationwide.<br>Shipping Worldwide.
                     </h2>
                     
                     <p class="text-slate-200 text-base sm:text-lg mb-8 max-w-lg leading-relaxed font-normal drop-shadow">
-                        End-to-end freight solutions that move your business forward.
+                        End-to-end freight and courier solutions that move your business forward.
                     </p>
 
                     <!-- Original Action Buttons -->
@@ -170,7 +183,7 @@
                             <div>
                                 <div class="flex justify-between items-center mb-1.5">
                                     <label class="block text-xs font-semibold text-slate-300">Password</label>
-                                    <a href="javascript:void(0)" onclick="alert('Please contact your SwiftFreight account manager to reset your portal password.')" class="text-[11px] text-sky-400 hover:underline">Forgot password?</a>
+                                    <a href="javascript:void(0)" onclick="alert('Please contact your Priority Handling Logistics account manager to reset your portal password.')" class="text-[11px] text-sky-400 hover:underline">Forgot password?</a>
                                 </div>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs">
@@ -190,7 +203,7 @@
                             </div>
 
                             <button type="submit" id="loginBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-right-to-bracket"></i> Sign In to SwiftPortal
+                                <i class="fa-solid fa-right-to-bracket"></i> Sign In to Client Portal
                             </button>
 
                             <div id="loginStatus" class="hidden p-3 bg-red-500/20 border border-red-500/30 text-red-300 rounded-xl text-center text-xs"></div>
@@ -275,7 +288,7 @@
             </p>
             <div class="grid grid-cols-2 md:grid-cols-6 gap-6 items-center justify-items-center opacity-80 grayscale hover:grayscale-0 transition-all">
                 <span class="font-black text-slate-800 text-sm">MAERSK</span>
-                <span class="font-black text-purple-700 text-sm">FedEx</span>
+                <span class="font-black text-brand-blue text-sm">FedEx</span>
                 <span class="font-black italic text-red-600 text-sm">DHL</span>
                 <span class="font-bold text-slate-800 text-xs"><i class="fa-solid fa-anchor mr-1"></i> COSCO</span>
                 <span class="font-bold text-sky-600 text-xs"><i class="fa-solid fa-plane-departure mr-1"></i> BOEING</span>
@@ -287,7 +300,7 @@
     <!-- FOOTER (WHITE BACKGROUND) -->
     <footer class="bg-white text-slate-500 py-8 px-6 text-xs border-t border-slate-100 relative z-20">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p>&copy; 2026 SwiftFreight Logistics Philippines Inc. All rights reserved.</p>
+            <p>&copy; 2026 Priority Handling Logistics Inc. All rights reserved.</p>
             <div class="flex gap-6">
                 <a href="javascript:void(0)" onclick="openPrivacyModal()" class="hover:text-slate-900 transition-colors">Privacy Policy (RA 10173)</a>
                 <a href="javascript:void(0)" onclick="openTermsModal()" class="hover:text-slate-900 transition-colors">Terms of Service (PH Law)</a>
@@ -307,7 +320,7 @@
                     <i class="fa-solid fa-headset"></i>
                 </div>
                 <div>
-                    <h4 class="text-xs font-bold">SwiftSupport PH</h4>
+                    <h4 class="text-xs font-bold">Priority Support PH</h4>
                     <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
                 </div>
             </div>
@@ -331,19 +344,67 @@
     </div>
 
     <!-- MODALS -->
-    <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-2xl w-full p-6 text-slate-200 text-xs space-y-3">
-            <h3 class="text-base font-bold text-white">Privacy Policy (RA 10173 Compliance)</h3>
-            <p>SwiftFreight processes corporate portal accounts strictly under the Philippine Data Privacy Act of 2012.</p>
-            <button onclick="closePrivacyModal()" class="mt-4 bg-brand-blue text-white px-4 py-2 rounded-lg font-semibold">Close</button>
+    <!-- PRIVACY POLICY MODAL -->
+    <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[70] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brand-blue text-lg"></i>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Privacy Policy</h3>
+                        <span class="text-[10px] text-slate-400">Compliant with Republic Act No. 10173 (Philippine Data Privacy Act of 2012)</span>
+                    </div>
+                </div>
+                <button onclick="closePrivacyModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
+                <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
+                <p>Priority Handling Logistics Inc. is committed to protecting your personal data under RA 10173 (Data Privacy Act of 2012). We collect only the personal information needed to process shipments, respond to inquiries, and fulfill our service obligations.</p>
+                <p><strong class="text-white">What we collect:</strong> Name, contact details, company information, and shipment details provided through our online forms.</p>
+                <p><strong class="text-white">How we use it:</strong> To arrange courier and freight forwarding services, respond to inquiries, send order/promo updates (with consent), and comply with customs and regulatory requirements.</p>
+                <p><strong class="text-white">Your rights:</strong> Under RA 10173 you may access, correct, or request deletion of your personal data, or withdraw consent, by contacting our Data Protection Officer at cs@priority-ph.com.</p>
+            </div>
+            <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
+                <button onclick="closePrivacyModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">I Understand</button>
+            </div>
         </div>
     </div>
-
-    <div id="termsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-2xl w-full p-6 text-slate-200 text-xs space-y-3">
-            <h3 class="text-base font-bold text-white">Terms of Service (Philippine Law)</h3>
-            <p>Governed by Philippine Commercial Law, Customs Modernization and Tariff Act (RA 10863), and Civil Code on Carriers.</p>
-            <button onclick="closeTermsModal()" class="mt-4 bg-brand-blue text-white px-4 py-2 rounded-lg font-semibold">Close</button>
+    <!-- TERMS & CONDITIONS MODAL -->
+    <div id="termsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[70] flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-slate-900 border border-white/10 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col text-slate-200 shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-950">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-contract text-brand-blue text-lg"></i>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Terms and Conditions</h3>
+                        <span class="text-[10px] text-slate-400">Governed by the Laws of the Republic of the Philippines</span>
+                    </div>
+                </div>
+                <button onclick="closeTermsModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-slate-300">
+                <p class="font-semibold text-white">Effective Date: January 1, 2026</p>
+                <p class="font-semibold text-white mb-2">TERMS AND CONDITIONS OF CARRIAGE</p>
+                <p><strong class="text-white">1. In these conditions.</strong> The &quot;Carrier&quot; means Priority Handling Logistics, Inc. carrying on business in its own name and under any business name and unless the context otherwise requires its officers, servants, agents and sub-contractors THE CARRIES IS NOT A COMMON CARRIER and will accept no liability as such.</p>
+                <p><strong class="text-white">2. The Carrier reserves the right to:</strong></p>
+                <p class="pl-4">a) refuse the carriage or transport of goods to its destination,</p>
+                <p class="pl-4">b) carry consignor's documents or goods by any route and procedure, and by successive carriers and according to its handling storage and transportation methods, and</p>
+                <p class="pl-4">c) to inspect any goods consigned to ensure that they are capable of carriage to the countries of destination within the standard operating procedures, customs declarations, and handling methods of the Carrier.</p>
+                <p><strong class="text-white">4. The Consignor is responsible</strong> for the packing of the goods including the packing in any container that may be supplied to the Consignor by the Carrier. The Carrier accepts no responsibility for loss or damage or to the goods caused by inadequate of inappropriate packaging. It is the responsibility of the Consignor to address adequately each consignment to enable effective delivery to be made. The Carrier shall not be liable for delay in forwarding or delivery resulting from the Consignor's failure to comply with its obligation in this respect.</p>
+                <p><strong class="text-white">5. The Consignor warrants</strong> that it is authorized to accept and is accepting these Conditions on behalf of itself but also as an agent for and on behalf of all other person who are or may hereafter become interested in the goods. The Consignor indemnifies the Carrier against any damages, costs and expenses resulting from any breach of this warranty.</p>
+                <p><strong class="text-white">6. The Carrier shall have a lien</strong> on all goods shipped, for freight charges and/or advance for other charges of any kind arising out of transportation hereunder and may refuse to surrender possession of the goods until such charges are paid.</p>
+                <p><strong class="text-white">7. The Carrier is liable</strong> for damage sustained in the event of the destruction or loss of, or of damage to any cargo, the occurrence which caused the damage so sustained takes place during carriage and the Carrier is also liable for damage occasioned by delay in the carriage of cargo. The Carrier is not liable if it proves that it and its servants and agents have taken all necessary measures to avoid the damage or that it was impossible for it or them to take such measures. PROVIDED ALWAYS THAT the liability of the Carrier under these conditions shall be limited to the payment by the Carrier by way of damages of a sum of not exceeding US$100.00 or its local currency equivalent and Pesos 100.00 for international and domestic carriage respectively per consignment or in the case where transit insurance is affected the amount payable thereunder in the event of loss or damage to the goods.</p>
+                <p><strong class="text-white">8. Any claim brought</strong> by a customer against the Carrier hereunder in respect of duties and liabilities must be notified by the customer to an office of the Carrier with in 48 hours and in writing within 14 days of the day when the goods should have reached their destination. No claim for loss or damage may be entertained if o in is filed beyond the allowable period or until the transportation charges have been paid.</p>
+                <p><strong class="text-white">9. The Carrier will not carry</strong> dangerous, hazardous, combustible or explosive materials, gold and silver bullion, coin, dust, cyanides, precipitates or any form of uncoined gold and silver bullion, platinum and other precious metals, precious and semi-precious stones, currency (paper or coin) of any nationality, negotiable securities, stocks, bonds, certificates, stamps, blank or endorsed bank cheques, money orders or travelers cheques, antiques, works of art, livestock, plants, drugs, pharmaceuticals, liquor, firearms, tobacco, foodstuff, IATA restricted articles or perishables and in the event that the Consignor should consign such items. with the Carrier the Consignor indemnities the Carrier for all claims, damages costs and expenses which may arise as a result of such carriage and the Carrier shall have the right to abandon carriage of the same immediately upon Carrier having knowledge that the goods infringe this condition.</p>
+                <p><strong class="text-white">10. If the carriage involves</strong> an ultimate destination or stop in a country other than the country of departure, the Warsaw Convention may be applicable and the Convention governs and in most cases limits the liability of carriers in respect of lost of or damage to cargo.</p>
+            </div>
+            <div class="p-4 border-t border-white/10 bg-slate-950 flex justify-end">
+                <button onclick="closeTermsModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white px-5 py-2 rounded-lg text-xs font-semibold">Accept Terms</button>
+            </div>
         </div>
     </div>
 

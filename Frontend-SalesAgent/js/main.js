@@ -1,15 +1,15 @@
 /* ==========================================================================
-   SWIFTFREIGHT SALES AGENT PORTAL - JAVASCRIPT LOGIC
+   PRIORITY HANDLING LOGISTICS SALES AGENT PORTAL - JAVASCRIPT LOGIC
    Manages the shared data store that drives the Customer Dashboard portal.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
    1. SHARED DATA STORE (localStorage)
    This store is read by both the Sales Agent portal (write) and the
-   Customer dashboard (read). Key: swift_dashboard_data
+   Customer dashboard (read). Key: priority_dashboard_data
    -------------------------------------------------------------------------- */
 
-const STORE_KEY = 'swift_dashboard_data';
+const STORE_KEY = 'priority_dashboard_data';
 
 function getDefaultStore() {
     return {
@@ -17,18 +17,18 @@ function getDefaultStore() {
             { id: 'cust-001', company: 'Charlie Hub.Inc', contact: 'J. Sison', account: '8841', email: 'client@company.ph', port: 'CLIENT', portalAccess: true, warehouse: 'Caloocan Hub', address: '12 Rizal Ave, Caloocan City, Metro Manila', phone: '+63 917 000 1234' }
         ],
         shipments: [
-            { id: 'SF-WB-208841', type: '40ft container · Reefer', route: 'Manila → Cebu', carrier: 'Trans-Pacific Lines', status: 'In Transit', eta: 'Jul 29, 14:00' },
-            { id: 'SF-WB-208835', type: '20ft container · Dry van', route: 'Cebu → Manila', carrier: '2GO Freight', status: 'Customs', eta: 'Jul 30, 09:00' },
-            { id: 'SF-WB-208790', type: 'LCL · Palletized', route: 'Davao → Manila', carrier: 'Trans-Pacific Lines', status: 'Delivered', eta: 'Jul 25, 11:20' },
-            { id: 'SF-WB-208712', type: '40ft container · Dry van', route: 'Manila → Iloilo', carrier: 'Sulpicio Lines', status: 'Delayed', eta: 'Jul 27, 18:00' },
-            { id: 'SF-WB-208699', type: '20ft container · Reefer', route: 'Manila → Cagayan de Oro', carrier: '2GO Freight', status: 'In Transit', eta: 'Aug 2, 07:30' },
-            { id: 'SF-WB-208650', type: 'FCL · Dry van', route: 'Manila → Bacolod', carrier: 'Trans-Pacific Lines', status: 'In Transit', eta: 'Jul 31, 10:00' }
+            { id: 'PH-WB-208841', type: '40ft container · Reefer', route: 'Manila → Cebu', carrier: 'Trans-Pacific Lines', status: 'In Transit', eta: 'Jul 29, 14:00' },
+            { id: 'PH-WB-208835', type: '20ft container · Dry van', route: 'Cebu → Manila', carrier: '2GO Freight', status: 'Customs', eta: 'Jul 30, 09:00' },
+            { id: 'PH-WB-208790', type: 'LCL · Palletized', route: 'Davao → Manila', carrier: 'Trans-Pacific Lines', status: 'Delivered', eta: 'Jul 25, 11:20' },
+            { id: 'PH-WB-208712', type: '40ft container · Dry van', route: 'Manila → Iloilo', carrier: 'Sulpicio Lines', status: 'Delayed', eta: 'Jul 27, 18:00' },
+            { id: 'PH-WB-208699', type: '20ft container · Reefer', route: 'Manila → Cagayan de Oro', carrier: '2GO Freight', status: 'In Transit', eta: 'Aug 2, 07:30' },
+            { id: 'PH-WB-208650', type: 'FCL · Dry van', route: 'Manila → Bacolod', carrier: 'Trans-Pacific Lines', status: 'In Transit', eta: 'Jul 31, 10:00' }
         ],
         invoices: [
-            { id: 'INV-2026-0841', waybill: 'SF-WB-208841', amount: '₱24,000', status: 'Pending', due: 'Aug 5, 2026' },
-            { id: 'INV-2026-0835', waybill: 'SF-WB-208835', amount: '₱24,200', status: 'Pending', due: 'Aug 6, 2026' },
-            { id: 'INV-2026-0790', waybill: 'SF-WB-208790', amount: '₱18,750', status: 'Paid', due: 'Jul 20, 2026' },
-            { id: 'INV-2026-0712', waybill: 'SF-WB-208712', amount: '₱31,000', status: 'Paid', due: 'Jul 15, 2026' }
+            { id: 'INV-2026-0841', waybill: 'PH-WB-208841', amount: '₱24,000', status: 'Pending', due: 'Aug 5, 2026' },
+            { id: 'INV-2026-0835', waybill: 'PH-WB-208835', amount: '₱24,200', status: 'Pending', due: 'Aug 6, 2026' },
+            { id: 'INV-2026-0790', waybill: 'PH-WB-208790', amount: '₱18,750', status: 'Paid', due: 'Jul 20, 2026' },
+            { id: 'INV-2026-0712', waybill: 'PH-WB-208712', amount: '₱31,000', status: 'Paid', due: 'Jul 15, 2026' }
         ],
         documents: [
             { id: 'doc-001', name: 'Bill of Lading — WB-208841', category: 'bill-lading', type: 'PDF', uploaded: 'Jul 26' },
@@ -36,7 +36,7 @@ function getDefaultStore() {
             { id: 'doc-003', name: 'Proof of Delivery — WB-208790', category: 'proof-delivery', type: 'PDF', uploaded: 'Jul 25' }
         ],
         tickets: [
-            { id: 'TCK-1042', title: 'Delay on SF-WB-208712 — need updated ETA', status: 'In Progress' },
+            { id: 'TCK-1042', title: 'Delay on PH-WB-208712 — need updated ETA', status: 'In Progress' },
             { id: 'TCK-1039', title: 'Request for duplicate Bill of Lading', status: 'Awaiting Reply' },
             { id: 'TCK-1021', title: 'Billing discrepancy on INV-2026-0790', status: 'Resolved' }
         ],
@@ -47,9 +47,9 @@ function getDefaultStore() {
             customs: 78,
             damageFree: 99,
             breaches: [
-                { waybill: 'SF-WB-208712', commitment: 'Transit time', flagged: 'Jul 27, 06:00', status: 'Open' },
-                { waybill: 'SF-WB-208601', commitment: 'Customs clearance', flagged: 'Jul 20, 15:30', status: 'Resolved' },
-                { waybill: 'SF-WB-208588', commitment: 'On-time pickup', flagged: 'Jul 18, 08:00', status: 'Resolved' }
+                { waybill: 'PH-WB-208712', commitment: 'Transit time', flagged: 'Jul 27, 06:00', status: 'Open' },
+                { waybill: 'PH-WB-208601', commitment: 'Customs clearance', flagged: 'Jul 20, 15:30', status: 'Resolved' },
+                { waybill: 'PH-WB-208588', commitment: 'On-time pickup', flagged: 'Jul 18, 08:00', status: 'Resolved' }
             ]
         },
         updatedAt: new Date().toISOString()
@@ -80,6 +80,7 @@ function saveStore(store) {
 function notifyCustomer(message) {
     // Simulates pushing a notification to the customer portal hub
     console.log(`[Notification Hub] Customer notified: ${message}`);
+    playNotificationSound();
 }
 
 /* --------------------------------------------------------------------------
@@ -101,13 +102,13 @@ function handleAgentLogin(e) {
     loginBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...`;
 
     setTimeout(() => {
-        if (email === 'agent@swiftfreight.ph' && password === 'demo1234') {
+        if (email === 'agent@priority-ph.com' && password === 'demo1234') {
             loginBtn.disabled = false;
             loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to Agent Portal`;
             status.classList.add('hidden');
 
             generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
-            console.log(`[SwiftFreight Demo] Agent OTP sent to ${email}: ${generatedOtp}`);
+            console.log(`[Priority Handling Demo] Agent OTP sent to ${email}: ${generatedOtp}`);
 
             document.getElementById('credentialsForm').classList.add('hidden');
             document.getElementById('otpForm').classList.remove('hidden');
@@ -120,7 +121,7 @@ function handleAgentLogin(e) {
             loginBtn.disabled = false;
             loginBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to Agent Portal`;
             status.classList.remove('hidden');
-            status.innerText = 'Invalid credentials. Use agent@swiftfreight.ph / demo1234';
+            status.innerText = 'Invalid credentials. Use agent@priority-ph.com / demo1234';
         }
     }, 1000);
 }
@@ -138,7 +139,7 @@ function handleAgentOtpVerify(e) {
 
     setTimeout(() => {
         if (otpInput === generatedOtp) {
-            localStorage.setItem('swift_agent_session', JSON.stringify({
+            localStorage.setItem('priority_agent_session', JSON.stringify({
                 user: 'Maria Santos',
                 role: 'Senior Sales Agent',
                 email: email,
@@ -168,7 +169,7 @@ function backToCredentials() {
 function resendOtp() {
     generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
     const email = document.getElementById('loginEmail').value.trim();
-    console.log(`[SwiftFreight Demo] New OTP sent to ${email}: ${generatedOtp}`);
+    console.log(`[Priority Handling Demo] New OTP sent to ${email}: ${generatedOtp}`);
 
     const otpStatus = document.getElementById('otpStatus');
     otpStatus.classList.remove('hidden');
@@ -185,12 +186,12 @@ function resendOtp() {
 }
 
 function handleLogout() {
-    localStorage.removeItem('swift_agent_session');
+    localStorage.removeItem('priority_agent_session');
     window.location.href = 'index.php';
 }
 
 function checkAgentSession() {
-    const session = localStorage.getItem('swift_agent_session');
+    const session = localStorage.getItem('priority_agent_session');
     const protectedPages = ['dashboard.php', 'customers.php', 'settings.php', 'leads.php', 'pipelines.php', 'ai-escalations.php', 'quotes.php', 'contracts.php', 'meetings.php', 'chat.php'];
     const current = window.location.pathname.split('/').pop();
 
@@ -380,7 +381,7 @@ function exportShipmentsCSV() {
     const store = getStore();
     const rows = store.shipments.map(s => [s.id, s.route, s.carrier, s.status, s.eta].join(',')).join('\n');
     console.log('CSV export preview:\n' + rows);
-    alert('Exporting shipments data to SwiftFreight_Waybills.csv...');
+    alert('Exporting shipments data to PriorityHandling_Waybills.csv...');
 }
 
 /* --------------------------------------------------------------------------
@@ -521,7 +522,7 @@ function searchInvoicesTable() {
 }
 
 function downloadAllInvoices() {
-    alert("Downloading invoice package (SwiftFreight_Invoices_Q3.zip)...");
+    alert("Downloading invoice package (PriorityHandling_Invoices_Q3.zip)...");
 }
 
 /* --------------------------------------------------------------------------
@@ -871,7 +872,7 @@ function renderCustomersTable() {
             <tr class="hover:bg-slate-50 transition">
                 <td class="py-4 px-6">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0">${initials}</div>
+                        <div class="w-8 h-8 bg-brand-blue/15 text-brand-darkblue rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0">${initials}</div>
                         <div class="min-w-0">
                             <span class="text-sm font-bold text-slate-900 block">${c.company}</span>
                             <span class="text-[11px] text-slate-400">Acct #${c.account} · ${c.email}</span>
@@ -1140,7 +1141,7 @@ function initTrackingLeafletMap(wbId) {
 
     const latLngs = data.mapWaypoints.map(w => w.pos);
     trackingPolyline = L.polyline(latLngs, {
-        color: '#0066ff',
+        color: '#1D2E6A',
         weight: 3.5,
         opacity: 0.9,
         dashArray: '8, 8'
@@ -1156,7 +1157,7 @@ function initTrackingLeafletMap(wbId) {
 
         L.marker(wp.pos, { icon: customIcon })
             .addTo(trackingMap)
-            .bindPopup(`<b style="color:#0066ff;">${wp.title}</b><br>${wp.status}`);
+            .bindPopup(`<b style="color:#1D2E6A;">${wp.title}</b><br>${wp.status}`);
     });
 
     trackingMap.fitBounds(trackingPolyline.getBounds(), { padding: [40, 40] });
@@ -1208,64 +1209,152 @@ function closeModal(id) {
 }
 
 function openNewShipmentModal() {
-    document.getElementById('newWaybill').value = 'SF-WB-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('newWaybill').value = 'PH-WB-' + Math.floor(100000 + Math.random() * 900000);
     openModal('shipmentModal');
 }
 
 /* --------------------------------------------------------------------------
-   12. FLOATING CHAT WIDGET
+   12. NOTIFICATION SOUND SUPPORT
    -------------------------------------------------------------------------- */
+const NOTIFICATION_SOUND_KEY = 'priority_notif_sound';
+const DEFAULT_NOTIFICATION_SOUND = 'notification-1.mp3';
 
-function toggleChat() {
-    const chatBox = document.getElementById('chatBox');
-    chatBox.classList.toggle('opacity-0');
-    chatBox.classList.toggle('pointer-events-none');
-    chatBox.classList.toggle('translate-y-6');
+function getNotificationSound() {
+    return localStorage.getItem(NOTIFICATION_SOUND_KEY) || DEFAULT_NOTIFICATION_SOUND;
 }
 
-function handleChatKeyPress(e) {
-    if (e.key === 'Enter') sendMessage();
+function saveNotificationSound(sound) {
+    localStorage.setItem(NOTIFICATION_SOUND_KEY, sound || DEFAULT_NOTIFICATION_SOUND);
 }
 
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
+function playNotificationSound(sound) {
+    try {
+        const audio = new Audio('audio/' + (sound || getNotificationSound()));
+        audio.volume = 0.6;
+        audio.play().catch(() => {});
+    } catch (e) {
+        console.warn('[Notification Sound] Unable to play audio:', e);
+    }
+}
 
-    const chatBody = document.getElementById('chatBody');
+function previewNotificationSound() {
+    const select = document.getElementById('notifSoundSelect');
+    playNotificationSound(select ? select.value : null);
+}
 
-    const userMsg = document.createElement('div');
-    userMsg.className = 'bg-brand-blue text-white text-xs p-3 rounded-lg max-w-[85%] self-end shadow-sm leading-relaxed';
-    userMsg.innerText = text;
-    chatBody.appendChild(userMsg);
-
-    input.value = '';
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    setTimeout(() => {
-        const botMsg = document.createElement('div');
-        botMsg.className = 'bg-white border border-slate-200 text-slate-800 text-xs p-3 rounded-lg max-w-[85%] self-start shadow-sm leading-relaxed';
-        botMsg.innerText = "Mabuhay! This is the internal SwiftFreight support channel. Your request has been logged for the ops team.";
-        chatBody.appendChild(botMsg);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }, 700);
+function initNotificationSoundSetting() {
+    const select = document.getElementById('notifSoundSelect');
+    if (select) select.value = getNotificationSound();
 }
 
 /* --------------------------------------------------------------------------
    13. SETTINGS
    -------------------------------------------------------------------------- */
 
-function saveAgentDetails(e) {
-    e.preventDefault();
-    const btn = document.getElementById('saveAccountBtn');
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...`;
+/* --------------------------------------------------------------------------
+   SETTINGS — deferred "Apply Changes" model
+   All edits (appearance/dark mode, SLA targets, account fields, notification
+   sound) are staged locally and only persisted when applySettings() runs.
+   -------------------------------------------------------------------------- */
+const DARK_MODE_KEY = 'priority_dark_mode';
+let pendingSettings = {
+    darkMode: null,   // null => unchanged
+    sound: null,     // null => unchanged
+    sla: null,       // null => unchanged (object of slider values)
+    account: null    // null => unchanged (object of field values)
+};
 
-    setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = `Save changes`;
-        alert("Agent account details and notification preferences saved successfully!");
-    }, 800);
+function getStagedDarkMode() {
+    const isDark = document.documentElement.classList.contains('dark');
+    return (pendingSettings.darkMode === null) ? isDark : pendingSettings.darkMode;
+}
+
+function showApplyBar() {
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.remove('hidden');
+}
+
+function stageAppearanceDark(isOn) {
+    pendingSettings.darkMode = !!isOn;
+    showApplyBar();
+}
+
+function stageNotificationSound(value) {
+    pendingSettings.sound = value;
+    showApplyBar();
+}
+
+function stageSlaTargets() {
+    pendingSettings.sla = {
+        pickup: parseInt(document.getElementById('pickupSlider').value, 10) || 0,
+        transit: parseInt(document.getElementById('transitSlider').value, 10) || 0,
+        customs: parseInt(document.getElementById('customsSlider').value, 10) || 0,
+        damageFree: parseInt(document.getElementById('damageSlider').value, 10) || 0
+    };
+    showApplyBar();
+}
+
+function stageAgentDetails(e) {
+    e.preventDefault();
+    pendingSettings.account = {
+        name: document.getElementById('agentName') ? document.getElementById('agentName').value : null,
+        email: document.getElementById('agentEmail') ? document.getElementById('agentEmail').value : null
+    };
+    showApplyBar();
+}
+
+function applySettings() {
+    // 1. Dark mode
+    if (pendingSettings.darkMode !== null) {
+        localStorage.setItem(DARK_MODE_KEY, pendingSettings.darkMode ? 'true' : 'false');
+        document.documentElement.classList.toggle('dark', pendingSettings.darkMode);
+    }
+    // 2. Notification sound
+    if (pendingSettings.sound !== null) {
+        saveNotificationSound(pendingSettings.sound);
+    }
+    // 3. SLA targets (persist to shared store)
+    if (pendingSettings.sla !== null) {
+        const store = getStore();
+        store.sla = Object.assign(store.sla || {}, pendingSettings.sla);
+        store.sla.overall = Math.round((store.sla.pickup + store.sla.transit + store.sla.customs + store.sla.damageFree) / 4);
+        saveStore(store);
+        if (typeof renderSlaMetrics === 'function') renderSlaMetrics();
+        if (typeof renderSlaBars === 'function') renderSlaBars();
+        if (typeof updateDashboardKPIs === 'function') updateDashboardKPIs();
+    }
+    // 4. Agent account
+    if (pendingSettings.account !== null) {
+        const session = JSON.parse(localStorage.getItem('priority_agent_session') || '{}');
+        if (pendingSettings.account.name !== null) session.user = pendingSettings.account.name;
+        if (pendingSettings.account.email !== null) session.email = pendingSettings.account.email;
+        localStorage.setItem('priority_agent_session', JSON.stringify(session));
+    }
+
+    pendingSettings = { darkMode: null, sound: null, sla: null, account: null };
+
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.add('hidden');
+
+    const btn = document.getElementById('saveAccountBtn');
+    if (btn) {
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Applied`;
+        setTimeout(() => { btn.disabled = false; btn.innerHTML = original; }, 1200);
+    }
+}
+
+function discardSettings() {
+    pendingSettings = { darkMode: null, sound: null, sla: null, account: null };
+    const bar = document.getElementById('applyBar');
+    if (bar) bar.classList.add('hidden');
+    location.reload();
+}
+
+function initAppearanceSetting() {
+    const toggle = document.getElementById('appearanceDarkToggle');
+    if (toggle) toggle.checked = document.documentElement.classList.contains('dark');
 }
 
 function exportLeadsCsv() {
@@ -1295,7 +1384,7 @@ function exportLeadsCsv() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `swiftfreight-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `priorityhandling-leads-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1310,6 +1399,8 @@ function exportLeadsCsv() {
 document.addEventListener('DOMContentLoaded', () => {
     checkAgentSession();
     initTrackingPage();
+    initNotificationSoundSetting();
+    initAppearanceSetting();
 
     // Seed default store on first load
     getStore();

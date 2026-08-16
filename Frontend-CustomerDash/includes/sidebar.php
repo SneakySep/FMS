@@ -13,14 +13,14 @@ $nav = [
 ];
 ?>
     <!-- SIDEBAR NAVIGATION -->
-    <aside class="w-64 bg-[#080e1e] text-slate-300 min-h-screen flex flex-col justify-between p-4 border-r border-slate-800 shrink-0">
+    <aside class="w-64 bg-[#0a1628] text-slate-300 min-h-screen flex flex-col justify-between p-4 border-r border-slate-800 shrink-0">
         <div class="space-y-6">
             <!-- Brand Logo -->
             <div class="flex items-center gap-3 px-2 py-2">
-                <div class="w-10 h-10 bg-brand-blue text-white rounded-xl flex items-center justify-center font-black text-lg shadow-lg shadow-blue-500/30">SF</div>
+                <?php include 'includes/logo.php'; ?>
                 <div class="leading-none">
-                    <h1 class="text-base font-black text-white tracking-wider">SwiftFreight</h1>
-                    <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">CUSTOMER PORTAL</span>
+                    <h1 class="text-base font-black text-white tracking-wider uppercase">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>
+                    <span class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Logistics Inc. • Since 2005</span>
                 </div>
             </div>
 

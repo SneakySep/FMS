@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Support Tickets';
+$pageTitle = 'Priority Handling Logistics - Support Tickets';
 $activePage = 'tickets';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need help submitting or following up on a support ticket? Chat with us here.
@@ -59,7 +59,7 @@ include 'includes/sidebar.php';
                     <div class="ticket-item flex items-center justify-between p-4 bg-slate-50/70 border border-slate-100 rounded-xl hover:bg-blue-50/40 transition-colors cursor-pointer" onclick="alert('Opening ticket TCK-1042 details...')">
                         <div class="space-y-1">
                             <span class="text-[10px] font-mono text-slate-400 font-bold block">TCK-1042</span>
-                            <h4 class="text-xs font-extrabold text-slate-900 hover:text-brand-blue transition-colors">Delay on SF-WB-208712 — need updated ETA</h4>
+                            <h4 class="text-xs font-extrabold text-slate-900 hover:text-brand-blue transition-colors">Delay on PH-WB-208712 — need updated ETA</h4>
                         </div>
                         <span class="bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-[10px]">● In Progress</span>
                     </div>

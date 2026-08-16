@@ -1,14 +1,14 @@
 <?php
-$pageTitle = 'My Leads - SwiftFreight Agent Portal';
+$pageTitle = 'My Leads - Priority Handling Logistics';
 $activePage = 'leads';
 $chatMessage = trim(<<<'MSG'
-Mabuhay! Internal SwiftFreight support channel; how can we help?
+Mabuhay! Internal Priority Handling Logistics support channel; how can we help?
 MSG);
 include 'includes/head.php';
 include 'includes/sidebar.php';
 ?>
 
-<main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
+<main class="flex-1 flex flex-col min-w-0 bg-[#f4f7fa] dark:bg-[#0a1628]">
         <!-- TOP NAVBAR -->
         <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
             <h2 class="text-2xl font-bold italic text-slate-900 tracking-wide">My Leads</h2>
@@ -20,7 +20,7 @@ include 'includes/sidebar.php';
                     <input 
                         type="text" 
                         placeholder="Search leads, customer, quotes..." 
-                        class="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-slate-700"
+                        class="w-full pl-9 pr-4 py-1.5 text-sm bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue text-slate-700"
                     >
                 </div>
 
@@ -31,7 +31,7 @@ include 'includes/sidebar.php';
                 </button>
 
                 <!-- New Quote Button -->
-                <a href="quotes.php" class="bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm px-4 py-2 rounded-md transition inline-flex items-center gap-1.5 shadow-sm">
+                <a href="quotes.php" class="bg-brand-blue hover:bg-brand-darkblue text-white font-medium text-sm px-4 py-2 rounded-md transition inline-flex items-center gap-1.5 shadow-sm">
 <i class="fa-solid fa-plus w-4"></i>
 <span>New Quote</span>
 </a>
@@ -39,11 +39,11 @@ include 'includes/sidebar.php';
         </header>
 
         <!-- CONTENT BODY CONTAINER -->
-        <div class="p-8 space-y-6 max-w-[1400px]">
+        <div class="p-8 space-y-6 w-full">
 
             <!-- FILTER PILLS ROW -->
             <div class="flex items-center gap-3">
-                <button class="bg-purple-500 text-white font-semibold text-sm px-4 py-1.5 rounded-full shadow-sm">
+                <button class="bg-brand-blue text-white font-semibold text-sm px-4 py-1.5 rounded-full shadow-sm">
                     All (14)
                 </button>
                 <button class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm px-4 py-1.5 rounded-full transition">
@@ -91,7 +91,7 @@ include 'includes/sidebar.php';
                     </div>
 
                     <!-- Export Link -->
-                    <a href="#" onclick="return exportLeadsCsv();" class="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+                    <a href="#" onclick="return exportLeadsCsv();" class="text-xs font-semibold text-brand-blue hover:text-brand-darkblue flex items-center gap-1">
                         Export CSV <i class="fa-solid fa-arrow-right w-3.5 h-3.5"></i>
                     </a>
                 </div>
@@ -129,7 +129,7 @@ include 'includes/sidebar.php';
                                 </td>
                                 <td class="py-4 px-4 font-medium text-slate-700">5 Tons (Sea)</td>
                                 <td class="py-4 px-4">
-                                    <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
+                                    <span class="bg-brand-blue/15 text-brand-darkblue text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
                                 </td>
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2">
@@ -165,7 +165,7 @@ include 'includes/sidebar.php';
                                 </td>
                                 <td class="py-4 px-4 font-medium text-slate-700">20ft FCL (Sea)</td>
                                 <td class="py-4 px-4">
-                                    <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
+                                    <span class="bg-brand-blue/15 text-brand-darkblue text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
                                 </td>
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2">
@@ -212,7 +212,7 @@ include 'includes/sidebar.php';
                                     </div>
                                 </td>
                                 <td class="py-4 px-4 text-center">
-                                    <button class="bg-purple-300 hover:bg-purple-400 text-purple-900 text-xs font-semibold px-3 py-1.5 rounded-md transition">
+                                    <button class="bg-brand-blue/40 hover:bg-brand-blue text-brand-navy text-xs font-semibold px-3 py-1.5 rounded-md transition">
                                         View Meeting Details
                                     </button>
                                 </td>
@@ -271,7 +271,7 @@ include 'includes/sidebar.php';
                                 </td>
                                 <td class="py-4 px-4 font-medium text-slate-700">LCL (AIR)</td>
                                 <td class="py-4 px-4">
-                                    <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
+                                    <span class="bg-brand-blue/15 text-brand-darkblue text-xs font-semibold px-2.5 py-0.5 rounded-md">New</span>
                                 </td>
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2">
@@ -334,7 +334,6 @@ include 'includes/sidebar.php';
     
 </main>
 
-<?php include 'includes/chat-widget.php'; ?>
 
 
 

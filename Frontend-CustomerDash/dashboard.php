@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Customer Portal';
+$pageTitle = 'Priority Handling Logistics - Customer Portal';
 $activePage = 'dashboard';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need assistance with your manifest or SLA reports? Chat with us here.
@@ -110,7 +110,7 @@ include 'includes/sidebar.php';
                             <tbody class="divide-y divide-slate-100">
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="py-4">
-                                        <strong class="font-mono text-slate-900 text-xs block">SF-WB-208841</strong>
+                                        <strong class="font-mono text-slate-900 text-xs block">PH-WB-208841</strong>
                                         <span class="text-[10px] text-slate-400">40ft container · Reefer</span>
                                     </td>
                                     <td class="py-4 w-40">
@@ -128,7 +128,7 @@ include 'includes/sidebar.php';
 
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="py-4">
-                                        <strong class="font-mono text-slate-900 text-xs block">SF-WB-208835</strong>
+                                        <strong class="font-mono text-slate-900 text-xs block">PH-WB-208835</strong>
                                         <span class="text-[10px] text-slate-400">20ft container · Dry van</span>
                                     </td>
                                     <td class="py-4 w-40">
@@ -146,7 +146,7 @@ include 'includes/sidebar.php';
 
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="py-4">
-                                        <strong class="font-mono text-slate-900 text-xs block">SF-WB-208790</strong>
+                                        <strong class="font-mono text-slate-900 text-xs block">PH-WB-208790</strong>
                                         <span class="text-[10px] text-slate-400">LCL · Palletized</span>
                                     </td>
                                     <td class="py-4 w-40">
@@ -164,7 +164,7 @@ include 'includes/sidebar.php';
 
                                 <tr class="hover:bg-slate-50 transition-colors">
                                     <td class="py-4">
-                                        <strong class="font-mono text-slate-900 text-xs block">SF-WB-208712</strong>
+                                        <strong class="font-mono text-slate-900 text-xs block">PH-WB-208712</strong>
                                         <span class="text-[10px] text-slate-400">40ft container · Dry van</span>
                                     </td>
                                     <td class="py-4 w-40">

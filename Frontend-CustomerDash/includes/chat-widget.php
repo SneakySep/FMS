@@ -1,4 +1,4 @@
-<?php $chatMessage = $chatMessage ?? 'Mabuhay! Need assistance with your portal account or tracking? Chat with us here.'; ?>
+<?php $chatMessage = $chatMessage ?? 'Mabuhay! Welcome to Priority Handling Logistics. Need assistance with your portal account or tracking? Chat with us here.'; ?>
     <!-- FLOATING CHAT SUPPORT WIDGET -->
     <div onclick="toggleChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-blue hover:bg-brand-darkblue text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-blue-500/30 cursor-pointer z-50 transition-transform hover:scale-110">
         <i class="fa-solid fa-comments"></i>
@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-headset"></i>
                 </div>
                 <div>
-                    <h4 class="text-xs font-bold">SwiftSupport PH</h4>
+                    <h4 class="text-xs font-bold">Priority Support PH</h4>
                     <span class="text-[10px] text-emerald-400 font-semibold">● Online</span>
                 </div>
             </div>

@@ -1,12 +1,12 @@
 /* ==========================================================================
-   SWIFTFREIGHT CUSTOMER PORTAL - SHARED STORE BRIDGE
-   Reads the shared 'swift_dashboard_data' store maintained by the
+   PRIORITY HANDLING LOGISTICS CUSTOMER PORTAL - SHARED STORE BRIDGE
+   Reads the shared 'priority_dashboard_data' store maintained by the
    Sales Agent portal and live-renders the Customer portal pages so
    agent changes (shipments, invoices, documents, tickets, SLA) appear
    instantly on the customer side.
    ========================================================================== */
 
-const CUSTOMER_STORE_KEY = 'swift_dashboard_data';
+const CUSTOMER_STORE_KEY = 'priority_dashboard_data';
 
 function getSharedStore() {
     const raw = localStorage.getItem(CUSTOMER_STORE_KEY);
@@ -212,7 +212,7 @@ function bridgeRenderTracking(store) {
     if (!select) return;
     select.innerHTML = store.shipments.map(s => `
         <option value="${s.id}">${s.id} (${s.route})</option>`).join('');
-    const first = store.shipments.find(s => ['SF-WB-208841', 'SF-WB-208835', 'SF-WB-208790'].includes(s.id)) || store.shipments[0];
+    const first = store.shipments.find(s => ['PH-WB-208841', 'PH-WB-208835', 'PH-WB-208790'].includes(s.id)) || store.shipments[0];
     if (first && window.switchTrackWaybill) {
         select.value = first.id;
         switchTrackWaybill(first.id);
@@ -233,6 +233,31 @@ function bridgeRenderSettings(store) {
         const el = document.getElementById(id);
         if (el) el.value = val;
     });
+}
+
+/* Persist staged account/profile edits back into the shared store and session. */
+function updateCustomerProfile(account) {
+    const store = getSharedStore() || { customers: [] };
+    if (!Array.isArray(store.customers)) store.customers = [];
+    if (!store.customers[0]) {
+        store.customers[0] = { id: 'cust-001', account: '8841', port: 'CLIENT' };
+    }
+    const cust = store.customers[0];
+    if (account.company !== undefined) cust.company = account.company;
+    if (account.email !== undefined) cust.email = account.email;
+    if (account.phone !== undefined) cust.phone = account.phone;
+    if (account.warehouse !== undefined) cust.warehouse = account.warehouse;
+    if (account.address !== undefined) cust.address = account.address;
+
+    localStorage.setItem(CUSTOMER_STORE_KEY, JSON.stringify(store));
+
+    // Reflect the change in the active session object too.
+    try {
+        const session = JSON.parse(localStorage.getItem('priority_session') || '{}');
+        if (account.company !== undefined) session.company = account.company;
+        if (account.email !== undefined) session.email = account.email;
+        localStorage.setItem('priority_session', JSON.stringify(session));
+    } catch (e) { /* ignore */ }
 }
 
 function bridgeRenderAnalytics(store) {
@@ -277,6 +302,7 @@ function bridgeInit() {
         if (e.key === CUSTOMER_STORE_KEY) {
             const fresh = getSharedStore();
             if (!fresh) return;
+            playNotificationSound();
             if (page === 'dashboard.php') bridgeRenderDashboard(fresh);
             else if (page === 'shipments.php') bridgeRenderShipments(fresh);
             else if (page === 'invoices.php') bridgeRenderInvoices(fresh);

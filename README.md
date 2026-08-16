@@ -2,7 +2,7 @@
 
 Freight Management for Capstone.
 
-A SwiftFreight freight-management demo consisting of three frontends:
+A Priority Handling Logistics, Inc. freight-management demo consisting of three frontends:
 
 - `Frontend-CustomerDash/` — Customer Portal
 - `Frontend-SalesAgent/` — Sales Agent Portal

@@ -1,15 +1,15 @@
 <?php
-$pageTitle = 'Chat - SwiftFreight Agent Portal';
+$pageTitle = 'Chat - Priority Handling Logistics';
 $activePage = 'chat';
 $chatMessage = trim(<<<'MSG'
-Mabuhay! Internal SwiftFreight support channel; how can we help?
+Mabuhay! Internal Priority Handling Logistics support channel; how can we help?
 MSG);
 include 'includes/head.php';
 include 'includes/sidebar.php';
 ?>
 
-<main class="flex-1 flex flex-col min-w-0 bg-[#f8fafc]">
-<header class="h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between flex-shrink-0">
+<main class="flex-1 flex flex-col min-w-0 bg-[#f4f7fa] dark:bg-[#0a1628]">
+<header class="h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between flex-shrink-0 dark:bg-[#112240] dark:border-slate-700/40">
       <!-- Title -->
       <h2 class="text-2xl font-bold italic tracking-tight text-slate-900">Chat</h2>
 
@@ -17,9 +17,9 @@ include 'includes/sidebar.php';
       <div class="w-96">
         <div class="relative">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <i class="fa-solid fa-magnifying-glass text-sm"></i>
           </span>
-          <input type="text" placeholder="Search leads, customer, quotes..." class="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition">
+          <input type="text" placeholder="Search leads, customer, quotes..." class="w-full text-xs pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition">
         </div>
       </div>
 
@@ -27,26 +27,26 @@ include 'includes/sidebar.php';
       <div class="flex items-center space-x-4">
         <!-- Notification Bell -->
         <button class="relative p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <i class="fa-solid fa-bell text-lg"></i>
           <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
 
         <!-- + New Quote Button -->
-        <a href="quotes.php" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5">
+        <a href="quotes.php" class="bg-gradient-to-r from-brand-blue to-brand-darkblue hover:from-brand-darkblue hover:to-brand-navy text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5">
 <span>+ New Quote</span>
 </a>
       </div>
     </header>
-<div class="flex-1 overflow-hidden p-6 bg-[#F8FAFC]">
-      <div class="h-full bg-white rounded-2xl border border-slate-200/80 shadow-sm flex overflow-hidden">
+<div class="flex-1 overflow-hidden p-6 bg-[#f4f7fa] dark:bg-[#0a1628]">
+      <div class="h-full bg-white rounded-2xl border border-slate-200/80 shadow-sm flex overflow-hidden dark:bg-[#112240]">
         
         <!-- LEFT COLUMN: Conversation List -->
-        <div class="w-80 border-r border-slate-200/80 flex flex-col flex-shrink-0 bg-slate-50/30">
+        <div class="w-80 border-r border-slate-200/80 flex flex-col flex-shrink-0 bg-slate-50/30 dark:bg-[#0f1f3a]">
           
           <div class="overflow-y-auto flex-1 divide-y divide-slate-100">
 
             <!-- Chat Item 1 (Selected) -->
-            <div class="p-4 bg-indigo-50/60 border-l-4 border-indigo-600 cursor-pointer transition">
+            <div class="p-4 bg-brand-blue/10 border-l-4 border-brand-blue cursor-pointer transition">
               <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3 min-w-0">
                   <div class="w-9 h-9 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center text-xs flex-shrink-0">
@@ -159,14 +159,14 @@ include 'includes/sidebar.php';
 
             <!-- Message 2: AI Agent -->
             <div class="max-w-xl">
-              <div class="bg-indigo-50/70 border border-indigo-100 text-slate-800 rounded-2xl rounded-tl-sm p-4 space-y-1.5">
-                <div class="text-[10px] font-bold tracking-wider text-indigo-500 uppercase">
+              <div class="bg-brand-blue/10 border border-brand-blue/20 text-slate-800 rounded-2xl rounded-tl-sm p-4 space-y-1.5">
+                <div class="text-[10px] font-bold tracking-wider text-brand-blue uppercase">
                   AI AGENT
                 </div>
-                <p class="text-xs leading-relaxed font-medium text-indigo-950">
+                <p class="text-xs leading-relaxed font-medium text-brand-navy">
                   Thanks for reaching out! For that volume we typically offer tiered pricing. Let me connect you with a sales agent who can give you exact numbers.
                 </p>
-                <div class="text-[10px] text-indigo-400 pt-0.5">
+                <div class="text-[10px] text-brand-blue pt-0.5">
                   confidence 0.58 · escalated to Jenna Reyes
                 </div>
               </div>
@@ -189,7 +189,7 @@ include 'includes/sidebar.php';
               <div class="max-w-xl">
                 <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4 shadow-sm">
                   <p class="text-xs leading-relaxed font-medium">
-                    Hi! This is Jenna from SwiftFreight. Happy to work with your volume — for 20+ containers/month we can offer our volume-tier rate plus 30-day terms. Want to hop on a quick call this week?
+                    Hi! This is Jenna from Priority Handling Logistics. Happy to work with your volume — for 20+ containers/month we can offer our volume-tier rate plus 30-day terms. Want to hop on a quick call this week?
                   </p>
                 </div>
                 <div class="text-right mt-1.5">
@@ -205,7 +205,7 @@ include 'includes/sidebar.php';
             <div class="flex items-center space-x-2">
               <input type="text" placeholder="Type a message..." class="flex-1 text-xs px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
               <button class="bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl transition shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                <i class="fa-solid fa-paper-plane text-sm"></i>
               </button>
             </div>
           </div>
@@ -217,7 +217,6 @@ include 'includes/sidebar.php';
 </div>
 </main>
 
-<?php include 'includes/chat-widget.php'; ?>
 
 
 

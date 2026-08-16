@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'SwiftFreight - Shipments History';
+$pageTitle = 'Priority Handling Logistics - Shipments History';
 $activePage = 'shipments';
 $chatMessage = trim(<<<'MSG'
 Mabuhay! Need assistance with a waybill or carrier status? Chat with us here.
@@ -77,7 +77,7 @@ include 'includes/sidebar.php';
                             <!-- Row 1 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="in-transit">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208841</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208841</strong>
                                     <span class="text-[10px] text-slate-400">40ft container · Reefer</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Manila &rarr; Cebu</td>
@@ -91,7 +91,7 @@ include 'includes/sidebar.php';
                             <!-- Row 2 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="customs">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208835</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208835</strong>
                                     <span class="text-[10px] text-slate-400">20ft container · Dry van</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Cebu &rarr; Manila</td>
@@ -105,7 +105,7 @@ include 'includes/sidebar.php';
                             <!-- Row 3 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="delivered">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208790</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208790</strong>
                                     <span class="text-[10px] text-slate-400">LCL · Palletized</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Davao &rarr; Manila</td>
@@ -119,7 +119,7 @@ include 'includes/sidebar.php';
                             <!-- Row 4 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="delayed">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208712</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208712</strong>
                                     <span class="text-[10px] text-slate-400">40ft container · Dry van</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Manila &rarr; Iloilo</td>
@@ -133,7 +133,7 @@ include 'includes/sidebar.php';
                             <!-- Row 5 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="in-transit">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208699</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208699</strong>
                                     <span class="text-[10px] text-slate-400">20ft container · Reefer</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Manila &rarr; Cagayan de Oro</td>
@@ -147,7 +147,7 @@ include 'includes/sidebar.php';
                             <!-- Row 6 -->
                             <tr class="shipment-row hover:bg-slate-50 transition-colors" data-status="in-transit">
                                 <td class="py-4">
-                                    <strong class="font-mono text-slate-900 text-xs block">SF-WB-208650</strong>
+                                    <strong class="font-mono text-slate-900 text-xs block">PH-WB-208650</strong>
                                     <span class="text-[10px] text-slate-400">FCL · Dry van</span>
                                 </td>
                                 <td class="py-4 font-semibold text-slate-800">Manila &rarr; Bacolod</td>

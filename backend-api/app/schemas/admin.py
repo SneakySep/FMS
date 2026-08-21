@@ -12,6 +12,10 @@ class CloseWonTicketResponseSchema(BaseModel):
     phone_number: Optional[str] = None
     agreed_amount: Optional[float] = 0.0
     created_at: Optional[str] = None
+    customer_id: Optional[str] = None       
+    ticket_status: Optional[str] = "for account" # Default status: 'for account' o 'created'
+    pickup_datetime: Optional[str] = None
+    pickup_address: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -25,4 +29,15 @@ class CreateCustomerFromTicketSchema(BaseModel):
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
-   
+
+class CustomerUserResponse(BaseModel):
+    id: str
+    email: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    company_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    created_at: Optional[str] = None
+
+    class Config:
+        from_attributes = True

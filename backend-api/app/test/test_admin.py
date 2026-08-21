@@ -9,7 +9,7 @@ app.include_router(router)
 
 client = TestClient(app)
 
-# Mock Ticket Object na sumusunod nang eksakto sa CloseWonTicketResponseSchema
+# Mock Ticket Object na sumusunod sa CloseWonTicketResponseSchema
 MOCK_TICKET = {
     "id": "123e4567-e89b-12d3-a456-426614174000",
     "inquiry_id": "123e4567-e89b-12d3-a456-426614174001",
@@ -19,6 +19,7 @@ MOCK_TICKET = {
     "phone_number": "09171234567",
     "agreed_amount": 15000.0,
     "created_at": "2026-08-21T00:00:00Z",
+    "ticket_status": "for account",
 }
 
 # ==========================================
@@ -31,7 +32,8 @@ def test_get_close_won_tickets_success(mock_supabase):
     mock_execute = MagicMock()
     mock_execute.data = [MOCK_TICKET]
 
-    mock_supabase.table.return_value.select.return_value.execute.return_value = (
+    # Inayos ang call chain para mag-match sa .table().select().eq().execute()
+    mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = (
         mock_execute
     )
 
@@ -43,6 +45,7 @@ def test_get_close_won_tickets_success(mock_supabase):
     assert len(res_json) == 1
     assert res_json[0]["id"] == "123e4567-e89b-12d3-a456-426614174000"
     assert res_json[0]["company_name"] == "ABC Logistics"
+    mock_supabase.table.assert_called_once_with("tickets")
 
 
 @patch("app.routes.admin.supabase_secondary")
@@ -151,3 +154,49 @@ def test_create_customer_from_ticket_server_error(mock_supabase):
 
     assert response.status_code == 500
     assert "Unexpected Supabase Auth Error" in response.json()["detail"]
+
+
+# ==========================================
+# 3. TEST: GET /api/v1/admin/customer-accounts
+# ==========================================
+
+
+@patch("app.routes.admin.supabase_secondary")
+def test_get_customer_accounts_success(mock_supabase):
+    mock_data = [
+        {
+            "id": "mock-new-user-uuid-1234",
+            "email": "juan@abc.com",
+            "first_name": "Juan",
+            "last_name": "Dela Cruz",
+            "company_name": "ABC Logistics",
+            "phone_number": "09171234567",
+            "role": "customer",
+        }
+    ]
+
+    mock_execute = MagicMock()
+    mock_execute.data = mock_data
+
+    mock_supabase.table.return_value.select.return_value.execute.return_value = (
+        mock_execute
+    )
+
+    response = client.get("/api/v1/admin/customer-accounts")
+
+    assert response.status_code == 200
+    res_json = response.json()
+    assert res_json["status"] == "success"
+    assert len(res_json["data"]) == 1
+    assert res_json["data"][0]["email"] == "juan@abc.com"
+    mock_supabase.table.assert_called_once_with("users")
+
+
+@patch("app.routes.admin.supabase_secondary")
+def test_get_customer_accounts_server_error(mock_supabase):
+    mock_supabase.table.side_effect = Exception("Users table query error")
+
+    response = client.get("/api/v1/admin/customer-accounts")
+
+    assert response.status_code == 500
+    assert "Users table query error" in response.json()["detail"]

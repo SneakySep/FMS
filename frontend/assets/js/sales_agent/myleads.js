@@ -32,8 +32,10 @@ function openViewModal(lead) {
     (lead.platform_used === 'Google Forms') ? 'Gmail' : (lead.platform_used || 'N/A');
   document.getElementById('modalService').innerText = lead.service_type || 'N/A';
   document.getElementById('modalRoute').innerText = (lead.origin || 'N/A') + ' ➔ ' + (lead.destination || 'N/A');
-  document.getElementById('modalCargo').innerText = lead.cargo_details || lead.initial_inquiry_text || 'No cargo specifications provided.';
-  
+  const cargoElem = document.getElementById('modalCargo');
+  if (cargoElem) {
+    cargoElem.value = lead.cargo_details || lead.initial_inquiry_text || '';
+  }
   const status = lead.status || 'new_inquiry';
   document.getElementById('modalStatusSelect').value = status;
 
@@ -70,6 +72,8 @@ async function handleStatusUpdate(e) {
   const newStatus = document.getElementById('modalStatusSelect').value;
   const priceVal = document.getElementById('modalPriceInput').value;
 
+  const cargoDetails = document.getElementById('modalCargo')?.value.trim();
+
   const pickupAddress = document.getElementById('modalPickupAddress')?.value.trim();
   const pickupDateTime = document.getElementById('modalPickupDateTime')?.value;
 
@@ -97,6 +101,7 @@ async function handleStatusUpdate(e) {
   const payload = {
     status: newStatus,
     estimated_amount: priceVal ? parseFloat(priceVal) : 0,
+    cargo_details: cargoDetails || null,
     pickup_address: pickupAddress || null,
     pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null,
     agent_id: agentId,

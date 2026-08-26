@@ -46,6 +46,8 @@ $agentEmail = $_SESSION['email']
 
     <!-- Custom CSS Styles -->
     <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <?php 
     if (file_exists(__DIR__ . '/tailwind_config.php')) {

@@ -15,7 +15,7 @@ async function dropLead(ev, targetStage) {
   }
 }
 
-// Gamitin ang flexible URL o relative endpoint kung may proxy, o manatili sa FastAPI
+// Gamitin ang flexible URL 
 const FASTAPI_BASE_URL = "http://127.0.0.1:8000";
 
 async function updateLeadStatus(leadId, newStatus) {
@@ -48,7 +48,7 @@ async function updateLeadStatus(leadId, newStatus) {
   }
 }
 
-// Client-side search filter para sa mga cards na nare-render na
+// Client-side search filter 
 function filterKanbanCards() {
   const query = (document.getElementById('kanbanSearch')?.value || '').toLowerCase();
   const cards = document.querySelectorAll('.kanban-card');

@@ -57,6 +57,9 @@ $agentEmail = $_SESSION['email']
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- ApexCharts CDN (pipeline snapshot line chart) -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0"></script>
 </head>
 <body 
     class="bg-[#f8fafc] text-slate-800 font-sans antialiased min-h-screen flex"

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+﻿from unittest.mock import MagicMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from app.routes.sales_agent.leads import router
@@ -129,6 +129,87 @@ def test_get_lead_stats_error(mock_supabase):
     assert response.status_code == 500
     assert "Stats fetch failed" in response.json()["detail"]
 
+
+# ==========================================
+# 2b. TEST: GET /api/v1/leads/trend
+# ==========================================
+
+
+@patch("app.routes.sales_agent.leads.supabase_secondary")
+def test_get_lead_trend_success(mock_supabase):
+    # 3 dummy inquiries; 2 fall inside the last 30 days, 1 is far in the past
+    mock_data = [
+        {"created_at": "2026-08-25T10:00:00+00:00"},
+        {"created_at": "2026-08-26T10:00:00+00:00"},
+        {"created_at": "2020-01-01T10:00:00+00:00"},  # outside window
+        {"created_at": None},  # ignored
+    ]
+
+    mock_execute = MagicMock()
+    mock_execute.data = mock_data
+
+    mock_supabase.table.return_value.select.return_value.execute.return_value = (
+        mock_execute
+    )
+
+    response = client.get("/api/v1/leads/trend?range=30")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["range_days"] == 30
+    # Exactly 30 daily buckets returned, all zero except the 2 in-range days
+    assert len(body["dates"]) == 30
+    assert len(body["counts"]) == 30
+    assert sum(body["counts"]) == 2
+    # dates are sorted ascending
+    assert body["dates"] == sorted(body["dates"])
+
+
+@patch("app.routes.sales_agent.leads.supabase_secondary")
+def test_get_lead_trend_error(mock_supabase):
+    mock_supabase.table.side_effect = Exception("Trend fetch failed")
+
+    response = client.get("/api/v1/leads/trend?range=7")
+
+    assert response.status_code == 500
+    assert "Trend fetch failed" in response.json()["detail"]
+
+
+# ==========================================
+# 2c. TEST: GET /api/v1/leads/trend/stages
+# ==========================================
+
+
+@patch("app.routes.sales_agent.leads.supabase_secondary")
+def test_get_lead_stage_trend_success(mock_supabase):
+    # 2 inquiries in range: one new_inquiry, one closed_won
+    mock_data = [
+        {"created_at": "2026-08-25T10:00:00+00:00", "status": "new_inquiry"},
+        {"created_at": "2026-08-26T10:00:00+00:00", "status": "closed_won"},
+        {"created_at": "2020-01-01T10:00:00+00:00", "status": "new_inquiry"},  # outside window
+        {"created_at": None, "status": "qualifying"},  # ignored
+    ]
+    mock_execute = MagicMock()
+    mock_execute.data = mock_data
+    mock_supabase.table.return_value.select.return_value.execute.return_value = mock_execute
+    response = client.get("/api/v1/leads/trend/stages?range=30")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["range_days"] == 30
+    assert len(body["dates"]) == 30
+    assert len(body["series"]) == 5
+    by_status = {s["status"]: s["data"] for s in body["series"]}
+    assert sum(by_status["new_inquiry"]) == 1
+    assert sum(by_status["closed_won"]) == 1
+    assert sum(by_status["qualifying"]) == 0
+
+
+@patch("app.routes.sales_agent.leads.supabase_secondary")
+def test_get_lead_stage_trend_error(mock_supabase):
+    mock_supabase.table.side_effect = Exception("Stage trend fetch failed")
+    response = client.get("/api/v1/leads/trend/stages?range=7")
+    assert response.status_code == 500
+    assert "Stage trend fetch failed" in response.json()["detail"]
 
 # ==========================================
 # 3. TEST: PATCH /api/v1/leads/{lead_id}/status

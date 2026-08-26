@@ -2,7 +2,7 @@
 # === Back end ======
 
 .env
-myvenv/
+.venv/
 
 
 # Python cache files

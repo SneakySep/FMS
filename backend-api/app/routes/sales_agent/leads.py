@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 from datetime import datetime
 import dateutil.parser
 from typing import Optional
@@ -8,6 +8,8 @@ from app.schemas.lead import (
     LeadResponseSchema, 
     PaginatedLeadResponseSchema, 
     LeadStatsResponseSchema, 
+    LeadTrendResponseSchema,
+    LeadStageTrendResponseSchema,
     StatusUpdateSchema,
     LeadCreateSchema
 )
@@ -70,6 +72,96 @@ async def get_lead_stats():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.get("/trend", response_model=LeadTrendResponseSchema)
+async def get_lead_trend(
+    range: int = Query(30, ge=7, le=90, description="Number of days to look back (7, 30, or 90)"),
+    agent_id: Optional[str] = Query(None),
+):
+    """Daily-bucketed count of inquiries created over the last `range` days.
+
+    Returns aligned `dates` (YYYY-MM-DD) and `counts` arrays so the frontend
+    can render a real time-series line chart for the pipeline snapshot.
+    """
+    try:
+        # 1. Kunin lang ang created_at column para magaan ang query
+        query = supabase_secondary.table("inquiries").select("created_at")
+        if agent_id:
+            query = query.eq("assigned_agent_id", agent_id)
+
+        res = query.execute()
+        data = res.data or []
+
+        # 2. Build na lang ng date buckets sa Python (hindi umaasa sa SQL group-by)
+        from datetime import timedelta
+        today = datetime.now().date()
+        start = today - timedelta(days=range - 1)
+
+        # Init ng zero counts per day
+        buckets: dict[str, int] = {}
+        cursor = start
+        while cursor <= today:
+            buckets[cursor.isoformat()] = 0
+            cursor += timedelta(days=1)
+
+        for item in data:
+            raw = item.get("created_at")
+            if not raw:
+                continue
+            try:
+                dt = dateutil.parser.parse(str(raw))
+            except (ValueError, OverflowError):
+                continue
+            day = dt.date().isoformat()
+            if day in buckets:
+                buckets[day] += 1
+
+        dates = list(buckets.keys())
+        counts = [buckets[d] for d in dates]
+
+        return {"range_days": range, "dates": dates, "counts": counts}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/trend/stages", response_model=LeadStageTrendResponseSchema)
+async def get_lead_stage_trend(
+    range: int = Query(30, ge=7, le=90, description="Number of days to look back"),
+    agent_id: Optional[str] = Query(None),
+):
+    """Daily-bucketed counts per pipeline stage over the last range days."""
+    try:
+        from datetime import timedelta
+        query = supabase_secondary.table("inquiries").select("created_at, status")
+        if agent_id:
+            query = query.eq("assigned_agent_id", agent_id)
+        res = query.execute()
+        data = res.data or []
+        today = datetime.now().date()
+        start = today - timedelta(days=range - 1)
+        dates = []
+        cursor = start
+        while cursor <= today:
+            dates.append(cursor.isoformat())
+            cursor += timedelta(days=1)
+        STAGES = ["new_inquiry", "qualifying", "quote_sent", "negotiation", "closed_won"]
+        buckets = {stage: {d: 0 for d in dates} for stage in STAGES}
+        for item in data:
+            raw = item.get("created_at")
+            st = item.get("status")
+            if not raw or st not in buckets:
+                continue
+            try:
+                dt = dateutil.parser.parse(str(raw))
+            except (ValueError, OverflowError):
+                continue
+            day = dt.date().isoformat()
+            if day in buckets[st]:
+                buckets[st][day] += 1
+        series = [{"status": stage, "data": [buckets[stage][d] for d in dates]} for stage in STAGES]
+        return {"range_days": range, "dates": dates, "series": series}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.patch("/{lead_id}/status", response_model=LeadResponseSchema)
 async def update_lead_status(
@@ -269,3 +361,5 @@ async def create_new_leads(payload: LeadCreateSchema):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+

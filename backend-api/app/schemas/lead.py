@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+﻿from pydantic import BaseModel, EmailStr
 from typing import Optional, Any, List, Literal
 from datetime import datetime
 
@@ -70,6 +70,23 @@ class LeadStatsResponseSchema(BaseModel):
     negotiation: int = 0
     closed_won: int = 0
     closed_lost: int = 0
+
+
+class LeadTrendResponseSchema(BaseModel):
+    range_days: int
+    dates: List[str]
+    counts: List[int]
+
+
+class LeadStageTrendItem(BaseModel):
+    status: str
+    data: List[int]
+
+
+class LeadStageTrendResponseSchema(BaseModel):
+    range_days: int
+    dates: List[str]
+    series: List[LeadStageTrendItem]
 
 
 class LeadCreateSchema(BaseModel):

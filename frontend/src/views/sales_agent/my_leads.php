@@ -92,16 +92,24 @@ function getLeadStatusBadge($status) {
   </div>
 
   <!-- LEADS TABLE CARD -->
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm shadow-slate-200/50 overflow-hidden">
     
     <!-- CARD HEADER -->
-    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-      <div>
-        <h2 class="text-base font-bold text-slate-800">Inquiry Leads Directory</h2>
-        <p class="text-xs text-slate-400">Manage status updates and customer inquiries</p>
+    <div class="relative overflow-hidden p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-violet-50/80 via-indigo-50/60 to-white">
+      <div class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-violet-200/30 blur-xl"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2.5">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-md shadow-indigo-500/30">
+            <i class="fa-solid fa-inbox text-sm"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-slate-800 leading-tight">Inquiry Leads Directory</h2>
+            <p class="text-xs text-slate-400">Manage status updates and customer inquiries</p>
+          </div>
+        </div>
       </div>
-      <button class="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
-        Export CSV ➔
+      <button class="relative text-sm font-semibold text-purple-600 hover:text-purple-700 hover:bg-white px-3 py-1.5 rounded-xl border border-purple-100 bg-white/70 transition flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-file-export text-xs"></i> Export CSV
       </button>
     </div>
 
@@ -109,39 +117,67 @@ function getLeadStatusBadge($status) {
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-100">
-            <th class="py-3 px-4">Inquiry Code</th>
-            <th class="py-3 px-4">Company & Contact</th>
-            <th class="py-3 px-4">Service Type</th>
-            <th class="py-3 px-4">Estimated Price</th>
-            <th class="py-3 px-4">Status</th>
-            <th class="py-3 px-4">Date Submitted</th>
-            <th class="py-3 px-4 text-center">Actions</th>
+          <tr class="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-100">
+            <th class="py-3.5 px-4">Inquiry Code</th>
+            <th class="py-3.5 px-4">Company & Contact</th>
+            <th class="py-3.5 px-4">Service Type</th>
+            <th class="py-3.5 px-4">Estimated Price</th>
+            <th class="py-3.5 px-4">Status</th>
+            <th class="py-3.5 px-4">Date Submitted</th>
+            <th class="py-3.5 px-4 text-center">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100 text-sm">
           <?php if (empty($leads_list)): ?>
             <tr>
-              <td colspan="6" class="py-8 text-center text-slate-400">
-                No inquiries found.
+              <td colspan="7" class="py-14 text-center">
+                <div class="flex flex-col items-center justify-center gap-3 text-slate-400">
+                  <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-300">
+                    <i class="fa-regular fa-folder-open text-2xl"></i>
+                  </div>
+                  <p class="text-sm font-medium">No inquiries found.</p>
+                  <p class="text-xs text-slate-300">New leads will appear here once submitted.</p>
+                </div>
               </td>
             </tr>
           <?php else: ?>
             <?php foreach ($leads_list as $lead): ?>
-              <tr class="hover:bg-slate-50/80 transition">
+              <tr class="hover:bg-slate-50/70 transition-all hover:shadow-[inset_0_0_0_1px_rgba(124,58,237,0.08)]">
                 
                 <!-- 1. INQUIRY CODE / ID -->
-                <td class="py-4 px-4 font-bold text-purple-600">
-                  <?= htmlspecialchars($lead['inquiry_code'] ?? 'INQ-'.substr($lead['id'], 0, 8)) ?>
+                <td class="py-4 px-4">
+                  <span class="inline-block rounded-lg bg-violet-50 px-2.5 py-1 font-bold text-[13px] text-violet-600 ring-1 ring-violet-100">
+                    <?= htmlspecialchars($lead['inquiry_code'] ?? 'INQ-'.substr($lead['id'], 0, 8)) ?>
+                  </span>
                 </td>
 
                 <!-- 2. COMPANY NAME & CONTACT PERSON -->
                 <td class="py-4 px-4">
-                  <div class="font-bold text-slate-800">
-                    <?= htmlspecialchars($lead['company_name'] ?? 'N/A') ?>
-                  </div>
-                  <div class="text-xs text-slate-500">
-                     <?= htmlspecialchars($lead['contact_person'] ?? 'No Contact Person') ?>
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-[11px] font-extrabold uppercase text-slate-500 ring-1 ring-slate-200">
+                      <?php
+                        $cn = trim((string)($lead['company_name'] ?? ''));
+                        $initials = '?';
+                        if ($cn !== '') {
+                          $parts = array_filter(explode(' ', $cn));
+                          $initials = '';
+                          foreach ($parts as $w) {
+                            $initials .= mb_substr($w, 0, 1);
+                            if (strlen($initials) >= 2) break;
+                          }
+                          $initials = strtoupper($initials);
+                        }
+                        echo htmlspecialchars($initials);
+                      ?>
+                    </div>
+                    <div>
+                      <div class="font-bold text-slate-800 leading-tight">
+                        <?= htmlspecialchars($lead['company_name'] ?? 'N/A') ?>
+                      </div>
+                      <div class="text-xs text-slate-500">
+                         <?= htmlspecialchars($lead['contact_person'] ?? 'No Contact Person') ?>
+                      </div>
+                    </div>
                   </div>
                 </td>
 
@@ -156,20 +192,24 @@ function getLeadStatusBadge($status) {
                 </td>
 
                 <!--  ESTIMATED PRICE DISPLAY -->
-                <td class="py-4 px-4 font-bold text-slate-800">
-                  ₱<?= number_format((float)($lead['estimated_amount'] ?? 0), 2) ?>
+                <td class="py-4 px-4">
+                  <span class="font-bold text-emerald-600">₱<?= number_format((float)($lead['estimated_amount'] ?? 0), 2) ?></span>
                 </td>
 
                 <!-- 4. STATUS -->
                 <td class="py-4 px-4 align-middle">
-                  <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-[11px] font-bold border tracking-wide whitespace-nowrap leading-none <?= getLeadStatusBadge($lead['status'] ?? 'new_inquiry') ?>">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border tracking-wide whitespace-nowrap leading-none <?= getLeadStatusBadge($lead['status'] ?? 'new_inquiry') ?>">
+                    <span class="h-1.5 w-1.5 rounded-full bg-current opacity-70"></span>
                     <?= htmlspecialchars(str_replace('_', ' ', strtoupper($lead['status'] ?? 'NEW INQUIRY'))) ?>
                   </span>
                 </td>
 
                 <!-- 5. CREATED AT -->
                 <td class="py-4 px-4 text-xs text-slate-500">
-                  <?= date('M d, Y • h:i A', strtotime($lead['created_at'])) ?>
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-calendar text-slate-300"></i>
+                    <?= date('M d, Y • h:i A', strtotime($lead['created_at'])) ?>
+                  </div>
                 </td>
 
                 <!-- 6. ACTIONS (VIEW & CONTACT) -->
@@ -180,8 +220,8 @@ function getLeadStatusBadge($status) {
                     <button 
                       type="button"
                       onclick="openViewModal(<?= htmlspecialchars(json_encode($lead)) ?>)" 
-                      class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold rounded-xl text-xs transition-all active:scale-95 border border-indigo-100 inline-flex items-center gap-1.5">
-                      <i class="fa-solid fa-eye text-[11px]"></i> View & Manage
+                      class="group px-3.5 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm shadow-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/30 inline-flex items-center gap-1.5">
+                      <i class="fa-solid fa-eye text-[11px] transition group-hover:scale-110"></i> View & Manage
                     </button>
 
                   </div>

@@ -1,5 +1,5 @@
 ﻿<?php
-$page_title = "Sales Agent Dashboard · PRIORITY HANDLING";
+$page_title = "Sales Agent Dashboard - PRIORITY HANDLING";
 
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';
@@ -90,13 +90,15 @@ function getContractStatusBadge($status) {
   <?php include_once 'components/kpi_cards.php'; ?>
 
   <!-- ROW 2: MAIN DASHBOARD GRID -->
-  <div class="flex flex-wrap gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
     <!-- LEFT COLUMN: PIPELINE SNAPSHOT -->
-    <?php include_once 'components/pipeline_snapshot.php'; ?>
+    <div class="lg:col-span-2">
+      <?php include_once 'components/pipeline_snapshot.php'; ?>
+    </div>
 
     <!-- RIGHT COLUMN WIDGETS -->
-    <div class="space-y-6 flex-[1_1_0px] min-w-[260px]">
+    <div class="lg:col-span-1">
       <?php include_once 'components/top_customers.php'; ?>
     </div>
 

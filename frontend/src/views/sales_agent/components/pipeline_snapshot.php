@@ -1,58 +1,55 @@
-﻿<div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-4 md:p-6 flex-[2_1_0px] min-w-[300px]">
-  <div class="flex justify-between mb-4 md:mb-6">
+﻿<div class="bg-white border border-slate-200 shadow-sm rounded-xl p-4 md:p-6 flex-[2_1_0px] min-w-[300px]">
+  <div class="flex justify-between items-start mb-4 md:mb-6">
     <div class="grid gap-4 grid-cols-2">
       <div>
-        <h5 class="inline-flex items-center text-body">Total Leads
-          <svg data-popover-target="clicks-info" data-popover-placement="bottom" class="w-4 h-4 text-body hover:text-heading cursor-pointer ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-          <div data-popover id="clicks-info" role="tooltip" class="absolute z-10 p-3 invisible inline-block text-sm text-body transition-opacity duration-300 bg-neutral-primary-soft border border-default rounded-base shadow-xs opacity-0 w-72">
-              <div>
-                  <h3 class="font-semibold text-heading mb-2">Total Leads</h3>
-                  <p class="mb-4">All leads currently in your pipeline across every stage. A healthy pipeline keeps this number growing week over week.</p>
-                  <h3 class="font-semibold text-heading mb-2">Calculation</h3>
-                  <p class="mb-4">Counts every lead regardless of stage: New Inquiry, Qualifying, Quote Sent, Negotiation and Won.</p>
-                  <a href="/kanban" class="flex items-center font-medium text-fg-brand hover:underline">
-                      Open board
-                      <svg class="w-4 h-4 ms-1 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
-                  </a>
-              </div>
-              <div data-popper-arrow></div>
-          </div>
+        <h5 class="inline-flex items-center text-slate-500 text-sm font-medium">Total Leads
+          <span class="relative group ms-1 cursor-pointer">
+            <svg class="w-4 h-4 text-slate-400 hover:text-slate-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-6 z-20 w-72 p-3 text-xs text-slate-500 bg-white border border-slate-200 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <span class="block font-semibold text-slate-700 mb-2">Total Leads</span>
+              <span class="block mb-3">All leads currently in your pipeline across every stage. A healthy pipeline keeps this number growing week over week.</span>
+              <span class="block font-semibold text-slate-700 mb-1">Calculation</span>
+              <span class="block">Counts every lead regardless of stage: New Inquiry, Qualifying, Quote Sent, Negotiation and Won.</span>
+              <a href="/kanban" class="inline-flex items-center font-medium text-brand-blue hover:underline mt-2">
+                Open board
+                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
+              </a>
+            </span>
+          </span>
         </h5>
-        <p class="text-heading text-2xl font-semibold"><?= htmlspecialchars((string)array_sum(array_column($pipeline, 'count'))) ?></p>
+        <p class="text-slate-800 text-2xl font-semibold"><?= htmlspecialchars((string)array_sum(array_column($pipeline, 'count'))) ?></p>
       </div>
 
       <div>
-        <h5 class="inline-flex items-center text-body">Won (MTD)
-          <svg data-popover-target="cpc-info" data-popover-placement="bottom" class="w-4 h-4 text-body hover:text-heading cursor-pointer ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-          <div data-popover id="cpc-info" role="tooltip" class="absolute z-10 p-3 invisible inline-block text-sm text-body transition-opacity duration-300 bg-neutral-primary-soft border border-default rounded-base shadow-xs opacity-0 w-72">
-              <div>
-                  <h3 class="font-semibold text-heading mb-2">Won (Month to Date)</h3>
-                  <p class="mb-4">Deals marked as Won so far this month. This is the conversion outcome of your pipeline activity.</p>
-                  <h3 class="font-semibold text-heading mb-2">Calculation</h3>
-                  <p class="mb-4">Counts only leads whose stage is Closed Won and whose close date falls within the current calendar month.</p>
-                  <a href="/kanban" class="flex items-center font-medium text-fg-brand hover:underline">
-                      Open board
-                      <svg class="w-4 h-4 ms-1 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
-                  </a>
-              </div>
-              <div data-popper-arrow></div>
-          </div>
+        <h5 class="inline-flex items-center text-slate-500 text-sm font-medium">Won (MTD)
+          <span class="relative group ms-1 cursor-pointer">
+            <svg class="w-4 h-4 text-slate-400 hover:text-slate-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-6 z-20 w-72 p-3 text-xs text-slate-500 bg-white border border-slate-200 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <span class="block font-semibold text-slate-700 mb-2">Won (Month to Date)</span>
+              <span class="block mb-3">Deals marked as Won so far this month. This is the conversion outcome of your pipeline activity.</span>
+              <span class="block font-semibold text-slate-700 mb-1">Calculation</span>
+              <span class="block">Counts only leads whose stage is Closed Won and whose close date falls within the current calendar month.</span>
+              <a href="/kanban" class="inline-flex items-center font-medium text-brand-blue hover:underline mt-2">
+                Open board
+                <svg class="w-4 h-4 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
+              </a>
+            </span>
+          </span>
         </h5>
-        <p class="text-heading text-2xl font-semibold"><?= htmlspecialchars((string)$closed_won) ?></p>
+        <p class="text-slate-800 text-2xl font-semibold"><?= htmlspecialchars((string)$closed_won) ?></p>
       </div>
     </div>
     <div class="relative group">
-      <button id="dropdownDefaultButton" type="button" class="inline-flex items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
+      <button id="dropdownDefaultButton" type="button" class="inline-flex items-center text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 hover:text-slate-800 focus:ring-4 focus:ring-slate-200 shadow-sm font-medium leading-5 rounded-xl text-sm px-3 py-2 focus:outline-none">
         Last 30 days
         <svg class="w-4 h-4 ms-1.5 -me-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
       </button>
-      <div id="lastDaysdropdown" class="absolute right-0 z-10 hidden group-hover:block bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
-          <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownDefaultButton">
-            <li><a href="#" data-range="7"  class="range-item inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last week</a></li>
-            <li><a href="#" data-range="1"  class="range-item inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Today</a></li>
-            <li><a href="#" data-range="7"  class="range-item inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
-            <li><a href="#" data-range="30" class="range-item inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
-            <li><a href="#" data-range="90" class="range-item inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 90 days</a></li>
+      <div id="lastDaysdropdown" class="absolute right-0 z-10 hidden group-hover:block bg-white border border-slate-200 rounded-xl shadow-lg w-44">
+          <ul class="p-2 text-sm text-slate-600 font-medium" aria-labelledby="dropdownDefaultButton">
+            <li><a href="#" data-range="1"  class="range-item inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-slate-800 rounded-lg">Today</a></li>
+            <li><a href="#" data-range="7"  class="range-item inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-slate-800 rounded-lg">Last 7 days</a></li>
+            <li><a href="#" data-range="30" class="range-item inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-slate-800 rounded-lg">Last 30 days</a></li>
+            <li><a href="#" data-range="90" class="range-item inline-flex items-center w-full p-2 hover:bg-slate-100 hover:text-slate-800 rounded-lg">Last 90 days</a></li>
           </ul>
       </div>
     </div>
@@ -60,18 +57,18 @@
 
   <div id="line-chart"></div>
 
-  <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4 pt-4 border-default border-t md:mt-6 md:pt-6">
+  <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4 pt-4 border-slate-200 border-t md:mt-6 md:pt-6">
     <?php foreach ($pipeline as $key => $stage): ?>
-      <div class="flex items-center gap-2 text-xs text-body">
+      <div class="flex items-center gap-2 text-xs text-slate-500">
         <span class="inline-block w-2.5 h-2.5 rounded-full" style="background: <?= $stage['color'] ?>;"></span>
-        <span class="font-medium text-heading"><?= htmlspecialchars($stage['label']) ?></span>
-        <span class="font-bold text-heading"><?= htmlspecialchars((string)$stage['count']) ?></span>
+        <span class="font-medium text-slate-700"><?= htmlspecialchars($stage['label']) ?></span>
+        <span class="font-bold text-slate-800"><?= htmlspecialchars((string)$stage['count']) ?></span>
       </div>
     <?php endforeach; ?>
   </div>
 
-  <div class="border-default border-t mt-4 md:mt-6 pt-4 md:pt-6">
-    <button type="button" onclick="window.location.href='/kanban'" class="inline-flex items-center text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
+  <div class="border-slate-200 border-t mt-4 md:mt-6 pt-4 md:pt-6">
+    <button type="button" onclick="window.location.href='/kanban'" class="inline-flex items-center text-white bg-brand-blue hover:bg-brand-darkblue shadow-sm font-medium leading-5 rounded-xl text-sm px-3 py-2 focus:outline-none focus:ring-4 focus:ring-brand-blue/30 transition-colors">
       <svg class="w-4 h-4 me-1.5 -ms-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m4 10v-2m3 2v-6m3 6v-3m4-11v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/></svg>
       View full report
     </button>

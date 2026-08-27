@@ -55,6 +55,9 @@ $agentEmail = $_SESSION['email']
     } 
     ?>
 
+    <!-- Optional per-page <head> assets (e.g. tracking.php Leaflet CSS) -->
+    <?php if (!empty($extraHead)) { echo $extraHead; } ?>
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 

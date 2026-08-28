@@ -82,7 +82,7 @@ function getStatusBadgeClass($status) {
             <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
                 Help Desk <i class="fa-solid fa-headset text-xs"></i>
             </button>
-            <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
+            <button onclick="openBookingModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
                 <i class="fa-solid fa-plus text-xs"></i> Book Shipment
             </button>
         </div>
@@ -101,7 +101,7 @@ function getStatusBadgeClass($status) {
                 <h1 class="text-2xl lg:text-3xl font-black italic tracking-tight mt-3">Welcome back, <?= htmlspecialchars($company_name) ?> &#128075;</h1>
                 <p class="text-sm text-blue-100 mt-1.5 max-w-md">Here is a live snapshot of your shipments and account health. Track, manage, and book freight in one place.</p>
                 <div class="flex flex-wrap gap-3 mt-5">
-                    <a href="/shipments/book" class="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors shadow-sm flex items-center gap-2">
+                    <a href="javascript:void(0)" onclick="openBookingModal()" class="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors shadow-sm flex items-center gap-2">
                         <i class="fa-solid fa-plus text-xs"></i> New Booking
                     </a>
                     <a href="/tracking" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-4 py-2.5 rounded-xl border border-white/20 transition-colors flex items-center gap-2">
@@ -288,7 +288,7 @@ function getStatusBadgeClass($status) {
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                     <h2 class="text-base font-bold text-slate-900 mb-4">Quick Actions</h2>
                     <div class="grid grid-cols-2 gap-3">
-                        <a href="/shipments/book" class="group flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl bg-slate-50 hover:bg-brand-blue hover:text-white border border-slate-200 hover:border-brand-blue transition-all text-slate-600">
+                        <a href="javascript:void(0)" onclick="openBookingModal()" class="group flex flex-col items-center justify-center gap-2 p-3.5 rounded-xl bg-slate-50 hover:bg-brand-blue hover:text-white border border-slate-200 hover:border-brand-blue transition-all text-slate-600">
                             <i class="fa-solid fa-plus text-base group-hover:scale-110 transition-transform"></i>
                             <span class="text-[11px] font-semibold">Book</span>
                         </a>
@@ -358,6 +358,8 @@ function getStatusBadgeClass($status) {
 
     </div>
 </main>
+
+<?php include_once '../../components/booking_modal.php'; ?>
 
 <?php include_once '../../components/chat_widget.php'; ?>
 

@@ -62,4 +62,22 @@ async function submitCreateAccount(e) {
     submitBtn.disabled = false;
     submitBtn.innerHTML = `<span>Provision Account</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>`;
   }
+
+function filterTickets() {
+  const searchTerm = document.getElementById('ticketSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('tbody tr');
+
+  rows.forEach(row => {
+    // Skip empty state row
+    if (row.classList.contains('empty-state')) return;
+    
+    const text = row.textContent.toLowerCase();
+    if (text.includes(searchTerm)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
 }

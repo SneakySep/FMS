@@ -71,3 +71,24 @@ body {
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* =========================================================================
+   ApexCharts Custom Enhancements for Admin Dashboard
+   ========================================================================= */
+.admin-chart-card {
+  overflow: hidden;
+}
+.admin-chart-card .apexcharts-tooltip {
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+.admin-chart-card .apexcharts-tooltip-title,
+.admin-chart-card .apexcharts-tooltip-text {
+  font-family: 'Inter', sans-serif !important;
+}
+.admin-chart-card .apexcharts-bar-border-radius {
+  transition: box-shadow 0.3s ease;
+}
+.admin-chart-card .apexcharts-bar:hover {
+  filter: brightness(1.1);
+}

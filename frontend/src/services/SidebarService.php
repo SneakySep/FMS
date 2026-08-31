@@ -134,6 +134,11 @@ class SidebarService
                                 'customers' => ['label' => 'Customer Accounts', 'url' => 'customers.php'],
                                 'agents'    => ['label' => 'Sales Agents', 'url' => 'agents.php'],
                             ]
+                        ],
+                        'logs' => [
+                            'label' => 'System Logs',
+                            'icon' => 'fa-shield-halved',
+                            'url' => 'logs.php'
                         ]
                     ],
                 ]

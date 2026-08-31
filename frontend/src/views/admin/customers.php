@@ -27,25 +27,39 @@ $total_customers = count($customers_list);
   <!-- TOP HEADER -->
   <?php include_once 'components/top_header.php'; ?>
 
-  <!-- FILTER PILLS -->
-  <div class="flex items-center gap-2 mb-6">
-    <button class="px-5 py-2 bg-indigo-600 text-white rounded-full text-xs font-bold shadow-sm shadow-indigo-200">
-      All Accounts (<?= $total_customers ?>)
-    </button>
+  <!-- PAGE HEADER & ACTIONS -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight italic">Customer Management</h1>
+          <p class="text-slate-500 text-sm">Manage and monitor all client portal accounts.</p>
+      </div>
+      <div class="flex items-center gap-3">
+          <button class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm shadow-indigo-200 transition-all active:scale-95 flex items-center gap-2">
+              <i class="fa-solid fa-plus"></i> Add New Customer
+          </button>
+      </div>
   </div>
 
   <!-- TABLE CONTAINER CARD -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
     
-    <!-- CARD HEADER -->
-    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-black text-slate-900 tracking-tight italic">Customer Accounts</h2>
-        <p class="text-xs text-slate-400 mt-0.5">List of created portal accounts for clients</p>
+    <!-- CARD HEADER / SEARCH -->
+    <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="bg-indigo-50 p-3 rounded-xl text-indigo-600">
+            <i class="fa-solid fa-users"></i>
+        </div>
+        <div>
+            <h2 class="text-base font-bold text-slate-900">All Accounts</h2>
+            <p class="text-xs text-slate-400">Showing <?= $total_customers ?> registered customers</p>
+        </div>
       </div>
-      <button type="button" onclick="window.location.reload()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 transition-colors">
-        <i class="fa-solid fa-rotate-right"></i> Refresh List
-      </button>
+      
+      <div class="relative w-full md:w-72">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="customerSearch" placeholder="Search customers..." 
+               class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+      </div>
     </div>
 
     <!-- DATA TABLE -->
@@ -54,18 +68,19 @@ $total_customers = count($customers_list);
         <!-- TABLE HEADER -->
         <thead>
           <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
-            <th class="py-4 px-6">Customer / Company</th>
+            <th class="py-4 px-6">Customer</th>
             <th class="py-4 px-6">Email Address</th>
-            <th class="py-4 px-6">Account Status</th>
-            <th class="py-4 px-6 text-center">Action</th>
+            <th class="py-4 px-6">Company</th>
+            <th class="py-4 px-6">Status</th>
+            <th class="py-4 px-6 text-center">Actions</th>
           </tr>
         </thead>
 
         <!-- TABLE BODY -->
-        <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+        <tbody class="divide-y divide-slate-100 text-xs text-slate-700" id="customerTableBody">
           <?php if (empty($customers_list)): ?>
             <tr>
-              <td colspan="4" class="py-12 text-center text-slate-400">
+              <td colspan="5" class="py-12 text-center text-slate-400">
                 <i class="fa-solid fa-users-slash text-2xl mb-2 text-slate-300 block"></i>
                 No customer accounts created yet.
               </td>
@@ -76,60 +91,29 @@ $total_customers = count($customers_list);
                 $firstName = $user['first_name'] ?? '';
                 $lastName  = $user['last_name'] ?? '';
                 $fullName  = trim("$firstName $lastName");
-
-                if (empty($fullName)) {
-                    $fullName = $user['full_name'] ?? 'Customer';
-                }
+                if (empty($fullName)) $fullName = $user['full_name'] ?? 'Customer';
 
                 $email     = $user['email'] ?? 'N/A';
-                $company   = !empty($user['company_name']) ? $user['company_name'] : 'Individual Client';
-                $phone     = $user['phone_number'] ?? 'N/A';
-                $createdAt = !empty($user['created_at']) ? date('M d, Y h:i A', strtotime($user['created_at'])) : 'N/A';
+                $company   = !empty($user['company_name']) ? $user['company_name'] : 'Individual';
+                $status    = $user['status'] ?? 'Active'; // Assume status exists
               ?>
-              <tr class="hover:bg-slate-50/80 transition-colors">
-                
-                <!-- CUSTOMER / COMPANY -->
+              <tr class="hover:bg-slate-50/50 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900"><?= htmlspecialchars($fullName) ?></td>
+                <td class="py-4 px-6 text-slate-500"><?= htmlspecialchars($email) ?></td>
+                <td class="py-4 px-6 text-slate-600"><?= htmlspecialchars($company) ?></td>
                 <td class="py-4 px-6">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-bold flex items-center justify-center text-xs shrink-0 uppercase">
-                      <?= !empty($fullName) ? substr($fullName, 0, 1) : 'C' ?>
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-900"><?= htmlspecialchars($fullName) ?></div>
-                      <div class="text-[11px] text-slate-400"><?= htmlspecialchars($company) ?></div>
-                    </div>
-                  </div>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+                        <?= htmlspecialchars($status) ?>
+                    </span>
                 </td>
-
-                <!-- EMAIL -->
-                <td class="py-4 px-6 font-medium text-slate-600">
-                  <?= htmlspecialchars($email) ?>
-                </td>
-
-                <!-- STATUS -->
-                <td class="py-4 px-6">
-                  <span class="px-3 py-1 bg-emerald-100 text-emerald-700 font-semibold text-[10px] rounded-full inline-flex items-center gap-1.5 shrink-0">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active Portal
-                  </span>
-                </td>
-
-                <!-- ACTION BUTTON -->
                 <td class="py-4 px-6 text-center">
-                  <button 
-                    type="button" 
-                    onclick='viewCustomerDetails(<?= json_encode([
-                      "first_name" => $firstName,
-                      "last_name" => $lastName,
-                      "email" => $email,
-                      "company_name" => $company,
-                      "phone_number" => $phone,
-                      "created_at" => $createdAt
-                    ]) ?>)'
-                    class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition-all active:scale-95 inline-flex items-center gap-1.5">
-                    <i class="fa-solid fa-eye text-[10px] text-slate-500"></i> View Details
-                  </button>
+                    <button class="text-slate-400 hover:text-indigo-600 transition-colors p-2">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="text-slate-400 hover:text-slate-800 transition-colors p-2">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
                 </td>
-
               </tr>
             <?php endforeach; ?>
           <?php endif; ?>
@@ -228,6 +212,18 @@ $total_customers = count($customers_list);
 </div>
 
 <!-- JAVASCRIPT -->
+<script>
+    // Simple search functionality
+    document.getElementById('customerSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#customerTableBody tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+</script>
+
 <script src="../../../assets/js/view.js"></script>
 
 <!-- FOOTER INCLUDE -->

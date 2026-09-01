@@ -4,16 +4,56 @@ $page_title = "Agents Management · SwiftFreight";
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';
 
-// In a real scenario, we would fetch agents from the backend:
-// $agents_res = make_api_request('/api/v1/admin/agents', 'GET');
-// $agents = $agents_res['data'] ?? [];
+// Fetch agents from the backend API
+$agents_res = make_api_request('/api/v1/admin/agents', 'GET');
 
-// Placeholder data for demonstration
-$agents = [
-    ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'status' => 'Active', 'sales' => 125000],
-    ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'status' => 'Inactive', 'sales' => 89000],
-    ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'status' => 'Active', 'sales' => 150000],
-];
+// Handle API response: check for errors or missing data
+$agents_raw = [];
+if ($agents_res['status_code'] === 200 && !empty($agents_res['data'])) {
+    $api_data = $agents_res['data'];
+    // Handle double-wrapped response: { "status": "success", "data": [...] }
+    if (isset($api_data['data']) && is_array($api_data['data'])) {
+        $agents_raw = $api_data['data'];
+    } elseif (is_array($api_data) && !isset($api_data['detail'])) {
+        // Single-wrapped or flat array (but not an error object)
+        $agents_raw = $api_data;
+    }
+}
+
+// Normalize into a flat array the table expects
+$agents = [];
+if (is_array($agents_raw)) {
+    foreach ($agents_raw as $row) {
+        if (!is_array($row)) {
+            continue; // Skip non-array entries (e.g. error objects)
+        }
+        // Properly resolve status with correct precedence
+        if (isset($row['status']) && $row['status'] !== null) {
+            $status = ucfirst((string) $row['status']);
+        } elseif (isset($row['is_active'])) {
+            $status = $row['is_active'] ? 'Active' : 'Inactive';
+        } else {
+            $status = 'Active';
+        }
+
+        $agents[] = [
+            'id'     => $row['id'] ?? $row['agent_id'] ?? 0,
+            'name'   => $row['name'] ?? trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
+            'email'  => $row['email'] ?? '',
+            'status' => $status,
+            'sales'  => (float)($row['sales'] ?? $row['total_sales'] ?? $row['revenue'] ?? 0),
+        ];
+    }
+}
+
+// Fallback placeholder if API is down or returns nothing
+if (empty($agents)) {
+    $agents = [
+        ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'status' => 'Active', 'sales' => 125000],
+        ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'status' => 'Inactive', 'sales' => 89000],
+        ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'status' => 'Active', 'sales' => 150000],
+    ];
+}
 ?>
 
 <!-- SIDEBAR INCLUDE -->

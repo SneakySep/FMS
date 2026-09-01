@@ -2,6 +2,27 @@
 $page_title = "Notification · Rising Red Dragon";
 
 include_once '../../includes/header.php';
+require_once '../../helpers/api_helper.php';
+
+// --- Fetch live notifications from the backend API, with demo fallback ---
+$notif_res  = make_api_request('/api/v1/portal/notifications', 'GET');
+$notif_data = $notif_res['data']['data'] ?? $notif_res['data'] ?? null;
+
+if (!empty($notif_data) && is_array($notif_data)) {
+    $notifications = $notif_data;
+} else {
+    // Demo fallback when API is unreachable
+    $notifications = [
+        ['id' => 1, 'type' => 'urgent',   'title' => 'SLA Breach - WB12345',       'message' => 'Delivery Exceeded SLA window by 3h 40m. Escalated to Ops.',     'time' => '2h ago',  'action' => 'View Details', 'link' => '/sla-monitoring'],
+        ['id' => 2, 'type' => 'warning',  'title' => 'Document Pending - WB208812', 'message' => 'Commercial Invoice awaiting your review and approval.',          'time' => '1d ago',  'action' => 'Review Doc',   'link' => '/documents'],
+        ['id' => 3, 'type' => 'success',  'title' => 'POD Confirmed - WB208835',   'message' => 'Proof of Delivery uploaded for Cebu-Manila shipment.',           'time' => '2d ago',  'action' => 'View POD',     'link' => '/documents'],
+        ['id' => 4, 'type' => 'info',     'title' => 'Inquiry Resolved - INQ-1245','message' => 'Billing clarification closed by your account manager.',          'time' => '3d ago',  'action' => 'View',         'link' => '/tickets'],
+        ['id' => 5, 'type' => 'warning',  'title' => 'Shipment Delay - WB-1245',   'message' => 'New ETA +2h due to traffic advisory on route.',                  'time' => '3d ago',  'action' => 'Track',        'link' => '/tracking'],
+    ];
+}
+
+// Count alert types for the badge
+$alert_count = count($notifications);
 ?>
 
 <div class="app-container">
@@ -31,7 +52,7 @@ include_once '../../includes/header.php';
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2 text-sm">
             <span class="text-slate-400">🔔</span>
-            <span class="text-slate-300">5 alerts</span>
+            <span class="text-slate-300"><?= $alert_count ?> alerts</span>
           </div>
           <div class="text-right">
             <p class="text-xs text-slate-500">Session Active</p>
@@ -54,107 +75,43 @@ include_once '../../includes/header.php';
         <!-- Notification items -->
         <div class="space-y-4">
 
-          <!-- Alert 1: SLA Breach (Urgent) -->
-          <div class="notif-urgent glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('SLA Breach - WB12345')">
+          <?php
+          $notif_styles = [
+              'urgent'   => ['dot' => 'bg-rose-500',  'badge' => 'text-rose-400',  'label' => 'Urgent',     'panel_class' => 'notif-urgent'],
+              'warning'  => ['dot' => 'bg-amber-500', 'badge' => 'text-amber-400', 'label' => 'Warning',    'panel_class' => 'notif-warning'],
+              'success'  => ['dot' => 'bg-emerald-500','badge' => 'text-emerald-400','label' => 'Confirmed', 'panel_class' => 'notif-success'],
+              'info'     => ['dot' => 'bg-sky-500',   'badge' => 'text-sky-400',   'label' => 'Resolved',   'panel_class' => 'notif-info'],
+          ];
+          foreach ($notifications as $notif):
+              $type   = $notif['type'] ?? 'info';
+              $style  = $notif_styles[$type] ?? $notif_styles['info'];
+              $title  = htmlspecialchars($notif['title'] ?? 'Notification');
+              $msg    = htmlspecialchars($notif['message'] ?? '');
+              $time   = htmlspecialchars($notif['time'] ?? '');
+              $action = htmlspecialchars($notif['action'] ?? 'View');
+              $link   = $notif['link'] ?? '#';
+          ?>
+          <div class="<?= $style['panel_class'] ?> glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('<?= $title ?>')">
             <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full bg-rose-500 mt-2 flex-shrink-0"></div>
+              <div class="w-2 h-2 rounded-full <?= $style['dot'] ?> mt-2 flex-shrink-0"></div>
               <div class="flex-1">
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white">SLA Breaches - WB12345</h3>
-                  <span class="text-xs text-rose-400 font-medium">Urgent</span>
+                  <h3 class="text-sm font-semibold text-white"><?= $title ?></h3>
+                  <span class="text-xs <?= $style['badge'] ?> font-medium"><?= $style['label'] ?></span>
                 </div>
                 <p class="text-sm text-slate-300 mt-0.5">
-                  Delivery Exceeded SLA window by 3h 40m. Escalated to Ops.
+                  <?= $msg ?>
                 </p>
                 <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ 2h ago</span>
-                  <a href="#" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">View Details →</a>
+                  <span class="text-xs text-slate-500">⏱️ <?= $time ?></span>
+                  <a href="<?= $link ?>" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium"><?= $action ?> →</a>
                 </div>
               </div>
             </div>
           </div>
+          <?php endforeach; ?>
 
-          <!-- Alert 2: Document Pending (Warning) -->
-          <div class="notif-warning glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('Document Pending - Inv2026.pdf')">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white">Document Pending - Inv2026.pdf</h3>
-                  <span class="text-xs text-amber-400 font-medium">Pending</span>
-                </div>
-                <p class="text-sm text-slate-300 mt-0.5">
-                  Awaiting verification uploaded and confirmed.
-                </p>
-                <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ 5h ago</span>
-                  <a href="#" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">Review →</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alert 3: Delivered (Success) -->
-          <div class="notif-success glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('Delivered - WB-12367')">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white">Delivered - WB-12367</h3>
-                  <span class="text-xs text-emerald-400 font-medium">Completed</span>
-                </div>
-                <p class="text-sm text-slate-300 mt-0.5">
-                  Proof of delivery uploaded and confirmed.
-                </p>
-                <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ 1d ago</span>
-                  <a href="#" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">View POD →</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alert 4: Inquiry Resolved (Info) -->
-          <div class="notif-info glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('Inquiry Resolved - INQ-1245')">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full bg-sky-500 mt-2 flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white">Inquiry Resolved - INQ-1245</h3>
-                  <span class="text-xs text-sky-400 font-medium">Resolved</span>
-                </div>
-                <p class="text-sm text-slate-300 mt-0.5">
-                  Billing clarification closed by your account manager.
-                </p>
-                <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ 3d ago</span>
-                  <a href="#" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">View →</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alert 5: Shipment Delay (Warning) -->
-          <div class="notif-warning glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('Shipment Delay - WB-1245')">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white">Shipment Delay - WB-1245</h3>
-                  <span class="text-xs text-amber-400 font-medium">Updated</span>
-                </div>
-                <p class="text-sm text-slate-300 mt-0.5">
-                  New ETA +2h due to traffic advisory on route.
-                </p>
-                <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ 3d ago</span>
-                  <a href="#" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">Track →</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+      </div>
       </div>
 
       <!-- FOOTER COPYRIGHT -->

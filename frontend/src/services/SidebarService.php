@@ -141,6 +141,9 @@ class SidebarService
                             'url' => 'logs.php'
                         ]
                     ],
+                    'REPORT' => [
+                        'analytics' => ['label' => 'Analytics & Reports', 'icon' => 'fa-chart-line', 'url' => 'analytics.php'],
+                    ],
                 ]
             ];
         }

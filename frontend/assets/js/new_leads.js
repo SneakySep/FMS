@@ -1,4 +1,13 @@
 
+// =================================================================================================
+// New Leads - Create & Submit
+// =================================================================================================
+
+// Resolve the API base URL from the PHP-injected config, falling back to localhost
+var LEADS_API_BASE = (window.ADMIN_DASHBOARD_DATA && window.ADMIN_DASHBOARD_DATA.api_base_url)
+  ? window.ADMIN_DASHBOARD_DATA.api_base_url
+  : 'http://127.0.0.1:8000';
+
 function openLeadModal() {
   document.getElementById('newLeadModal').classList.remove('hidden');
 }
@@ -14,9 +23,8 @@ async function submitNewLead(event) {
   const form = event.target;
   const submitBtn = document.getElementById('submitLeadBtn');
   
-  // Disable button while processing
   submitBtn.disabled = true;
-  submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Saving...`;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Saving...';
 
   const payload = {
     company_name: form.company_name.value.trim(),
@@ -29,11 +37,9 @@ async function submitNewLead(event) {
   };
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/v1/leads/leads', {
+    const response = await fetch(LEADS_API_BASE + '/api/v1/leads/leads', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
@@ -42,7 +48,7 @@ async function submitNewLead(event) {
     if (response.ok && result.status === 'success') {
       alert('Lead successfully added!');
       closeLeadModal();
-      window.location.reload(); // Refresh para mag-update ang Pipeline Snapshot & Counts
+      window.location.reload();
     } else {
       alert('Error: ' + (result.detail || 'Failed to create lead.'));
     }
@@ -51,6 +57,6 @@ async function submitNewLead(event) {
     alert('Failed to connect to backend server.');
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = `<span>Save Lead</span>`;
+    submitBtn.innerHTML = '<span>Save Lead</span>';
   }
 }

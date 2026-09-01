@@ -3,23 +3,47 @@ $page_title = "BI Analytics · Priority Handling Logistics";
 $activePage = 'analytics';
 require_once '../../includes/header.php';
 include_once '../../includes/sidebar.php';
+require_once '../../helpers/api_helper.php';
 
-// --- Demo dataset (swap for make_api_request('/api/v1/portal/analytics','GET') when a live feed is wired) ---
-$months      = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-$shipments   = [28, 34, 26, 42, 38, 48];
-$spend       = [42000, 51000, 39000, 64000, 58000, 72000];
-$onTimeTrend = [88, 90, 86, 92, 91, 94];
-$statusBreakdown = ['Delivered' => 142, 'In Transit' => 38, 'Customs' => 14, 'Delayed' => 6];
-$topRoutes = [
-    ['Manila &rarr; Cebu',          18],
-    ['Manila &rarr; Davao',         12],
-    ['Cebu &rarr; Manila',           9],
-    ['Manila &rarr; Iloilo',         7],
-    ['Manila &rarr; Cagayan de Oro', 5],
-];
-$totalShipments = array_sum($shipments);
-$totalSpend     = array_sum($spend);
-$slaPct         = 94;
+// --- Fetch live analytics from backend API, with demo fallback ---
+$analytics_res = make_api_request('/api/v1/portal/analytics', 'GET');
+$analytics     = $analytics_res['data']['data'] ?? $analytics_res['data'] ?? null;
+
+if (!empty($analytics) && is_array($analytics)) {
+    // Live data from API
+    $months          = $analytics['months'] ?? ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+    $shipments       = $analytics['shipments'] ?? [28, 34, 26, 42, 38, 48];
+    $spend           = $analytics['spend'] ?? [42000, 51000, 39000, 64000, 58000, 72000];
+    $onTimeTrend     = $analytics['on_time_trend'] ?? [88, 90, 86, 92, 91, 94];
+    $statusBreakdown = $analytics['status_breakdown'] ?? ['Delivered' => 142, 'In Transit' => 38, 'Customs' => 14, 'Delayed' => 6];
+    $topRoutes       = $analytics['top_routes'] ?? [
+        ['Manila &rarr; Cebu', 18],
+        ['Manila &rarr; Davao', 12],
+        ['Cebu &rarr; Manila', 9],
+        ['Manila &rarr; Iloilo', 7],
+        ['Manila &rarr; Cagayan de Oro', 5],
+    ];
+    $totalShipments  = $analytics['total_shipments'] ?? array_sum($shipments);
+    $totalSpend      = $analytics['total_spend'] ?? array_sum($spend);
+    $slaPct          = $analytics['sla_pct'] ?? 94;
+} else {
+    // Demo fallback when API is unreachable
+    $months          = ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+    $shipments       = [28, 34, 26, 42, 38, 48];
+    $spend           = [42000, 51000, 39000, 64000, 58000, 72000];
+    $onTimeTrend     = [88, 90, 86, 92, 91, 94];
+    $statusBreakdown = ['Delivered' => 142, 'In Transit' => 38, 'Customs' => 14, 'Delayed' => 6];
+    $topRoutes       = [
+        ['Manila &rarr; Cebu',          18],
+        ['Manila &rarr; Davao',         12],
+        ['Cebu &rarr; Manila',           9],
+        ['Manila &rarr; Iloilo',         7],
+        ['Manila &rarr; Cagayan de Oro', 5],
+    ];
+    $totalShipments  = array_sum($shipments);
+    $totalSpend      = array_sum($spend);
+    $slaPct          = 94;
+}
 ?>
 
 <!-- MAIN CONTENT AREA -->

@@ -3,21 +3,41 @@ $page_title = "Shipments · Priority Handling Logistics";
 $activePage = 'shipments';
 require_once '../../includes/header.php';
 include_once '../../includes/sidebar.php';
+require_once '../../helpers/api_helper.php';
 
 /*
- * Shipment data source.
- * In production this would come from make_api_request('/api/v1/portal/shipments', 'GET').
- * Kept as a local array here so the dashboard renders with realistic demo data
- * and the same structure can be swapped for a live feed later.
+ * Shipment data source — live from the backend API.
+ * Falls back to demo data if the API is unreachable.
  */
-$shipments = [
-    ['waybill' => 'PH-WB-208841', 'type' => '40ft container · Reefer',    'route' => 'Manila → Cebu',            'carrier' => 'Trans-Pacific Lines', 'status' => 'in-transit', 'eta' => 'Jul 29, 14:00'],
-    ['waybill' => 'PH-WB-208835', 'type' => '20ft container · Dry van',   'route' => 'Cebu → Manila',            'carrier' => '2GO Freight',         'status' => 'customs',   'eta' => 'Jul 30, 09:00'],
-    ['waybill' => 'PH-WB-208812', 'type' => 'LCL · Break-bulk',           'route' => 'Manila → Davao',           'carrier' => 'Sulpicio Lines',      'status' => 'delivered', 'eta' => 'Jul 25, 11:20'],
-    ['waybill' => 'PH-WB-208712', 'type' => '40ft container · Dry van',   'route' => 'Manila → Iloilo',          'carrier' => 'Sulpicio Lines',      'status' => 'delayed',   'eta' => 'Jul 27, 18:00'],
-    ['waybill' => 'PH-WB-208699', 'type' => '20ft container · Reefer',    'route' => 'Manila → Cagayan de Oro',  'carrier' => '2GO Freight',         'status' => 'in-transit', 'eta' => 'Aug 02, 07:30'],
-    ['waybill' => 'PH-WB-208650', 'type' => 'FCL · Dry van',              'route' => 'Manila → Bacolod',         'carrier' => 'Trans-Pacific Lines', 'status' => 'in-transit', 'eta' => 'Jul 31, 10:00'],
-];
+$shipments_res = make_api_request('/api/v1/portal/shipments', 'GET');
+$shipments_raw = $shipments_res['data']['data'] ?? $shipments_res['data'] ?? [];
+
+// Normalize API response into the structure the template expects
+$shipments = [];
+if (is_array($shipments_raw) && !empty($shipments_raw)) {
+    foreach ($shipments_raw as $row) {
+        $shipments[] = [
+            'waybill'  => $row['waybill'] ?? $row['waybill_number'] ?? $row['tracking_number'] ?? 'N/A',
+            'type'     => $row['type'] ?? $row['shipment_type'] ?? $row['container_type'] ?? 'Standard',
+            'route'    => $row['route'] ?? (($row['origin'] ?? '') . ' → ' . ($row['destination'] ?? '')),
+            'carrier'  => $row['carrier'] ?? $row['carrier_name'] ?? 'N/A',
+            'status'   => $row['status'] ?? 'in-transit',
+            'eta'      => $row['eta'] ?? $row['estimated_arrival'] ?? '',
+        ];
+    }
+}
+
+// Fallback demo data when API is unreachable or returns nothing
+if (empty($shipments)) {
+    $shipments = [
+        ['waybill' => 'PH-WB-208841', 'type' => '40ft container · Reefer',    'route' => 'Manila → Cebu',            'carrier' => 'Trans-Pacific Lines', 'status' => 'in-transit', 'eta' => 'Jul 29, 14:00'],
+        ['waybill' => 'PH-WB-208835', 'type' => '20ft container · Dry van',   'route' => 'Cebu → Manila',            'carrier' => '2GO Freight',         'status' => 'customs',   'eta' => 'Jul 30, 09:00'],
+        ['waybill' => 'PH-WB-208812', 'type' => 'LCL · Break-bulk',           'route' => 'Manila → Davao',           'carrier' => 'Sulpicio Lines',      'status' => 'delivered', 'eta' => 'Jul 25, 11:20'],
+        ['waybill' => 'PH-WB-208712', 'type' => '40ft container · Dry van',   'route' => 'Manila → Iloilo',          'carrier' => 'Sulpicio Lines',      'status' => 'delayed',   'eta' => 'Jul 27, 18:00'],
+        ['waybill' => 'PH-WB-208699', 'type' => '20ft container · Reefer',    'route' => 'Manila → Cagayan de Oro',  'carrier' => '2GO Freight',         'status' => 'in-transit', 'eta' => 'Aug 02, 07:30'],
+        ['waybill' => 'PH-WB-208650', 'type' => 'FCL · Dry van',              'route' => 'Manila → Bacolod',         'carrier' => 'Trans-Pacific Lines', 'status' => 'in-transit', 'eta' => 'Jul 31, 10:00'],
+    ];
+}
 
 // Derive the status counts used by the KPI strip + doughnut chart.
 $counts = ['all' => count($shipments), 'in-transit' => 0, 'customs' => 0, 'delayed' => 0, 'delivered' => 0];

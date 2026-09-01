@@ -1,3 +1,12 @@
+// =================================================================================================
+// Admin Tickets – Account Provisioning & Search
+// =================================================================================================
+
+// Resolve the API base URL from the PHP-injected config, falling back to localhost
+var TICKETS_API_BASE = (window.ADMIN_DASHBOARD_DATA && window.ADMIN_DASHBOARD_DATA.api_base_url)
+  ? window.ADMIN_DASHBOARD_DATA.api_base_url
+  : 'http://127.0.0.1:8000';
+
 function openCreateModal(data) {
   document.getElementById('modal_ticket_id').value = data.ticket_id || '';
   document.getElementById('modal_email').value = data.email || '';
@@ -5,9 +14,9 @@ function openCreateModal(data) {
   document.getElementById('modal_last_name').value = data.last_name || '';
   document.getElementById('modal_company_name').value = data.company_name || '';
   document.getElementById('modal_phone_number').value = data.phone_number || '';
-  
+
   generatePassword(); // Auto fill initial password
-  
+
   document.getElementById('accountModal').classList.remove('hidden');
 }
 
@@ -26,10 +35,10 @@ function generatePassword() {
 
 async function submitCreateAccount(e) {
   e.preventDefault();
-  
+
   const submitBtn = document.getElementById('submitBtn');
   submitBtn.disabled = true;
-  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating...`;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
 
   const payload = {
     ticket_id: document.getElementById('modal_ticket_id').value,
@@ -42,7 +51,7 @@ async function submitCreateAccount(e) {
   };
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/v1/admin/create-customer-from-ticket', {
+    const response = await fetch(TICKETS_API_BASE + '/api/v1/admin/create-customer-from-ticket', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -60,8 +69,9 @@ async function submitCreateAccount(e) {
     alert('Server connection failed: ' + err.message);
   } finally {
     submitBtn.disabled = false;
-    submitBtn.innerHTML = `<span>Provision Account</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>`;
+    submitBtn.innerHTML = '<span>Provision Account</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>';
   }
+}
 
 function filterTickets() {
   const searchTerm = document.getElementById('ticketSearch').value.toLowerCase();
@@ -70,7 +80,7 @@ function filterTickets() {
   rows.forEach(row => {
     // Skip empty state row
     if (row.classList.contains('empty-state')) return;
-    
+
     const text = row.textContent.toLowerCase();
     if (text.includes(searchTerm)) {
       row.style.display = '';
@@ -78,6 +88,4 @@ function filterTickets() {
       row.style.display = 'none';
     }
   });
-}
-
 }

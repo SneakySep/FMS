@@ -3,6 +3,33 @@ $page_title = "Documents · Priority Handling Logistics";
 $activePage = 'documents';
 require_once '../../includes/header.php';
 include_once '../../includes/sidebar.php';
+require_once '../../helpers/api_helper.php';
+
+// --- Fetch live documents from the backend API, with demo fallback ---
+$docs_res  = make_api_request('/api/v1/portal/documents', 'GET');
+$docs_raw  = $docs_res['data']['data'] ?? $docs_res['data'] ?? null;
+
+if (!empty($docs_raw) && is_array($docs_raw)) {
+    $documents = $docs_raw;
+} else {
+    // Demo fallback when API is unreachable
+    $documents = [
+        ['name' => 'PH-WB-208841 - BOL.pdf',        'type' => 'Bill of Lading',  'size' => '2.4 MB', 'date' => 'Jul 28, 2026', 'status' => 'uploaded'],
+        ['name' => 'PH-WB-208841 - Invoice.pdf',     'type' => 'Invoice',        'size' => '1.1 MB', 'date' => 'Jul 28, 2026', 'status' => 'uploaded'],
+        ['name' => 'PH-WB-208835 - POD.pdf',         'type' => 'Proof of Delivery','size' => '3.2 MB','date' => 'Jul 25, 2026', 'status' => 'uploaded'],
+        ['name' => 'PH-WB-208812 - Customs.pdf',     'type' => 'Customs Clearance','size' => '1.8 MB','date' => 'Jul 23, 2026', 'status' => 'uploaded'],
+        ['name' => 'PH-WB-208712 - Insurance.pdf',   'type' => 'Insurance Cert', 'size' => '0.9 MB', 'date' => 'Jul 20, 2026', 'status' => 'uploaded'],
+        ['name' => 'Service Agreement 2026',         'type' => 'Contract',       'size' => '2.1 MB', 'date' => 'Jan 15, 2026', 'status' => 'pending'],
+    ];
+}
+
+// Derive counts for KPI cards
+$total_docs  = count($documents);
+$pending_count = 0;
+foreach ($documents as $doc) {
+    if (($doc['status'] ?? '') === 'pending') $pending_count++;
+}
+$uploaded_count = $total_docs - $pending_count;
 ?>
 
 
@@ -56,7 +83,7 @@ include_once '../../includes/sidebar.php';
                         <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">+3 this week</span>
                     </div>
                     <p class="text-xs text-slate-400 font-medium mt-4">Total Documents</p>
-                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">18</h3>
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight"><?= $total_docs ?></h3>
                 </div>
 
                 <!-- Pending Signatures -->
@@ -68,7 +95,7 @@ include_once '../../includes/sidebar.php';
                         <span class="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">Action needed</span>
                     </div>
                     <p class="text-xs text-slate-400 font-medium mt-4">Pending Signatures</p>
-                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">2</h3>
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight"><?= $pending_count ?></h3>
                 </div>
 
                 <!-- Shared with me -->

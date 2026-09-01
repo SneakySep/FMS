@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import Optional, List
 import secrets
-from app.supabase_config.supabase import supabase_secondary
+from app.supabase_config.supabase import supabase, supabase_secondary
 from app.schemas.admin import CloseWonTicketResponseSchema, CreateCustomerFromTicketSchema, CustomerUserResponse
 from app.service.email_service import send_customer_welcome_email
 
@@ -165,6 +165,36 @@ async def get_customer_accounts():
         return {
             "status": "success", 
             "data": res.data or []
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 3. Kunin ang lahat ng Sales Agents mula sa profiles table (Primary DB)
+@router.get("/agents")
+async def get_agents():
+    try:
+        # Kukunin ang lahat ng users na may role = 'sales_agent' sa profiles table
+        res = supabase.table("profiles").select("*").eq("role", "sales_agent").execute()
+        agents = res.data or []
+
+        # Normalize ang data para consistent ang format sa frontend
+        normalized = []
+        for agent in agents:
+            full_name = f"{agent.get('first_name', '')} {agent.get('last_name', '')}".strip()
+            normalized.append({
+                "id": agent.get("id", ""),
+                "name": full_name or agent.get("full_name", "Unknown"),
+                "first_name": agent.get("first_name", ""),
+                "last_name": agent.get("last_name", ""),
+                "email": agent.get("email", ""),
+                "status": agent.get("status", "Active"),
+                "sales": float(agent.get("total_sales", 0) or 0),
+            })
+
+        return {
+            "status": "success",
+            "data": normalized
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

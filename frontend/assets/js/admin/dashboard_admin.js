@@ -197,24 +197,13 @@
               show: true,
               total: {
                 show: true,
-                label: {
-                  text: 'Total Customers',
-                  style: {
-                    fontSize: '10px',
-                    color: '#94a3b8',
-                    fontWeight: 600
-                  }
+                label: 'Total Customers',
+                formatter: function () {
+                  return total.toString();
                 },
-                val: {
-                  formatter: function () {
-                    return total.toString();
-                  },
-                  style: {
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    color: '#0f172a'
-                  }
-                }
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#0f172a'
               }
             }
           }

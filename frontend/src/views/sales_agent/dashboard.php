@@ -75,6 +75,16 @@ function getContractStatusBadge($status) {
             return 'bg-slate-100 text-slate-600';
     }
 }
+
+// 4. Fetch AI Escalations (new_inquiry leads needing attention)
+$escalations_res = make_api_request('/api/v1/leads/?status=new_inquiry&limit=5', 'GET');
+$escalations_raw = $escalations_res['data']['data'] ?? $escalations_res['data'] ?? [];
+$escalations = is_array($escalations_raw) ? array_slice($escalations_raw, 0, 5) : [];
+
+// 5. Fetch Agent's Contracts (if endpoint exists, otherwise empty)
+$contracts_res = make_api_request('/api/v1/contracts?limit=5', 'GET');
+$contracts = $contracts_res['data']['data'] ?? $contracts_res['data'] ?? [];
+if (!is_array($contracts)) $contracts = [];
 ?>
 
 <!-- SIDEBAR INCLUDE -->
@@ -108,6 +118,16 @@ function getContractStatusBadge($status) {
     </div>
 
   </div>
+
+  <!-- ROW 3: ESCALATION QUEUE & MY CONTRACTS -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+
+    <!-- LEFT: AI ESCALATION QUEUE -->
+    <?php include_once 'components/escalation_queue.php'; ?>
+
+    <!-- RIGHT: MY CONTRACTS -->
+    <?php include_once 'components/my_contracts.php'; ?>
+
   </div>
 
   <?php include_once 'components/lead_modal.php'; ?>

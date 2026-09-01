@@ -1,10 +1,52 @@
-﻿<?php
+<?php
 $page_title = "SLA Monitoring · Priority Handling Logistics";
 $activePage = 'sla-monitoring';
 require_once '../../includes/header.php';
 include_once '../../includes/sidebar.php';
-?>
+require_once '../../helpers/api_helper.php';
 
+// --- Fetch live SLA data from the backend API, with demo fallback ---
+$sla_res  = make_api_request('/api/v1/portal/sla', 'GET');
+$sla_data = $sla_res['data']['data'] ?? $sla_res['data'] ?? null;
+
+if (!empty($sla_data) && is_array($sla_data)) {
+    $sla_compliance    = (int)($sla_data['compliance_pct'] ?? $sla_data['sla_pct'] ?? 94);
+    $total_commitments = (int)($sla_data['total_commitments'] ?? 1024);
+    $breaches_total    = (int)($sla_data['breaches_total'] ?? $sla_data['breach_count'] ?? 4);
+    $breach_causes     = $sla_data['breach_causes'] ?? [
+        ['cause' => 'Customs clearance', 'count' => 2, 'color' => 'amber'],
+        ['cause' => 'Transit time',      'count' => 1, 'color' => 'rose'],
+        ['cause' => 'On-time pickup',    'count' => 1, 'color' => 'brand-blue'],
+        ['cause' => 'Damage-free',       'count' => 0, 'color' => 'emerald'],
+    ];
+    $breach_log        = $sla_data['breach_log'] ?? [
+        ['waybill' => 'PH-WB-208841', 'commitment' => '48h Delivery',   'status' => 'Breached', 'breach_time' => '3h 40m', 'date' => 'Jul 28, 2026'],
+        ['waybill' => 'PH-WB-208790', 'commitment' => 'Customs <= 24h',  'status' => 'Breached', 'breach_time' => '6h 15m', 'date' => 'Jul 26, 2026'],
+        ['waybill' => 'PH-WB-208812', 'commitment' => 'Damage-Free',    'status' => 'Met',      'breach_time' => '-',      'date' => 'Jul 25, 2026'],
+        ['waybill' => 'PH-WB-208799', 'commitment' => 'On-time Pickup', 'status' => 'Breached', 'breach_time' => '1h 20m', 'date' => 'Jul 24, 2026'],
+        ['waybill' => 'PH-WB-208712', 'commitment' => '48h Delivery',   'status' => 'Met',      'breach_time' => '-',      'date' => 'Jul 22, 2026'],
+    ];
+} else {
+    // Demo fallback
+    $sla_compliance    = 94;
+    $total_commitments = 1024;
+    $breaches_total    = 4;
+    $breach_causes     = [
+        ['cause' => 'Customs clearance', 'count' => 2, 'color' => 'amber'],
+        ['cause' => 'Transit time',      'count' => 1, 'color' => 'rose'],
+        ['cause' => 'On-time pickup',    'count' => 1, 'color' => 'brand-blue'],
+        ['cause' => 'Damage-free',       'count' => 0, 'color' => 'emerald'],
+    ];
+    $breach_log        = [
+        ['waybill' => 'PH-WB-208841', 'commitment' => '48h Delivery',   'status' => 'Breached', 'breach_time' => '3h 40m', 'date' => 'Jul 28, 2026'],
+        ['waybill' => 'PH-WB-208790', 'commitment' => 'Customs <= 24h',  'status' => 'Breached', 'breach_time' => '6h 15m', 'date' => 'Jul 26, 2026'],
+        ['waybill' => 'PH-WB-208812', 'commitment' => 'Damage-Free',    'status' => 'Met',      'breach_time' => '-',      'date' => 'Jul 25, 2026'],
+        ['waybill' => 'PH-WB-208799', 'commitment' => 'On-time Pickup', 'status' => 'Breached', 'breach_time' => '1h 20m', 'date' => 'Jul 24, 2026'],
+        ['waybill' => 'PH-WB-208712', 'commitment' => '48h Delivery',   'status' => 'Met',      'breach_time' => '-',      'date' => 'Jul 22, 2026'],
+    ];
+}
+
+?>
 <style>
   @keyframes slaFadeUp { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform:none;} }
   .sla-anim { animation: slaFadeUp .5s ease both; }
@@ -60,7 +102,7 @@ include_once '../../includes/sidebar.php';
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           Commitments in good standing
         </span>
-        <h1 class="text-xl lg:text-2xl font-black italic tracking-tight mt-3">Your SLA compliance is holding at 94%</h1>
+        <h1 class="text-xl lg:text-2xl font-black italic tracking-tight mt-3">Your SLA compliance is holding at <?= $sla_compliance ?>%</h1>
         <p class="text-sm text-blue-100 mt-1.5 max-w-md">One open breach needs attention. Most service commitments are being met ahead of target.</p>
         <div class="flex flex-wrap gap-2 mt-4">
           <span class="bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl border border-white/20 transition-colors flex items-center gap-1.5">
@@ -73,7 +115,7 @@ include_once '../../includes/sidebar.php';
       </div>
       <div class="hidden sm:flex shrink-0 relative z-10">
         <div class="w-28 h-28 rounded-full bg-white/10 border border-white/20 flex flex-col items-center justify-center backdrop-blur-sm">
-          <span class="text-3xl font-black">94%</span>
+          <span class="text-3xl font-black"><?= $sla_compliance ?>%</span>
           <span class="text-[10px] font-semibold uppercase tracking-wider text-blue-100">Compliance</span>
         </div>
       </div>
@@ -93,7 +135,7 @@ include_once '../../includes/sidebar.php';
           </div>
         </div>
         <div class="mt-4">
-          <p class="text-3xl font-extrabold text-slate-900">94%</p>
+          <p class="text-3xl font-extrabold text-slate-900"><?= $sla_compliance ?>%</p>
           <p class="text-xs text-emerald-600 font-semibold mt-2 flex items-center gap-1">
             <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> 2 pts vs last month
           </p>
@@ -353,16 +395,16 @@ include_once '../../includes/sidebar.php';
           <div class="sla-donut w-32 h-32 rounded-full flex items-center justify-center"
                style="background: conic-gradient(#f59e0b 0% 50%, #ef4444 50% 75%, #0066ff 75% 92%, #10b981 92% 100%);">
             <div class="w-20 h-20 rounded-full bg-white flex flex-col items-center justify-center text-center shadow-inner">
-              <span class="text-xl font-black text-slate-900 leading-none">4</span>
+              <span class="text-xl font-black text-slate-900 leading-none"><?= $breaches_total ?></span>
               <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">Breaches</span>
             </div>
           </div>
         </div>
         <div class="space-y-2.5 text-xs">
-          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Customs clearance</span><span class="font-bold text-slate-800">2</span></div>
-          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Transit time</span><span class="font-bold text-slate-800">1</span></div>
-          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-brand-blue"></span>On-time pickup</span><span class="font-bold text-slate-800">1</span></div>
-          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Damage-free</span><span class="font-bold text-slate-800">0</span></div>
+          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Customs clearance</span><span class="font-bold text-slate-800"><?= $breach_causes[0]['count'] ?></span></div>
+          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Transit time</span><span class="font-bold text-slate-800"><?= $breach_causes[1]['count'] ?></span></div>
+          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-brand-blue"></span>On-time pickup</span><span class="font-bold text-slate-800"><?= $breach_causes[2]['count'] ?></span></div>
+          <div class="flex items-center justify-between"><span class="flex items-center gap-2 text-slate-600 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Damage-free</span><span class="font-bold text-slate-800"><?= $breach_causes[3]['count'] ?></span></div>
         </div>
 
         <!-- CTA for the open breach -->

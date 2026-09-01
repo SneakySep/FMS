@@ -259,6 +259,29 @@
       });
   };
 
+  /* ---------- Settings: tab switching ---------- */
+  window.switchSettingsTab = function (tabName) {
+    // Hide all panels
+    document.querySelectorAll('.settings-panel').forEach(function (panel) {
+      panel.classList.add('hidden');
+    });
+    // Show the target panel
+    var targetPanel = document.querySelector('[data-panel="' + tabName + '"]');
+    if (targetPanel) {
+      targetPanel.classList.remove('hidden');
+    }
+
+    // Update button styles
+    document.querySelectorAll('.settings-tab').forEach(function (tab) {
+      tab.classList.remove('bg-slate-100', 'dark:bg-slate-800/60');
+    });
+    var activeTab = document.querySelector('[data-tab="' + tabName + '"]');
+    if (activeTab) {
+      activeTab.classList.add('bg-slate-100', 'dark:bg-slate-800/60');
+    }
+  };
+
+
   document.addEventListener('DOMContentLoaded', function () {
     if (byId('trackingMap')) setTimeout(initTrackMap, 50);
   });

@@ -2,7 +2,7 @@
   
   <!-- Page Title / Dashboard Header -->
   <div>
-    <h1 class="text-2xl font-black text-slate-900 tracking-tight italic">Dashboard</h1>
+    <h1 class="text-2xl font-black text-slate-900 tracking-tight italic">Priority Handling</h1>
   </div>
 
   <!-- Right Actions: Global Search Bar & Notification Bell -->

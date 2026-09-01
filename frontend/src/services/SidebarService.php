@@ -178,11 +178,11 @@ class SidebarService
                     'DEALS' => [
                         // SUBMENU: Grouping Deals & Quotes together
                         'deals_group' => [
-                            'label' => 'Deals & Offers',
+                            'label' => 'Deals & Quotes',
                             'icon' => 'fa-briefcase',
                             'submenu' => [
                                 'rate_search' => ['label' => 'Rate Search', 'icon' => 'fa-calculator', 'url' => 'rates.php'],
-                                'invoices' => ['label' => 'Invoices & Billing', 'icon' => 'fa-file-invoice-dollar', 'url' => 'invoices.php'],
+                                'quotes' => ['label' => 'Quotes', 'icon' => 'fa-file-invoice-dollar', 'url' => 'quotes.php'],
                             ]
                         ]
                     ],

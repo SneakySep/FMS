@@ -62,13 +62,19 @@ function getLeadStatusBadge($status) {
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
 
-  <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
+  <?php 
+  $header_title = "My Leads";
+  $header_subtitle = "Manage your active leads and pipeline stages.";
+  $header_actions = '<button type="button" onclick="openLeadModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow-sm hover:shadow-indigo-200 flex items-center gap-2"><i class="fa-solid fa-plus text-[10px]"></i><span>New Lead</span></button>';
+  include_once 'components/dashboard_header.php'; 
+  ?>
 
-  <!-- STATUS FILTER TABS -->
-  <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+  <div class="p-6 lg:p-8">
+
+    <!-- STATUS FILTER TABS -->
+    <div class="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
     <a href="?status=all<?= !empty($search_query) ? '&search='.urlencode($search_query) : '' ?>" 
        class="px-4 py-2 rounded-xl text-sm font-semibold transition <?= $current_status === 'all' ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200' ?>">
       All (<?= $count_all ?>)

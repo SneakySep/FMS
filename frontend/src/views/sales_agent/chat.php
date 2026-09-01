@@ -21,11 +21,15 @@ if ($user_role === 'sales_agent') {
 <!-- MAIN CONTENT AREA -->
 <main class="flex-1 overflow-y-auto bg-[#f8fafc] p-6 lg:p-8">
 
-  <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
+  <?php 
+  $header_title = "Sales Agent Chat";
+  $header_subtitle = "Communicate with customers and manage support tickets.";
+  include_once 'components/dashboard_header.php'; 
+  ?>
 
   <!-- CHAT WORKSPACE -->
-  <div class="w-full h-[calc(100vh-180px)] bg-white border border-slate-200 rounded-2xl shadow-sm flex overflow-hidden">
+  <div class="p-6 lg:p-8">
+    <div class="w-full h-[calc(100vh-180px)] bg-white border border-slate-200 rounded-2xl shadow-sm flex overflow-hidden">
 
     <?php if ($user_role === 'sales_agent'): ?>
     <!-- ================= LEFT SIDEBAR: INBOX LIST ================= -->

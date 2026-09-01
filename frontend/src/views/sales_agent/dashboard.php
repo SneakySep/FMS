@@ -1,5 +1,5 @@
 ﻿<?php
-$page_title = "Sales Agent Dashboard - PRIORITY HANDLING";
+$page_title = "Sales Agent Dashboard - Priority Handling";
 
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';
@@ -84,10 +84,15 @@ function getContractStatusBadge($status) {
 <main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
   <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
+  <?php 
+  $header_title = "Priority Handling";
+  $header_subtitle = "Welcome back, agent. Overview of your activities.";
+  include_once 'components/dashboard_header.php'; 
+  ?>
 
-  <!-- ROW 1: TOP KPI METRICS -->
-  <?php include_once 'components/kpi_cards.php'; ?>
+  <div class="p-6 lg:p-8">
+    <!-- ROW 1: TOP KPI METRICS -->
+    <?php include_once 'components/kpi_cards.php'; ?>
 
   <!-- ROW 2: MAIN DASHBOARD GRID -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -102,6 +107,7 @@ function getContractStatusBadge($status) {
       <?php include_once 'components/top_customers.php'; ?>
     </div>
 
+  </div>
   </div>
 
   <?php include_once 'components/lead_modal.php'; ?>

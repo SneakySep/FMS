@@ -88,13 +88,17 @@ function kanbanMoney($value) {
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
 
-  <!-- STANDARD TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
-
-  <!-- PAGE TITLE ROW -->
-  <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+  <?php 
+  $header_title = "Kanban Pipeline";
+  $header_subtitle = "Drag and drop leads between stages — changes sync live.";
+  include_once 'components/dashboard_header.php'; 
+  ?>
+  
+  <div class="p-6 lg:p-8">
+    <!-- PAGE TITLE ROW -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
     <div>
       <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Kanban Pipeline</h1>
       <p class="text-sm text-slate-500 mt-1">Drag and drop leads between stages — changes sync live across My Leads & Kanban.</p>

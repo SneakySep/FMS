@@ -1,5 +1,5 @@
 <?php
-$page_title = "Admin Control Center · SwiftFreight";
+$page_title = "Admin Control Center - Priority Handling";
 
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';

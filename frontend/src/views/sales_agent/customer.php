@@ -58,15 +58,19 @@ $pct_platinum = round(($count_platinum / $tier_total) * 100);
 <!-- MAIN CONTENT AREA -->
 <main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
-  <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
-
-  <!-- PAGE HEADING + ACTIONS -->
-  <div class="flex flex-col gap-4 mb-6 lg:flex-row lg:items-end lg:justify-between">
-    <div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Customer Directory</h1>
-      <p class="mt-1 text-sm text-slate-500">Manage your assigned accounts, loyalty tiers and booking volume.</p>
-    </div>
+  <?php 
+  $header_title = "Customer Directory";
+  $header_subtitle = "Manage your assigned accounts, loyalty tiers and booking volume.";
+  include_once 'components/dashboard_header.php'; 
+  ?>
+  
+  <div class="p-6 lg:p-8">
+    <!-- PAGE HEADING + ACTIONS -->
+    <div class="flex flex-col gap-4 mb-6 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Customer Directory</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage your assigned accounts, loyalty tiers and booking volume.</p>
+      </div>
 
     <div class="flex items-center gap-2">
       <!-- SEARCH FORM (preserves active tier) -->

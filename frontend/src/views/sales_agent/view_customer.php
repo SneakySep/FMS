@@ -121,10 +121,15 @@ $donut_labels = ['Completed', 'In Transit', 'Pending', 'Cancelled'];
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
 
-  <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
+  <?php 
+  $header_title = "Customer Details";
+  $header_subtitle = "Detailed view of customer activity and profile.";
+  include_once 'components/dashboard_header.php'; 
+  ?>
+
+  <div class="p-6 lg:p-8">
 
   <!-- BACK BUTTON -->
   <div class="mb-6">

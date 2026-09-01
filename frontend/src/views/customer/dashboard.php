@@ -1,5 +1,7 @@
 <?php
 $page_title = "Customer Dashboard � SwiftFreight";
+$page_title = "Customer Dashboard - Priority Handling";
+
 
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';
@@ -60,7 +62,7 @@ function getStatusBadgeClass($status) {
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
             <div class="min-w-0">
-                <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Dashboard</h2>
+                <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Priority Handling</h2>
                 <p class="text-xs text-slate-400 font-medium mt-0.5"><?= htmlspecialchars($company_name) ?> &middot; Acct #<?= htmlspecialchars($customer_id) ?></p>
             </div>
         </div>

@@ -104,7 +104,7 @@ foreach ($all_leads as $lead) {
           <?php else: ?>
             <?php foreach ($column['items'] as $lead): ?>
               
-              <!-- CLEAN KANBAN CARD (NO EXTRA BUTTONS) -->
+              <!-- CLEAN KANBAN CARD -->
               <div 
                 draggable="true" 
                 ondragstart="dragLead(event, '<?= $lead['id'] ?>')"

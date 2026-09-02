@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from app.routes.sales_agent.leads import router
+from freezegun import freeze_time
 
 app = FastAPI()
 app.include_router(router)
@@ -243,6 +244,7 @@ def test_update_lead_status_not_found(mock_supabase):
 # ==========================================
 
 
+@freeze_time("2026-08-20")  # Pinipigilan ang oras 
 @patch("app.routes.sales_agent.leads.supabase_secondary")
 def test_get_dashboard_kpis_success(mock_supabase):
     mock_closed_leads = [
@@ -250,13 +252,13 @@ def test_get_dashboard_kpis_success(mock_supabase):
             "id": "1",
             "status": "closed_won",
             "estimated_amount": 5000.0,
-            "created_at": "2026-08-10T10:00:00Z",  # Current month (August 2026)
+            "created_at": "2026-08-10T10:00:00Z",  # Pasok sa Current Month (August)
         },
         {
             "id": "2",
             "status": "closed_won",
             "estimated_amount": 3000.0,
-            "created_at": "2026-07-15T10:00:00Z",  # Previous month (July 2026)
+            "created_at": "2026-07-15T10:00:00Z",  # Pasok sa Previous Month (July)
         },
     ]
 

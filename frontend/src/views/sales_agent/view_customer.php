@@ -67,7 +67,7 @@ function getCustomerTierBadge($tier) {
     </a>
   </div>
 
-  <!-- CUSTOMER DETAILS CARD (WIREFRAME DESIGN) -->
+  <!-- CUSTOMER DETAILS CARD -->
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:p-8 mb-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       

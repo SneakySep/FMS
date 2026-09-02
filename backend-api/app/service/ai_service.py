@@ -67,7 +67,7 @@ async def process_customer_chat(customer_id: str, user_message: str, sender_role
             )
             return user_message
 
-        # 3. KAPAG SI CUSTOMER ANG NAG-CHAT AT NAKA-HUMAN TAKEOVER PA (WITHOUT 5H TIMEOUT):
+        # 3. KAPAG SI CUSTOMER ANG NAG-CHAT AT NAKA-HUMAN TAKEOVER PA WITHOUT 5H TIMEOUT
         if current_status == "human_takeover":
             new_convo = [{"role": "user", "parts": [{"text": user_message}]}]
             await chat_collection.update_one(

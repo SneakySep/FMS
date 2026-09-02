@@ -16,11 +16,11 @@ async function dropLead(ev, targetStage) {
 }
 
 // Gamitin ang flexible URL 
-const FASTAPI_BASE_URL = "http://127.0.0.1:8000";
+const FASTAPI_BASE_URL = window.APP_CONFIG.API_BASE_URL;
 
 async function updateLeadStatus(leadId, newStatus) {
   try {
-    // Kunin ang agent_id mula sa body attribute na inilagay sa header.php
+    // Kunin ang agent_id mula sa body attribute 
     const agentId = document.body.getAttribute('data-agent-id') || null;
 
     const response = await fetch(`${FASTAPI_BASE_URL}/api/v1/leads/${leadId}/status`, {

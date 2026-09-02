@@ -1,193 +1,61 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch, MagicMock
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from app.routes.customers.chat import router
 
-app = FastAPI()
-app.include_router(router)
-client = TestClient(app)
+from app.routes.chat.chat import router as customer_router
 
-TEST_CUSTOMER_ID = "cust-12345"
-VALID_CHAT_PAYLOAD = {
-    "customer_id": TEST_CUSTOMER_ID,
-    "message": "Kumusta, anong status ng booking ko?"
-}
+# Setup isolated test app instance
+app_instance = FastAPI()
+app_instance.include_router(customer_router)
 
+client = TestClient(app_instance)
 
-# Async Iterator Helper para sa Motor MongoDB cursor mocking
-class AsyncCursorMock:
-    def __init__(self, documents):
-        self.documents = documents
+# 1. Test Sentiment Analysis Unit Function
+@pytest.mark.asyncio
+@patch("app.service.sintement.gemini_client")  # Eto ang tamang target na i-patch
+async def test_sentiment_analysis_logic(mock_gemini_client):
+    from app.service.sintement import analyze_message_and_extracted_details
 
-    def __aiter__(self):
-        self._iter = iter(self.documents)
-        return self
+    # Mock response object mula kay Gemini
+    mock_response = MagicMock()
+    mock_response.text = """{
+        "reply": "Kailan po ang target date ng delivery?",
+        "sentiment": "neutral",
+        "updated_details": {"origin": "Manila", "destination": "Cebu"},
+        "is_complete": false,
+        "force_handoff": false
+    }"""
 
-    async def __anext__(self):
-        try:
-            return next(self._iter)
-        except StopIteration:
-            raise StopAsyncIteration
+    # Synchronous call ang generate_content kaya return_value lang gagamitin (walang AsyncMock)
+    mock_gemini_client.models.generate_content.return_value = mock_response
 
+    result = await analyze_message_and_extracted_details("Manila to Cebu", {})
 
-# ===================================================
-# 1. POST /api/v1/chat TESTS
-# ===================================================
+    assert result["sentiment"] == "neutral"
+    assert result["updated_details"]["origin"] == "Manila"
+    assert result["is_complete"] is False
 
-@patch("app.routes.customers.chat.process_customer_chat", new_callable=AsyncMock)
-def test_chat_endpoint_success(mock_process_chat):
-    mock_process_chat.return_value = "Ang inyong booking ay confirmed na."
+# 3. Test Get Chat Messages Endpoint
+@patch("app.routes.chat.chat.supabase_secondary")
+def test_get_chat_messages_endpoint(mock_supabase):
+    conv_id = "test-conv-uuid"
 
-    response = client.post("/api/v1/chat", json=VALID_CHAT_PAYLOAD)
-
-    assert response.status_code == 200
-    assert response.json()["status"] == "success"
-    assert response.json()["reply"] == "Ang inyong booking ay confirmed na."
-    mock_process_chat.assert_called_once_with(
-        customer_id=TEST_CUSTOMER_ID,
-        user_message="Kumusta, anong status ng booking ko?"
-    )
-
-
-@patch("app.routes.customers.chat.process_customer_chat", new_callable=AsyncMock)
-def test_chat_endpoint_service_exception(mock_process_chat):
-    mock_process_chat.side_effect = Exception("AI Service connection timeout")
-
-    response = client.post("/api/v1/chat", json=VALID_CHAT_PAYLOAD)
-
-    assert response.status_code == 500
-    assert response.json()["detail"] == "AI Service connection timeout"
-
-
-# ===================================================
-# 2. GET /api/v1/chat/active-conversations TESTS
-# ===================================================
-
-@patch("app.routes.customers.chat.chat_collection.find")
-def test_get_active_conversations_success(mock_find):
-    fake_docs = [
+    mock_supabase.table().select().eq().order().execute.return_value.data = [
         {
-            "customer_id": "cust-001",
-            "history": [{"parts": [{"text": "Hello AI!"}]}],
-            "status": "ai_active"
-        },
-        {
-            "customer_id": "cust-002",
-            "history": [],
-            "status": "human_agent"
+            "id": "msg-1",
+            "conversation_id": conv_id,
+            "sender_type": "customer",
+            "sender_id": "cust-1",
+            "message": "Hello",
+            "created_at": "2026-08-27T17:31:00+00:00"
         }
     ]
-    mock_find.return_value = AsyncCursorMock(fake_docs)
 
-    response = client.get("/api/v1/chat/active-conversations")
+    response = client.get(f"/agent/v1/chat/messages/{conv_id}")
 
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 2
-    assert data[0]["customer_id"] == "cust-001"
-    assert data[0]["last_message"] == "Hello AI!"
-    assert data[1]["last_message"] == "No messages"
-
-
-@patch("app.routes.customers.chat.chat_collection.find")
-def test_get_active_conversations_exception(mock_find):
-    mock_find.side_effect = Exception("MongoDB query error")
-
-    response = client.get("/api/v1/chat/active-conversations")
-
-    assert response.status_code == 500
-    assert response.json()["detail"] == "MongoDB query error"
-
-
-# ===================================================
-# 3. GET /api/v1/chat/history/{customer_id} TESTS
-# ===================================================
-
-@patch("app.routes.customers.chat.chat_collection.find_one", new_callable=AsyncMock)
-def test_get_chat_history_found(mock_find_one):
-    mock_find_one.return_value = {
-        "customer_id": TEST_CUSTOMER_ID,
-        "history": [{"role": "user", "parts": [{"text": "Hi"}]}]
-    }
-
-    response = client.get(f"/api/v1/chat/history/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 200
-    assert response.json()["customer_id"] == TEST_CUSTOMER_ID
-    assert len(response.json()["history"]) == 1
-
-
-@patch("app.routes.customers.chat.chat_collection.find_one", new_callable=AsyncMock)
-def test_get_chat_history_not_found(mock_find_one):
-    mock_find_one.return_value = None
-
-    response = client.get(f"/api/v1/chat/history/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 200
-    assert response.json() == {"history": []}
-
-
-@patch("app.routes.customers.chat.chat_collection.find_one", new_callable=AsyncMock)
-def test_get_chat_history_exception(mock_find_one):
-    mock_find_one.side_effect = Exception("Database error")
-
-    response = client.get(f"/api/v1/chat/history/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 500
-    assert response.json()["detail"] == "Database error"
-
-
-# ===================================================
-# 4. POST /api/v1/chat/handover/{customer_id} TESTS
-# ===================================================
-
-@patch("app.routes.customers.chat.chat_collection.update_one", new_callable=AsyncMock)
-def test_handover_to_ai_success(mock_update_one):
-    mock_update_one.return_value = None
-
-    response = client.post(f"/api/v1/chat/handover/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 200
-    assert response.json()["status"] == "success"
-    assert response.json()["message"] == "Handed back to AI successfully."
-    mock_update_one.assert_called_once_with(
-        {"customer_id": TEST_CUSTOMER_ID},
-        {"$set": {"status": "ai_active"}}
-    )
-
-
-@patch("app.routes.customers.chat.chat_collection.update_one", new_callable=AsyncMock)
-def test_handover_to_ai_exception(mock_update_one):
-    mock_update_one.side_effect = Exception("Update failed")
-
-    response = client.post(f"/api/v1/chat/handover/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 500
-    assert response.json()["detail"] == "Update failed"
-
-
-# ===================================================
-# 5. DELETE /api/v1/chat/history/{customer_id} TESTS
-# ===================================================
-
-@patch("app.routes.customers.chat.chat_collection.delete_one", new_callable=AsyncMock)
-def test_clear_chat_history_success(mock_delete_one):
-    mock_delete_one.return_value = None
-
-    response = client.delete(f"/api/v1/chat/history/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 200
-    assert response.json()["status"] == "success"
-    assert response.json()["message"] == "Chat history cleared successfully."
-    mock_delete_one.assert_called_once_with({"customer_id": TEST_CUSTOMER_ID})
-
-
-@patch("app.routes.customers.chat.chat_collection.delete_one", new_callable=AsyncMock)
-def test_clear_chat_history_exception(mock_delete_one):
-    mock_delete_one.side_effect = Exception("Delete failed")
-
-    response = client.delete(f"/api/v1/chat/history/{TEST_CUSTOMER_ID}")
-
-    assert response.status_code == 500
-    assert response.json()["detail"] == "Delete failed"
+    assert len(data) == 1
+    assert data[0]["message"] == "Hello"
+    assert data[0]["formatted_time"] == "17:31"

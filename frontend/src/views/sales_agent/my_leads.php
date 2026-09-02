@@ -10,7 +10,7 @@ $search_query   = $_GET['search'] ?? '';
 $page           = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit          = 10;
 
-// 2. Fetch Live Stats mula sa FastAPI /api/v1/leads/stats
+// 2. Fetch Live Stats mula sa FastAPI 
 $stats_res  = make_api_request('/api/v1/leads/stats', 'GET');
 $stats_data = $stats_res['data'] ?? [];
 
@@ -122,7 +122,7 @@ function getLeadStatusBadge($status) {
         <tbody class="divide-y divide-slate-100 text-sm">
           <?php if (empty($leads_list)): ?>
             <tr>
-              <td colspan="6" class="py-8 text-center text-slate-400">
+              <td colspan="7" class="py-8 text-center text-slate-400">
                 No inquiries found.
               </td>
             </tr>
@@ -155,9 +155,9 @@ function getLeadStatusBadge($status) {
                   <?php endif; ?>
                 </td>
 
-                <!--  ESTIMATED PRICE DISPLAY -->
+                <!-- ESTIMATED PRICE DISPLAY -->
                 <td class="py-4 px-4 font-bold text-slate-800">
-                  ₱<?= number_format((float)($lead['estimated_amount'] ?? 0), 2) ?>
+                  ₱<?= number_format((float)($lead['estimated_amount'] ?? $lead['estimated_price'] ?? 0), 2) ?>
                 </td>
 
                 <!-- 4. STATUS -->
@@ -169,21 +169,19 @@ function getLeadStatusBadge($status) {
 
                 <!-- 5. CREATED AT -->
                 <td class="py-4 px-4 text-xs text-slate-500">
-                  <?= date('M d, Y • h:i A', strtotime($lead['created_at'])) ?>
+                  <?= !empty($lead['created_at']) ? date('M d, Y • h:i A', strtotime($lead['created_at'])) : 'N/A' ?>
                 </td>
 
-                <!-- 6. ACTIONS (VIEW & CONTACT) -->
+                <!-- 6. ACTIONS -->
                 <td class="py-4 px-4 text-center">
                   <div class="flex items-center justify-center gap-2">
-                    
-                    <!-- VIEW DETAILS MODAL TRIGGER -->
+                    <!-- FIXED  -->
                     <button 
                       type="button"
-                      onclick="openViewModal(<?= htmlspecialchars(json_encode($lead)) ?>)" 
+                      onclick='openViewModal(<?= htmlspecialchars(json_encode($lead, JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, "UTF-8") ?>)' 
                       class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold rounded-xl text-xs transition-all active:scale-95 border border-indigo-100 inline-flex items-center gap-1.5">
                       <i class="fa-solid fa-eye text-[11px]"></i> View & Manage
                     </button>
-
                   </div>
                 </td>
 
@@ -213,15 +211,11 @@ function getLeadStatusBadge($status) {
 
 </main>
 
-<?php include 'components/view_lead_modal.php'; ?>
-
-<?php include_once 'components/contact_modal.php'; ?>
-
+<?php include_once 'components/view_lead_modal.php'; ?>
 <?php include_once 'components/lead_modal.php'; ?>
 
 <!-- JAVASCRIPT FOR MODAL -->
 <script src="../../../assets/js/sales_agent/myleads.js"></script>
-<script src="../../../assets/js/sales_agent/contact_modal.js"></script>
 
 <?php include_once 'components/alert.php'; ?>
 

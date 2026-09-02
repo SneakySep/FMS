@@ -26,8 +26,8 @@ async def get_customer_stats():
         }
 
         for row in rows:
-            # Case-insensitive matching para sa tier
-            tier_val = str(row.get("tier") or "BRONZE")
+            # Format value to lowercase 
+            tier_val = str(row.get("tier") or "BRONZE").strip().lower()
             if tier_val in stats:
                 stats[tier_val] += 1
 

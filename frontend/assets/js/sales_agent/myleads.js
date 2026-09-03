@@ -1,69 +1,192 @@
-const FASTAPI_BASE_URL = "http://127.0.0.1:8000"; 
+const API_URL = window.APP_CONFIG.API_BASE_URL;
 
-// 1. Dynamic Toggle para sa Pickup Section kapag nagbago ang dropdown
 document.addEventListener('DOMContentLoaded', () => {
   const statusSelect = document.getElementById('modalStatusSelect');
   if (statusSelect) {
-    statusSelect.addEventListener('change', function() {
+    statusSelect.addEventListener('change', function () {
       togglePickupFields(this.value);
+      syncStepper();
+    });
+  }
+
+  // Live update sa Value Chip 
+  const priceInput = document.getElementById('modalPriceInput');
+  if (priceInput) {
+    priceInput.addEventListener('input', function () {
+      const val = parseFloat(this.value) || 0;
+      updateValueChip(val);
     });
   }
 });
+
+const STAGE_ORDER = ['new_inquiry', 'qualifying', 'quote_sent', 'negotiation', 'closed_won', 'closed_lost'];
+
+function normalizeStatus(st) {
+  if (!st) return 'new_inquiry';
+  let clean = String(st).toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (clean === 'quote') clean = 'quote_sent';
+  if (clean === 'qualify') clean = 'qualifying';
+  if (clean === 'negotiate') clean = 'negotiation';
+  if (clean === 'won') clean = 'closed_won';
+  if (clean === 'lost') clean = 'closed_lost';
+  return clean;
+}
+
+function stageOrder(stage) {
+  const clean = normalizeStatus(stage);
+  const idx = STAGE_ORDER.indexOf(clean);
+  return idx !== -1 ? idx : 0;
+}
+
+function updateValueChip(amount) {
+  const chip = document.getElementById('modalValueChip');
+  if (chip) {
+    const val = parseFloat(amount) || 0;
+    chip.innerText = '₱' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+}
+
+function syncStepper() {
+  const select = document.getElementById('modalStatusSelect');
+  if (!select) return;
+
+  const current = normalizeStatus(select.value);
+  const activeIdx = stageOrder(current);
+  const steps = document.querySelectorAll('#viewModal .lm-step');
+
+  steps.forEach(el => {
+    const stageAttr = normalizeStatus(el.getAttribute('data-stage'));
+    const idx = stageOrder(stageAttr);
+
+    el.classList.remove('is-active', 'is-done');
+    if (idx === activeIdx) {
+      el.classList.add('is-active');
+    } else if (idx < activeIdx) {
+      el.classList.add('is-done');
+    }
+  });
+}
 
 function togglePickupFields(status) {
   const pickupSection = document.getElementById('pickupFieldsSection');
   if (!pickupSection) return;
 
-  if (status === 'closed_won') {
+  if (normalizeStatus(status) === 'closed_won') {
     pickupSection.classList.remove('hidden');
   } else {
     pickupSection.classList.add('hidden');
   }
 }
 
+function generateInitials(name) {
+  if (!name || name === 'N/A') return '--';
+  const cleanName = name.trim();
+  const words = cleanName.split(/\s+/);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return cleanName.substring(0, 2).toUpperCase();
+}
+
+function restrictStatusDropdown(currentStatus) {
+  const select = document.getElementById('modalStatusSelect');
+  if (!select) return;
+
+  const currentIdx = stageOrder(currentStatus);
+
+  Array.from(select.options).forEach(option => {
+    const optionIdx = stageOrder(option.value);
+
+    // Idi-disable ang mga nakalipas na status 
+    if (optionIdx < currentIdx && normalizeStatus(option.value) !== 'closed_lost') {
+      option.disabled = true;
+      if (!option.innerText.includes('(Locked)')) {
+        option.innerText = option.innerText + ' (Locked)';
+      }
+    } else {
+      option.disabled = false;
+      option.innerText = option.innerText.replace(' (Locked)', '');
+    }
+  });
+}
+
 function openViewModal(lead) {
-  document.getElementById('modalLeadId').value = lead.id;
-  document.getElementById('modalCompany').innerText = lead.company_name || 'N/A';
-  document.getElementById('modalCode').innerText = lead.inquiry_code || ('INQ-' + lead.id.substring(0, 8));
-  document.getElementById('modalContact').innerText = lead.contact_person || 'N/A';
-  document.getElementById('modalEmail').innerText = lead.email || 'N/A';
-  document.getElementById('modalPhone').innerText = lead.phone_number || 'N/A';
-  document.getElementById('modalPlatform').innerText = 
-    (lead.platform_used === 'Google Forms') ? 'Gmail' : (lead.platform_used || 'N/A');
-  document.getElementById('modalService').innerText = lead.service_type || 'N/A';
+  console.log("OPENING MODAL WITH DATA:", lead);
+
+  // 1. Lead ID at Header Info
+  document.getElementById('modalLeadId').value = lead.id || lead.lead_id || '';
+  const company = lead.company_name || lead.company || 'N/A';
+  document.getElementById('modalCompany').innerText = company;
+  document.getElementById('modalCode').innerText = lead.inquiry_code || lead.code || ('INQ-' + String(lead.id || '').substring(0, 8));
+
+  // 2. Compute Dynamic Avatar Initials 
+  const avatarElem = document.getElementById('modalAvatar');
+  if (avatarElem) {
+    avatarElem.innerText = generateInitials(company);
+  }
+
+  // 3. Contact Info
+  const contact = lead.contact_person || lead.contact || 'N/A';
+  const email = lead.email || 'N/A';
+  const phone = lead.phone_number || lead.phone || 'N/A';
+
+  document.getElementById('modalContact').innerText = contact;
+  document.getElementById('modalEmail').innerText = email;
+  document.getElementById('modalPhone').innerText = phone;
+  document.getElementById('modalPlatform').innerText = (lead.platform_used === 'Google Forms') ? 'Gmail' : (lead.platform_used || 'N/A');
+  document.getElementById('modalService').innerText = lead.service_type || lead.service || 'N/A';
   document.getElementById('modalRoute').innerText = (lead.origin || 'N/A') + ' ➔ ' + (lead.destination || 'N/A');
+
+  // 4. Action Buttons 
+  const emailBtn = document.getElementById('contactModalEmailBtn');
+  const emailText = document.getElementById('contactModalEmailText');
+  if (emailBtn && emailText) {
+    emailText.innerText = email;
+    emailBtn.href = (email !== 'N/A') ? `mailto:${email}` : '#';
+  }
+
+  const phoneBtn = document.getElementById('contactModalPhoneBtn');
+  const phoneText = document.getElementById('contactModalPhoneText');
+  if (phoneBtn && phoneText) {
+    phoneText.innerText = phone;
+    phoneBtn.href = (phone !== 'N/A') ? `tel:${phone}` : '#';
+  }
+
+  // 5. Cargo Details
   const cargoElem = document.getElementById('modalCargo');
   if (cargoElem) {
     cargoElem.value = lead.cargo_details || lead.initial_inquiry_text || '';
   }
-  const status = lead.status || 'new_inquiry';
-  document.getElementById('modalStatusSelect').value = status;
 
-  // Set Current Price
-  document.getElementById('modalPriceInput').value = lead.estimated_amount || '';
-
-  // Set Current Pickup Data (kung mayroon)
-  if (document.getElementById('modalPickupAddress')) {
-    document.getElementById('modalPickupAddress').value = lead.pickup_address || '';
+  // 6. Price Auto-Fill 
+  const rawPrice = parseFloat(lead.estimated_amount ?? lead.estimated_price ?? lead.agreed_price ?? 0);
+  const priceInput = document.getElementById('modalPriceInput');
+  if (priceInput) {
+    priceInput.value = rawPrice > 0 ? rawPrice : '';
   }
-  if (document.getElementById('modalPickupDateTime')) {
-    document.getElementById('modalPickupDateTime').value = lead.pickup_datetime ? lead.pickup_datetime.slice(0, 16) : '';
+  updateValueChip(rawPrice);
+
+  // 7. Status & Stepper Alignment
+  const currentStatus = normalizeStatus(lead.status);
+  const statusSelect = document.getElementById('modalStatusSelect');
+  if (statusSelect) {
+    statusSelect.value = currentStatus;
   }
 
-  // Tiyakin kung dapat bang nakatago o nakalitaw ang Pickup fields
-  togglePickupFields(status);
+  restrictStatusDropdown(currentStatus);
+  togglePickupFields(currentStatus);
+  syncStepper();
 
-  document.getElementById('viewModal').classList.remove('hidden');
-  document.getElementById('viewModal').classList.add('flex');
+  // 8. Display Modal
+  const modal = document.getElementById('viewModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
 }
 
 function closeViewModal() {
-  document.getElementById('viewModal').classList.add('hidden');
-  document.getElementById('viewModal').classList.remove('flex');
-
-  // Clear inputs sa modal
-  if (document.getElementById('modalPickupAddress')) document.getElementById('modalPickupAddress').value = '';
-  if (document.getElementById('modalPickupDateTime')) document.getElementById('modalPickupDateTime').value = '';
+  const modal = document.getElementById('viewModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
 }
 
 async function handleStatusUpdate(e) {
@@ -73,11 +196,9 @@ async function handleStatusUpdate(e) {
   const priceVal = document.getElementById('modalPriceInput').value;
 
   const cargoDetails = document.getElementById('modalCargo')?.value.trim();
-
   const pickupAddress = document.getElementById('modalPickupAddress')?.value.trim();
   const pickupDateTime = document.getElementById('modalPickupDateTime')?.value;
 
-  // Client-side Validation kapag CLOSED_WON
   if (newStatus === 'closed_won') {
     if (!pickupAddress || !pickupDateTime) {
       if (typeof SwiftAlert !== 'undefined') {
@@ -93,24 +214,17 @@ async function handleStatusUpdate(e) {
     }
   }
 
-  // Kunin ang Session Agent Info 
-  const agentId = document.body.dataset.agentId || null;
-  const agentName = document.body.dataset.agentName || null;
-  const agentEmail = document.body.dataset.agentEmail || null;
-
   const payload = {
     status: newStatus,
     estimated_amount: priceVal ? parseFloat(priceVal) : 0,
+    estimated_price: priceVal ? parseFloat(priceVal) : 0,
     cargo_details: cargoDetails || null,
     pickup_address: pickupAddress || null,
-    pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null,
-    agent_id: agentId,
-    agent_name: agentName,
-    agent_email: agentEmail
+    pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null
   };
 
   try {
-    const response = await fetch(`${FASTAPI_BASE_URL}/api/v1/leads/${leadId}/status`, {
+    const response = await fetch(`${API_URL}/api/v1/leads/${leadId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -118,35 +232,13 @@ async function handleStatusUpdate(e) {
 
     if (response.ok) {
       closeViewModal();
-      
-      // Modern SweetAlert Notification
-      if (typeof SwiftAlert !== 'undefined') {
-        await SwiftAlert.fire({
-          icon: 'success',
-          title: '<span class="text-slate-800 text-xl font-bold">Updated Successfully!</span>',
-          html: `<p class="text-slate-600 text-sm mt-1">Status set to <b class="text-purple-600 uppercase">${newStatus.replace('_', ' ')}</b><br>Agreed Price: <b class="text-emerald-600">₱${parseFloat(priceVal || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</b></p>`,
-          confirmButtonText: 'Continue',
-          timer: 2000,
-          timerProgressBar: true
-        });
-      }
-
       location.reload();
     } else {
       const errData = await response.json();
-      const msg = errData.detail || 'Could not update lead record.';
-      if (typeof showAlert === 'function') {
-        showAlert('Update Failed', msg, 'error');
-      } else {
-        alert(`Update Failed: ${msg}`);
-      }
+      alert(`Update Failed: ${errData.detail || 'Could not update lead record.'}`);
     }
   } catch (err) {
     console.error(err);
-    if (typeof showAlert === 'function') {
-      showAlert('Server Error', 'Cannot connect to FastAPI server. Make sure Uvicorn is running!', 'error');
-    } else {
-      alert('Cannot connect to FastAPI server. Make sure Uvicorn is running!');
-    }
+    alert('Cannot connect to FastAPI server. Make sure Uvicorn is running!');
   }
 }

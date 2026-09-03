@@ -1,11 +1,10 @@
-
 // =================================================================================================
 // New Leads - Create & Submit
 // =================================================================================================
 
 // Resolve the API base URL from the PHP-injected config, falling back to localhost
-var LEADS_API_BASE = (window.ADMIN_DASHBOARD_DATA && window.ADMIN_DASHBOARD_DATA.api_base_url)
-  ? window.ADMIN_DASHBOARD_DATA.api_base_url
+var LEADS_API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL)
+  ? window.APP_CONFIG.API_BASE_URL
   : 'http://127.0.0.1:8000';
 
 function openLeadModal() {
@@ -45,16 +44,25 @@ async function submitNewLead(event) {
 
     const result = await response.json();
 
-    if (response.ok && result.status === 'success') {
-      alert('Lead successfully added!');
+    if (response.ok && (result.status === 'success' || response.status === 200 || response.status === 201)) {
       closeLeadModal();
-      window.location.reload();
+      
+      // Success Toast Notification
+      showToast('Lead successfully added!', 'success');
+
+      // Continuous flow delay para makita ang toast bago mag-reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+
     } else {
-      alert('Error: ' + (result.detail || 'Failed to create lead.'));
+      // 3. Error SweetAlert Modal
+      showAlert('Failed to Add Lead', result.detail || 'Failed to create lead.', 'error');
     }
   } catch (err) {
     console.error('Fetch Error:', err);
-    alert('Failed to connect to backend server.');
+    // 4. Connection Failure Alert
+    showAlert('Connection Error', 'Failed to connect to backend server.', 'error');
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<span>Save Lead</span>';

@@ -1,0 +1,1011 @@
+/* ==========================================================================
+   CRM DESIGN TOKENS  —  "NAVY & WHITE"
+   --------------------------------------------------------------------------
+   Single source of truth for the portal's modernised look. Loaded AFTER
+   assets/css/style.css from includes/header.php and components/head.php.
+
+   Scheme: the sidebar navy is the brand surface, everything else is white.
+   Navy owns STRUCTURE (rail, buttons, headings, table heads, chrome) while
+   the existing --accent-rgb picker (style.css -> ACCENT THEMES) keeps
+   owning LINKS and FOCUS rings so affordances survive.
+
+   Component classes (.crm-*) are plain CSS, so they are immune to the
+   Tailwind Play CDN's class scanner and work inside JS-injected markup.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+    /* Navy scale - anchored on the live sidebar colour #080e1e */
+    --navy-950: #050914;   /* deepest: rail base, page footer, overlays   */
+    --navy-900: #080e1e;   /* sidebar surface (brand anchor)              */
+    --navy-850: #0b1326;   /* raised dark surface                         */
+    --navy-800: #0f172a;   /* headings, primary buttons                   */
+    --navy-700: #1e293b;   /* strong secondary text                       */
+    --navy-600: #334155;   /* labels                                      */
+    --navy-500: #475569;   /* body text                                   */
+    --navy-400: #64748b;   /* subdued text                                */
+    --navy-300: #94a3b8;   /* muted / placeholder                         */
+    --navy-200: #cbd5e1;   /* disabled strokes                            */
+    --navy-100: #e2e8f0;   /* dividers on white                           */
+    --navy-50:  #f1f5f9;   /* zebra / chip fills                          */
+
+    /* Light canvas */
+    --canvas:        #f7f8fc;
+    --surface:       #ffffff;
+    --surface-muted: #f8fafc;
+    --surface-hover: #f2f5fb;
+    --line:          #e5e9f2;
+    --line-strong:   #d7deeb;
+
+    /* Text roles */
+    --fg-heading: var(--navy-900);
+    --fg-body:    var(--navy-600);
+    --fg-muted:   var(--navy-400);
+
+    /* Brand + focus (follows the accent picker) */
+    --brand:        rgb(var(--accent-rgb));
+    --brand-strong: rgb(var(--accent-strong-rgb));
+    --ring:         rgb(var(--accent-rgb) / 0.28);
+
+    /* Elevation */
+    --shadow-card: 0 1px 2px rgba(8, 14, 30, .04), 0 1px 3px rgba(8, 14, 30, .06);
+    --shadow-lift: 0 12px 32px -14px rgba(8, 14, 30, .20);
+    --shadow-navy: 0 8px 20px -10px rgba(8, 14, 30, .55);
+
+    /* Geometry */
+    --radius-card: 1rem;
+    --radius-ctl:  .625rem;
+    --radius-pill: 999px;
+}
+
+/* Dark mode re-tune: same navy family, inverted canvas. */
+html.dark {
+    --canvas:        #050914;
+    --surface:       #0b1326;
+    --surface-muted: #0f172a;
+    --surface-hover: #131e38;
+    --line:          rgba(148, 163, 184, .16);
+    --line-strong:   rgba(148, 163, 184, .30);
+
+    --fg-heading: #f1f5f9;
+    --fg-body:    #b6c2d6;
+    --fg-muted:   #8494ab;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, .45);
+    --shadow-lift: 0 16px 40px -16px rgba(0, 0, 0, .70);
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE
+   -------------------------------------------------------------------------- */
+/* Specificity (0,2,2) deliberately beats the Tailwind body utility. */
+html body.crm-body {
+    background-color: var(--canvas);
+    color: var(--fg-body);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Fallback heading colour only. :where() keeps specificity at (0,0,0) so an
+   explicit Tailwind text or tracking utility on a heading still wins. Without
+   this, ".crm-body h3" (0,1,1) beat ".text-white" (0,1,0) and painted the
+   light-mode navy (#080e1e) onto headings sitting on dark gradient banners. */
+:where(.crm-body :is(h1, h2, h3, h4)) {
+    color: var(--fg-heading);
+    letter-spacing: -0.015em;
+}
+
+/* --------------------------------------------------------------------------
+   3. SIDEBAR  -  navy rail
+   -------------------------------------------------------------------------- */
+.crm-sidebar {
+    background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+    border-right: 1px solid rgba(148, 163, 184, .10);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, .02);
+}
+
+/* Brand block */
+.crm-brand-name {
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+.crm-brand-badge {
+    display: inline-block;
+    margin-top: .3rem;
+    padding: .1rem .45rem;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .10);
+    font-size: .5625rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #a9b8cf;
+}
+
+/* Section headers */
+.crm-nav-group {
+    padding: 0 0 0 .625rem;
+    margin-bottom: .4rem;
+    font-size: .5625rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: #5b6b85;
+}
+
+/* Nav items */
+.crm-nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .625rem;
+    width: 100%;
+    padding: .375rem .5rem;
+    border-radius: var(--radius-ctl);
+    border: 1px solid transparent;
+    color: #94a3b8;
+    font-size: .75rem;
+    font-weight: 500;
+    text-align: left;
+    transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.crm-nav-item:hover {
+    background: rgba(255, 255, 255, .06);
+    color: #ffffff;
+}
+
+/* Active = white pill, navy text (the "navy + white" signature) */
+.crm-nav-item.is-active {
+    background: var(--surface);
+    color: var(--navy-900);
+    font-weight: 700;
+    box-shadow: var(--shadow-navy);
+}
+html.dark .crm-nav-item.is-active {
+    background: #e8eefb;
+    color: var(--navy-950);
+}
+
+/* Icon tile */
+.crm-nav-ico {
+    flex-shrink: 0;
+    width: 1.625rem;
+    height: 1.625rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .5rem;
+    background: rgba(255, 255, 255, .05);
+    color: #8fa0ba;
+    font-size: .75rem;
+    transition: background-color .18s ease, color .18s ease;
+}
+.crm-nav-item:hover .crm-nav-ico {
+    background: rgba(255, 255, 255, .12);
+    color: #ffffff;
+}
+.crm-nav-item.is-active .crm-nav-ico {
+    background: var(--navy-900);
+    color: #ffffff;
+}
+html.dark .crm-nav-item.is-active .crm-nav-ico {
+    background: var(--navy-950);
+}
+
+/* Left accent bar on the active pill */
+.crm-nav-item.is-active::before {
+    content: "";
+    position: absolute;
+    left: -.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 55%;
+    border-radius: 0 3px 3px 0;
+    background: var(--brand);
+}
+
+/* Submenu */
+.crm-sub-item {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .3rem .5rem;
+    border-radius: .5rem;
+    color: #7f8ea8;
+    font-size: .6875rem;
+    font-weight: 500;
+    transition: background-color .16s ease, color .16s ease;
+}
+.crm-sub-item:hover {
+    background: rgba(255, 255, 255, .06);
+    color: #ffffff;
+}
+.crm-sub-item.is-active {
+    background: rgba(255, 255, 255, .10);
+    color: #ffffff;
+    font-weight: 700;
+}
+.crm-sub-item.is-active .crm-sub-ico { color: var(--brand); }
+.crm-sub-ico { width: 1rem; text-align: center; font-size: .625rem; flex-shrink: 0; }
+
+/* Count badge on a nav row */
+.crm-nav-badge {
+    flex-shrink: 0;
+    min-width: 1.15rem;
+    padding: .05rem .35rem;
+    border-radius: var(--radius-pill);
+    background: rgba(148, 163, 184, .18);
+    color: #cbd5e1;
+    font-size: .5625rem;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.15rem;
+}
+.crm-nav-item.is-active .crm-nav-badge {
+    background: var(--navy-900);
+    color: #ffffff;
+}
+
+/* Footer card */
+.crm-side-foot {
+    border-top: 1px solid rgba(148, 163, 184, .14);
+}
+.crm-side-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .45rem;
+    border-radius: .875rem;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .07);
+    transition: background-color .18s ease, border-color .18s ease;
+}
+.crm-side-card:hover {
+    background: rgba(255, 255, 255, .07);
+    border-color: rgba(255, 255, 255, .13);
+}
+.crm-avatar-navy {
+    flex-shrink: 0;
+    width: 2.125rem;
+    height: 2.125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .625rem;
+    background: linear-gradient(140deg, #26364f 0%, var(--navy-950) 100%);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #ffffff;
+    font-size: .6875rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+.crm-side-name {
+    font-size: .6875rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.crm-side-meta {
+    display: block;
+    font-size: .5625rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #7f8ea8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.crm-logout-btn {
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .5rem;
+    color: #7f8ea8;
+    transition: background-color .16s ease, color .16s ease;
+}
+.crm-logout-btn:hover {
+    background: rgba(244, 63, 94, .14);
+    color: #fb7185;
+}
+
+/* Reveal-on-hover labels (rail stays collapsed at w-20) */
+.crm-reveal {
+    opacity: 0;
+    transition: opacity .22s ease;
+}
+.group:hover .crm-reveal { opacity: 1; }
+
+/* SLA mini-widget (customer rail) */
+.crm-sla-box {
+    padding: .625rem .75rem;
+    border-radius: .875rem;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .07);
+}
+.crm-sla-track {
+    height: .3125rem;
+    border-radius: var(--radius-pill);
+    background: rgba(148, 163, 184, .22);
+    overflow: hidden;
+}
+.crm-sla-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, #34d399, #10b981);
+}
+
+/* --------------------------------------------------------------------------
+   4. SURFACES  -  cards, panels
+   -------------------------------------------------------------------------- */
+.crm-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+}
+
+.crm-card-hover {
+    transition: box-shadow .22s ease, transform .22s ease, border-color .22s ease;
+}
+.crm-card-hover:hover {
+    box-shadow: var(--shadow-lift);
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+}
+
+/* Panel header: title row inside a card */
+.crm-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+}
+.crm-panel-title {
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--fg-heading);
+    letter-spacing: -0.01em;
+}
+.crm-panel-sub {
+    display: block;
+    margin-top: .125rem;
+    font-size: .75rem;
+    font-weight: 500;
+    color: var(--fg-muted);
+}
+.crm-panel-body { padding: 1.25rem; }
+
+/* Section eyebrow above a card grid */
+.crm-section-label {
+    font-size: .6875rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------------------
+   5. BUTTONS
+   -------------------------------------------------------------------------- */
+.crm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    height: 2.25rem;
+    padding: 0 1rem;
+    border-radius: var(--radius-ctl);
+    border: 1px solid transparent;
+    font-size: .8125rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease,
+                color .16s ease, box-shadow .16s ease, transform .12s ease;
+}
+.crm-btn:active { transform: scale(.98); }
+.crm-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.crm-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Primary: navy - the structural action */
+.crm-btn-primary {
+    background: var(--navy-800);
+    color: #ffffff;
+    box-shadow: var(--shadow-navy);
+}
+.crm-btn-primary:hover { background: var(--navy-900); }
+html.dark .crm-btn-primary {
+    background: #e8eefb;
+    color: var(--navy-950);
+    box-shadow: none;
+}
+html.dark .crm-btn-primary:hover { background: #ffffff; }
+
+/* Accent: follows the picker - reserved for the single hero action */
+.crm-btn-accent {
+    background: var(--brand);
+    color: #ffffff;
+}
+.crm-btn-accent:hover { background: var(--brand-strong); }
+
+/* Ghost: bordered, transparent */
+.crm-btn-ghost {
+    background: var(--surface);
+    border-color: var(--line-strong);
+    color: var(--navy-700);
+}
+.crm-btn-ghost:hover {
+    background: var(--surface-hover);
+    border-color: var(--navy-300);
+    color: var(--navy-900);
+}
+html.dark .crm-btn-ghost { color: var(--fg-body); }
+html.dark .crm-btn-ghost:hover {
+    background: var(--surface-hover);
+    color: #ffffff;
+}
+
+/* Subtle: borderless quiet action */
+.crm-btn-subtle {
+    background: transparent;
+    color: var(--navy-500);
+}
+.crm-btn-subtle:hover {
+    background: var(--surface-hover);
+    color: var(--navy-900);
+}
+
+/* Danger */
+.crm-btn-danger {
+    background: #dc2626;
+    color: #ffffff;
+}
+.crm-btn-danger:hover { background: #b91c1c; }
+
+/* Sizes */
+.crm-btn-sm { height: 1.875rem; padding: 0 .75rem; font-size: .75rem; border-radius: .5rem; }
+.crm-btn-lg { height: 2.75rem; padding: 0 1.375rem; font-size: .875rem; }
+
+/* Icon-only */
+.crm-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-ctl);
+    border: 1px solid transparent;
+    color: var(--navy-500);
+    cursor: pointer;
+    transition: background-color .16s ease, color .16s ease, border-color .16s ease;
+}
+.crm-icon-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--line);
+    color: var(--navy-900);
+}
+.crm-icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+html.dark .crm-icon-btn { color: var(--fg-muted); }
+html.dark .crm-icon-btn:hover { color: #ffffff; }
+
+
+/* --------------------------------------------------------------------------
+   6. FORMS
+   -------------------------------------------------------------------------- */
+.crm-input,
+.crm-select,
+.crm-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-ctl);
+    padding: .55rem .75rem;
+    font-size: .8125rem;
+    color: var(--navy-800);
+    transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+.crm-input::placeholder,
+.crm-textarea::placeholder { color: var(--navy-300); }
+.crm-input:hover,
+.crm-select:hover,
+.crm-textarea:hover { border-color: var(--navy-300); }
+.crm-input:focus,
+.crm-select:focus,
+.crm-textarea:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--ring);
+}
+html.dark .crm-input,
+html.dark .crm-select,
+html.dark .crm-textarea {
+    background: var(--surface-muted);
+    color: #e8eefb;
+}
+
+.crm-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--navy-500);
+}
+html.dark .crm-label { color: var(--fg-muted); }
+
+/* Search field with leading icon */
+.crm-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.crm-search .crm-search-ico {
+    position: absolute;
+    left: .75rem;
+    font-size: .75rem;
+    color: var(--navy-300);
+    pointer-events: none;
+}
+.crm-search .crm-input { padding-left: 2.125rem; }
+
+/* --------------------------------------------------------------------------
+   7. TABLES
+   -------------------------------------------------------------------------- */
+.crm-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card);
+}
+.crm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: .8125rem;
+}
+.crm-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface-muted);
+    padding: .75rem 1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: .625rem;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--navy-500);
+    text-align: left;
+    white-space: nowrap;
+}
+html.dark .crm-table thead th {
+    background: var(--surface-muted);
+    color: var(--fg-muted);
+}
+.crm-table tbody td {
+    padding: .8125rem 1rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg-body);
+    vertical-align: middle;
+}
+.crm-table tbody tr { transition: background-color .14s ease; }
+.crm-table tbody tr:hover td { background: var(--surface-hover); }
+.crm-table tbody tr:last-child td { border-bottom: none; }
+.crm-table .cell-strong {
+    font-weight: 600;
+    color: var(--fg-heading);
+}
+html.dark .crm-table tbody tr:hover td { background: var(--surface-hover); }
+
+
+/* --------------------------------------------------------------------------
+   8. BADGES, CHIPS, PILLS
+   -------------------------------------------------------------------------- */
+.crm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .2rem .6rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    font-size: .6875rem;
+    font-weight: 700;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+.crm-badge-dot {
+    width: .375rem;
+    height: .375rem;
+    border-radius: var(--radius-pill);
+    background: currentColor;
+    flex-shrink: 0;
+}
+.crm-badge-navy   { background: var(--navy-50);       color: var(--navy-700); border-color: var(--navy-100); }
+.crm-badge-green  { background: #ecfdf5;              color: #047857;          border-color: #a7f3d0; }
+.crm-badge-amber  { background: #fffbeb;              color: #b45309;          border-color: #fde68a; }
+.crm-badge-red    { background: #fef2f2;              color: #b91c1c;          border-color: #fecaca; }
+.crm-badge-blue   { background: #eff6ff;              color: #1d4ed8;          border-color: #bfdbfe; }
+.crm-badge-violet { background: #f5f3ff;              color: #6d28d9;          border-color: #ddd6fe; }
+.crm-badge-slate  { background: var(--surface-muted); color: var(--navy-500);  border-color: var(--line); }
+html.dark .crm-badge-navy,
+html.dark .crm-badge-green,
+html.dark .crm-badge-amber,
+html.dark .crm-badge-red,
+html.dark .crm-badge-blue,
+html.dark .crm-badge-violet,
+html.dark .crm-badge-slate {
+    border-color: rgba(148, 163, 184, .22);
+}
+
+/* Filter pill (segmented control item) */
+.crm-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .375rem .8125rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--navy-500);
+    font-size: .75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+.crm-pill:hover {
+    border-color: var(--navy-300);
+    color: var(--navy-900);
+    background: var(--surface-hover);
+}
+.crm-pill.is-active {
+    background: var(--navy-800);
+    border-color: var(--navy-800);
+    color: #ffffff;
+    box-shadow: var(--shadow-navy);
+}
+html.dark .crm-pill.is-active {
+    background: #e8eefb;
+    border-color: #e8eefb;
+    color: var(--navy-950);
+}
+
+/* --------------------------------------------------------------------------
+   9. TOPBAR + AVATAR
+   -------------------------------------------------------------------------- */
+.crm-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4rem;
+    padding: 0 1.25rem;
+    background: rgba(255, 255, 255, .82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+}
+html.dark .crm-topbar {
+    background: rgba(11, 19, 38, .82);
+    border-bottom-color: var(--line);
+}
+.crm-topbar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--fg-heading);
+}
+.crm-topbar-sub {
+    display: block;
+    font-size: .6875rem;
+    font-weight: 500;
+    color: var(--fg-muted);
+}
+.crm-topbar-group {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.crm-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: .625rem;
+    background: linear-gradient(140deg, var(--navy-700), var(--navy-950));
+    color: #ffffff;
+    font-size: .6875rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. KPI / STAT CARDS
+   -------------------------------------------------------------------------- */
+.crm-kpi {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 1.125rem 1.25rem;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow .22s ease, transform .22s ease, border-color .22s ease;
+}
+.crm-kpi:hover {
+    box-shadow: var(--shadow-lift);
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+}
+/* Navy hairline along the top edge */
+.crm-kpi::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--navy-800), transparent 65%);
+    opacity: .55;
+}
+.crm-kpi-label {
+    font-size: .625rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+}
+.crm-kpi-value {
+    margin-top: .375rem;
+    font-size: 1.625rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--fg-heading);
+    font-variant-numeric: tabular-nums;
+}
+.crm-kpi-foot {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .5rem;
+    font-size: .6875rem;
+    font-weight: 600;
+    color: var(--fg-muted);
+}
+.crm-delta { display: inline-flex; align-items: center; gap: .2rem; font-weight: 700; }
+.crm-delta-up   { color: #059669; }
+.crm-delta-down { color: #e11d48; }
+html.dark .crm-delta-up   { color: #34d399; }
+html.dark .crm-delta-down { color: #fb7185; }
+
+/* Icon tile on a KPI card */
+.crm-kpi-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+    background: var(--navy-50);
+    border: 1px solid var(--navy-100);
+    color: var(--navy-700);
+    font-size: .875rem;
+    flex-shrink: 0;
+}
+html.dark .crm-kpi-ico {
+    background: rgba(148, 163, 184, .10);
+    border-color: rgba(148, 163, 184, .18);
+    color: #cbd5e1;
+}
+
+/* --------------------------------------------------------------------------
+   11. MODALS
+   -------------------------------------------------------------------------- */
+.crm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(5, 9, 20, .55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.crm-modal {
+    width: 100%;
+    max-width: 28rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-lift);
+    animation: crm-pop .22s cubic-bezier(.16, 1, .3, 1);
+}
+.crm-modal-lg { max-width: 44rem; }
+.crm-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+.crm-modal-body { padding: 1.5rem; }
+.crm-modal-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .625rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--line);
+    background: var(--surface-muted);
+
+/* --------------------------------------------------------------------------
+   12. EMPTY STATE + PAGINATION
+   -------------------------------------------------------------------------- */
+.crm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+.crm-empty-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin-bottom: .25rem;
+    border-radius: 1rem;
+    background: var(--navy-50);
+    border: 1px solid var(--navy-100);
+    color: var(--navy-300);
+    font-size: 1.125rem;
+}
+.crm-empty-title {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--fg-heading);
+}
+.crm-empty-sub {
+    font-size: .75rem;
+    color: var(--fg-muted);
+    max-width: 24rem;
+}
+
+.crm-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .875rem 1.25rem;
+    border-top: 1px solid var(--line);
+    font-size: .75rem;
+    color: var(--fg-muted);
+}
+.crm-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.875rem;
+    height: 1.875rem;
+    padding: 0 .5rem;
+    border-radius: .5rem;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--navy-600);
+    font-size: .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+.crm-page-btn:hover:not(:disabled) {
+    background: var(--surface-hover);
+    border-color: var(--navy-300);
+    color: var(--navy-900);
+}
+.crm-page-btn.is-active {
+    background: var(--navy-800);
+    border-color: var(--navy-800);
+    color: #ffffff;
+}
+.crm-page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* --------------------------------------------------------------------------
+   13. MOTION
+   -------------------------------------------------------------------------- */
+@keyframes crm-pop {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes crm-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+.crm-fade-up { animation: crm-fade-up .4s cubic-bezier(.16, 1, .3, 1) both; }
+.crm-d1 { animation-delay: .04s; }
+.crm-d2 { animation-delay: .08s; }
+.crm-d3 { animation-delay: .12s; }
+.crm-d4 { animation-delay: .16s; }
+.crm-d5 { animation-delay: .20s; }
+.crm-d6 { animation-delay: .24s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .crm-fade-up, .crm-modal { animation: none; }
+    .crm-kpi:hover, .crm-card-hover:hover { transform: none; }
+    .crm-btn:active { transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   14. SCROLLBAR
+   -------------------------------------------------------------------------- */
+.crm-scroll { scrollbar-width: thin; scrollbar-color: var(--navy-200) transparent; }
+.crm-scroll::-webkit-scrollbar { width: .375rem; height: .375rem; }
+.crm-scroll::-webkit-scrollbar-track { background: transparent; }
+.crm-scroll::-webkit-scrollbar-thumb {
+    background: var(--navy-200);
+    border-radius: var(--radius-pill);
+}
+.crm-scroll::-webkit-scrollbar-thumb:hover { background: var(--navy-300); }
+html.dark .crm-scroll { scrollbar-color: rgba(148, 163, 184, .28) transparent; }
+
+/* --------------------------------------------------------------------------
+   15. DENSITY  -  honours the existing compact preference
+   -------------------------------------------------------------------------- */
+html[data-density="compact"] .crm-kpi { padding: .8125rem .9375rem; }
+html[data-density="compact"] .crm-kpi-value { font-size: 1.375rem; }
+html[data-density="compact"] .crm-table tbody td { padding: .5rem .75rem; }
+html[data-density="compact"] .crm-table thead th { padding: .5rem .75rem; }
+html[data-density="compact"] .crm-panel-head { padding: .75rem 1rem; }
+html[data-density="compact"] .crm-panel-body { padding: .875rem 1rem; }
+
+    border-radius: 0 0 1.25rem 1.25rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   16. MOBILE RAIL
+   On small screens the sidebar is off-canvas and slides in fully expanded,
+   so hover-reveal labels must always be visible there.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    #sidebar { width: 16rem; }
+    #sidebar .crm-reveal { opacity: 1; }
+    #sidebar .crm-nav-item.is-active::before { left: -.25rem; }
+    /* Off-canvas drawer. The markup carries Tailwind's -translate-x-full;
+       these id-scoped rules win on specificity and drive the open state. */
+    #sidebar.is-open { transform: translateX(0); }
+    #sidebarOverlay.is-active { display: block; }
+}
+

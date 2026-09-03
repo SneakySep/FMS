@@ -44,7 +44,7 @@ include_once '../../includes/sidebar.php';
     <section class="bg-gradient-to-r from-brand-blue to-brand-darkblue rounded-2xl p-6 lg:p-7 text-white shadow-lg shadow-blue-600/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 overflow-hidden relative tk-anim">
       <div class="relative z-10">
         <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-blue-100 bg-white/10 border border-white/20 px-2.5 py-1 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Support Hub · Online</span>
-        <h1 class="text-xl lg:text-2xl font-black italic tracking-tight mt-3">How can we help? 🤝</h1>
+        <h1 class="text-xl lg:text-2xl font-black italic text-white tracking-tight mt-3">How can we help? 🤝</h1>
         <p class="text-sm text-blue-100 mt-1.5 max-w-md">Open a ticket and our team will route it through the Notification Hub. Average first response time: <span class="font-semibold text-white">2h 14m</span>.</p>
         <div class="flex flex-wrap gap-3 mt-5">
           <button onclick="createNewTicket()" class="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors shadow-sm flex items-center gap-2"><i class="fa-solid fa-plus text-xs"></i> New Ticket</button>

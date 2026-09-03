@@ -1,4 +1,15 @@
-﻿<div class="bg-white border border-slate-200 shadow-sm rounded-xl p-4 md:p-6 flex-[2_1_0px] min-w-[300px]">
+﻿<?php
+// ---------------------------------------------------------------------------
+// Defensive defaults. This component is included by both dashboard.php and
+// bi_analytics.php, and it relies on the includer having already prepared
+// $pipeline (stage rows) and $closed_won (int). If an includer forgets, the
+// old code hit array_column(null, 'count') which is a fatal TypeError in
+// PHP 8, so fall back to an empty/zero pipeline instead of killing the page.
+// ---------------------------------------------------------------------------
+$pipeline   = (isset($pipeline) && is_array($pipeline)) ? $pipeline : [];
+$closed_won = (isset($closed_won)) ? (int) $closed_won : 0;
+?>
+<div class="bg-white border border-slate-200 shadow-sm rounded-xl p-4 md:p-6 flex-[2_1_0px] min-w-[300px]">
   <div class="flex justify-between items-start mb-4 md:mb-6">
     <div class="grid gap-4 grid-cols-2">
       <div>
@@ -53,6 +64,13 @@
           </ul>
       </div>
     </div>
+
+    <a href="reports.php" class="inline-flex items-center gap-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl transition-all shadow-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      View full report
+    </a>
   </div>
 
   <div id="line-chart"></div>

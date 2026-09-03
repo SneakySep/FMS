@@ -102,7 +102,7 @@ if (!empty($sla_data) && is_array($sla_data)) {
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           Commitments in good standing
         </span>
-        <h1 class="text-xl lg:text-2xl font-black italic tracking-tight mt-3">Your SLA compliance is holding at <?= $sla_compliance ?>%</h1>
+        <h1 class="text-xl lg:text-2xl font-black italic text-white tracking-tight mt-3">Your SLA compliance is holding at <?= $sla_compliance ?>%</h1>
         <p class="text-sm text-blue-100 mt-1.5 max-w-md">One open breach needs attention. Most service commitments are being met ahead of target.</p>
         <div class="flex flex-wrap gap-2 mt-4">
           <span class="bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl border border-white/20 transition-colors flex items-center gap-1.5">

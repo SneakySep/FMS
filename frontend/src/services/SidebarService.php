@@ -153,26 +153,26 @@ class SidebarService
                 'portalLabel' => 'SALES AGENT PORTAL',
                 'sections' => [
                     'OVERVIEW' => [
-                        'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-chart-pie', 'url' => 'dashboard.php'],
+                        'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-chart-pie', 'url' => '/src/views/sales_agent/dashboard.php'],
                     ],
                     'PIPELINE' => [
                         'leads' => [
                             'label' => 'My Leads', 
                             'icon' => 'fa-users-line', 
-                            'url' => 'my_leads.php', 
+                            'url' => '/src/views/sales_agent/my_leads.php', 
                             'badge' => (string)$leads, 
                             'badgeColor' => 'bg-purple-500/20 text-purple-400'
                         ],
                         'kanban' => ['label' => 'Sales Board', 
                                      'icon' => 'fa-columns', 
-                                     'url' => 'kanban.php'],
+                                     'url' => '/src/views/sales_agent/kanban.php'],
                     ],
                     'ACCOUNTS & CLIENTS' => [
                         'accounts_group' => [
                             'label' => 'Account & Clients',
                             'icon' => 'fa-users-gear',
                             'submenu' => [
-                                'customers' => ['label' => 'Customers', 'icon' => 'fa-users', 'url' => 'customer.php'],
+                                'customers' => ['label' => 'Customers', 'icon' => 'fa-users', 'url' => '/src/views/sales_agent/customer.php'],
                                 'book_shipment' => ['label' => 'Book Shipment', 'icon' => 'fa-box-archive', 'url' => 'book_shipment.php'],
                                 'shipment' => ['label' => 'Shipment Tracking', 'icon' => 'fa-truck-field', 'url' => 'shipment.php'],
                             ]
@@ -190,11 +190,11 @@ class SidebarService
                         ]
                     ],
                     'REPORT' => [
-                        'analytics' => ['label' => 'Analytics & Reports', 'icon' => 'fa-chart-line', 'url' => 'analytics.php'],
-                        'post_sales' => ['label' => 'Post-Sales & Events', 'icon' => 'fa-calendar-check', 'url' => 'post-sales-events.php'],
+                        'analytics' => ['label' => 'Analytics & Reports', 'icon' => 'fa-chart-line', 'url' => '/src/views/sales_agent/bi_analytics.php'],
+                        'post_sales' => ['label' => 'Post-Sales & Events', 'icon' => 'fa-calendar-check', 'url' => '/src/views/sales_agent/post_event.php'],
                     ],
                     'ROOMS' => [
-                        'chat'     => ['label' => 'Direct Chat', 'icon' => 'fa-comments', 'url' => 'chat.php'],
+                        'chat'     => ['label' => 'Direct Chat', 'icon' => 'fa-comments', 'url' => '../chat/chat.php'],
                         'settings' => ['label' => 'Settings', 'icon' => 'fa-gear', 'url' => 'settings.php'],
                     ]
                 ]

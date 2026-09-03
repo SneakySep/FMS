@@ -15,12 +15,12 @@ if ($user_role === 'sales_agent') {
 
 <!-- FLOATING CHAT BUTTON -->
 <div class="fixed bottom-5 right-5 z-50">
-    <button id="toggleChatBtn" class="relative bg-brand-blue hover:bg-brand-darkblue text-white p-4 rounded-full shadow-lg transition flex items-center justify-center">
-        <i data-lucide="message-square" class="w-6 h-6"></i>
+    <button id="toggleChatBtn" class="relative bg-navy-900 hover:bg-navy-950 dark:bg-slate-200 dark:hover:bg-white dark:text-navy-950 text-white w-12 h-12 rounded-2xl shadow-lg shadow-navy transition-all duration-200 flex items-center justify-center hover:-translate-y-0.5 active:scale-95">
+        <i data-lucide="message-square" class="w-5 h-5"></i>
         
         <!-- COUNTER BADGE PARA SA SALES AGENT -->
         <?php if ($user_role === 'sales_agent'): ?>
-            <span id="unreadBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-bounce">
+            <span id="unreadBadge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white dark:ring-navy-900 animate-bounce">
                 0
             </span>
         <?php endif; ?>
@@ -28,14 +28,14 @@ if ($user_role === 'sales_agent') {
 </div>
 
 <!-- CHAT MAIN WINDOW -->
-<div id="chatModal" class="hidden fixed bottom-20 right-5 z-50 w-[95vw] md:w-[750px] h-[550px] bg-white border border-slate-200 rounded-2xl shadow-lg flex overflow-hidden">
+<div id="chatModal" class="hidden fixed bottom-20 right-5 z-50 w-[95vw] md:w-[750px] h-[550px] crm-card !rounded-2xl !shadow-lift flex overflow-hidden">
 
     <?php if ($user_role === 'sales_agent'): ?>
         <!-- SIDEBAR INBOX (SALES AGENT ONLY) -->
-        <div class="w-1/3 bg-slate-50 border-r border-slate-200 flex flex-col">
-            <div class="p-3 border-b border-slate-200 flex justify-between items-center">
-                <h2 class="font-bold text-slate-800 text-sm">Customer Inbox</h2>
-                <button onclick="loadCustomerList()" class="text-xs text-blue-400 hover:underline">Refresh</button>
+        <div class="w-1/3 bg-surface-muted border-r border-line flex flex-col">
+            <div class="p-3 border-b border-line flex justify-between items-center">
+                <h2 class="font-bold text-navy-900 dark:text-slate-100 text-sm">Customer Inbox</h2>
+                <button onclick="loadCustomerList()" class="text-xs text-brand-blue hover:underline">Refresh</button>
             </div>
             <!-- LIST NG MGA MGA CUSTOMER NA NAG-CHAT -->
             <div id="customerList" class="flex-1 overflow-y-auto divide-y divide-slate-100">
@@ -45,13 +45,13 @@ if ($user_role === 'sales_agent') {
     <?php endif; ?>
 
     <!-- CHAT BOX WINDOW (COMMON) -->
-    <div class="flex-1 flex flex-col bg-slate-50/40">
+    <div class="flex-1 flex flex-col bg-canvas">
         
         <!-- Header -->
-        <div class="p-3 bg-white border-b border-slate-200 flex justify-between items-center">
+        <div class="p-3 bg-surface border-b border-line flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                <h3 id="chatHeaderTitle" class="font-semibold text-slate-800 text-sm">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></div>
+                <h3 id="chatHeaderTitle" class="font-semibold text-navy-900 dark:text-slate-100 text-sm">
                     <?php echo $user_role === 'sales_agent' ? 'Choose Customer' : 'SwiftFreight AI Support'; ?>
                 </h3>
             </div>
@@ -59,32 +59,32 @@ if ($user_role === 'sales_agent') {
             <div class="flex gap-2">
                 <?php if ($user_role === 'sales_agent'): ?>
                     <!-- BUTTON PARA IBALIK AGAD KAY AI -->
-                    <button id="handoverBtn" onclick="handoverToAI()" class="hidden text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 px-2 py-1 rounded transition">
+                    <button id="handoverBtn" onclick="handoverToAI()" class="hidden text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold transition">
                         Hand Back to AI
                     </button>
                 <?php endif; ?>
 
                 <?php if ($user_role === 'customer'): ?>
-                    <button id="clearHistoryBtn" onclick="clearChatHistory()" class="text-xs text-red-400 hover:text-red-300">Clear Chat</button>
+                    <button id="clearHistoryBtn" onclick="clearChatHistory()" class="text-xs text-rose-500 hover:text-rose-600 font-semibold">Clear Chat</button>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- Messages Area -->
-        <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm">
+        <div id="messagesContainer" class="crm-scroll flex-1 p-4 overflow-y-auto space-y-3 text-sm">
             <!-- Dito lumalabas ang chat bubbles -->
         </div>
 
         <!-- Input Area -->
-        <form id="widgetChatForm" class="p-3 bg-white border-t border-slate-200 flex gap-2">
+        <form id="widgetChatForm" class="p-3 bg-surface border-t border-line flex gap-2">
             <input 
                 type="text" 
                 id="widgetMessageInput" 
                 placeholder="I-type ang mensahe..." 
-                class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 text-sm focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition"
+                class="crm-input !text-sm flex-1"
                 required
             >
-            <button type="submit" class="bg-brand-blue hover:bg-brand-darkblue text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+            <button type="submit" class="crm-btn crm-btn-primary !text-sm">
                 Send
             </button>
         </form>
@@ -125,7 +125,7 @@ if ($user_role === 'sales_agent') {
         
         div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
         div.innerHTML = `
-            <div class="${isMe ? 'bg-brand-blue text-white' : 'bg-slate-100 text-slate-800 border border-slate-200'} p-2.5 rounded-xl max-w-[80%]">
+            <div class="${isMe ? 'bg-navy-900 text-white dark:bg-slate-200 dark:text-navy-950' : 'bg-surface text-navy-700 border border-line'} p-2.5 rounded-xl max-w-[80%] shadow-sm">
                 ${text}
             </div>
         `;
@@ -199,14 +199,14 @@ if ($user_role === 'sales_agent') {
 
             customers.forEach(cust => {
                 const item = document.createElement('div');
-                item.className = "p-3 hover:bg-slate-100 cursor-pointer flex items-center gap-3 transition border-b border-slate-100";
+                item.className = "p-3 hover:bg-surface-hover cursor-pointer flex items-center gap-3 transition border-b border-line";
                 item.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-xs">
+                    <div class="w-8 h-8 rounded-lg bg-navy-900 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                         ${cust.customer_id.substring(0, 2).toUpperCase()}
                     </div>
                     <div class="flex-1 overflow-hidden">
-                        <p class="text-xs font-semibold text-brand-blue truncate">${cust.customer_id}</p>
-                        <p class="text-[11px] text-gray-400 truncate">${cust.last_message}</p>
+                        <p class="text-xs font-semibold text-navy-900 dark:text-slate-100 truncate">${cust.customer_id}</p>
+                        <p class="text-[11px] text-navy-400 dark:text-slate-400 truncate">${cust.last_message}</p>
                     </div>
                 `;
                 item.onclick = () => selectCustomerForSales(cust.customer_id);

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional, List, Generic, TypeVar
+from typing import Optional, List, Generic, TypeVar, Any
 from datetime import datetime
 from uuid import UUID
 
@@ -64,6 +64,21 @@ class BookingResponse(BookingCreate):
     # Inupdate para sa Pydantic V2 (nawala rin ang deprecation warning)
     model_config = ConfigDict(from_attributes=True)
 
+# backlog remove soon
 class ChatRequest(BaseModel):
     customer_id: str
     message: str
+
+# Sintement Define json schema
+class ExtractedDetails(BaseModel):
+    origin: Optional[str] = None
+    destination: Optional[str] = None
+    service_type: Optional[str] = None
+    cargo_details: Optional[str] = None
+
+class AIAnalysisResult(BaseModel):
+    reply: str
+    sentiment: str # "positive", "neutral", "negative"
+    updated_details: ExtractedDetails
+    is_complete: bool
+    force_handoff: bool

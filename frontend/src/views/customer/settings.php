@@ -2,11 +2,72 @@
 $page_title = "Settings · Priority Handling Logistics";
 $activePage = 'settings';
 require_once '../../includes/header.php';
+require_once '../../helpers/api_helper.php';
 include_once '../../includes/sidebar.php';
+
+// ---------------------------------------------------------------------------
+// Hydrate the settings screen with the signed-in customer's real profile and
+// saved preferences. Every call is defensive: when the FastAPI service is down
+// the page still renders (JS then falls back to localStorage-only behaviour).
+// ---------------------------------------------------------------------------
+$profile_res = make_api_request('/api/v1/portal/profile', 'GET');
+$raw_profile = $profile_res['data'] ?? [];
+$profile     = is_array($raw_profile) ? ($raw_profile['data'] ?? $raw_profile) : [];
+
+$settings_res = make_api_request('/api/v1/portal/settings', 'GET');
+$raw_settings = $settings_res['data'] ?? [];
+$settings     = is_array($raw_settings) ? ($raw_settings['data'] ?? $raw_settings) : [];
+
+// Appearance values are read by the no-flash bootstrap in header.php, so they
+// must be emitted as real data attributes on <html> as well as on this root.
+$dark_mode    = !empty($settings['dark_mode']);
+$accent_color = in_array($settings['accent_color'] ?? '', ['blue', 'violet', 'emerald', 'amber', 'rose'], true)
+    ? $settings['accent_color'] : 'blue';
+$density      = ($settings['density'] ?? 'comfortable') === 'compact' ? 'compact' : 'comfortable';
+
+$attr = function ($value) {
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+};
+
+$acct = [
+    'customer_id'  => $profile['customer_id'] ?? ($profile['id'] ?? ''),
+    'company_name' => $profile['company_name'] ?? '',
+    'email'        => $profile['email'] ?? ($_SESSION['email'] ?? ''),
+    'phone_number' => $profile['phone_number'] ?? '',
+    'tier'         => $profile['tier'] ?? ($profile['status'] ?? ''),
+    'status'       => $profile['status'] ?? '',
+    'created_at'   => $profile['created_at'] ?? '',
+];
 ?>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <!--
+      The <main> element doubles as the hydration root for
+      assets/js/customer/customer_settings.js: the real profile + saved
+      preferences are rendered here as data attributes so the page paints with
+      correct values before the JS fetch round-trip completes.
+    -->
+    <main id="customerSettingsRoot" class="flex-1 flex flex-col min-w-0"
+          data-customer-user-id="<?= $attr($_SESSION['user_id'] ?? '') ?>"
+          data-account-id="<?= $attr($acct['customer_id']) ?>"
+          data-company="<?= $attr($acct['company_name']) ?>"
+          data-email="<?= $attr($acct['email']) ?>"
+          data-phone="<?= $attr($acct['phone_number']) ?>"
+          data-tier="<?= $attr($acct['tier']) ?>"
+          data-status="<?= $attr($acct['status']) ?>"
+          data-created-at="<?= $attr($acct['created_at']) ?>"
+          data-dark-mode="<?= $dark_mode ? '1' : '0' ?>"
+          data-accent-color="<?= $attr($accent_color) ?>"
+          data-density="<?= $attr($density) ?>"
+          data-notif-sound="<?= $attr($settings['notif_sound'] ?? 'notification-1.mp3') ?>"
+          data-sound-enabled="<?= isset($settings['sound_enabled']) ? (empty($settings['sound_enabled']) ? '0' : '1') : '1' ?>"
+          data-notify-shipment="<?= isset($settings['notify_shipment']) ? (empty($settings['notify_shipment']) ? '0' : '1') : '1' ?>"
+          data-notify-sla="<?= isset($settings['notify_sla']) ? (empty($settings['notify_sla']) ? '0' : '1') : '1' ?>"
+          data-notify-invoice="<?= isset($settings['notify_invoice']) ? (empty($settings['notify_invoice']) ? '0' : '1') : '1' ?>"
+          data-two-factor="<?= !empty($settings['two_factor_enabled']) ? '1' : '0' ?>"
+          data-billing-address="<?= $attr($settings['billing_address'] ?? '') ?>"
+          data-default-warehouse="<?= $attr($settings['default_warehouse'] ?? 'Caloocan Hub') ?>">
+
 
         <!-- TOP HEADER BAR (matches the rest of the portal) -->
         <header class="bg-white dark:bg-[#0e1b33] border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center">
@@ -90,15 +151,15 @@ include_once '../../includes/sidebar.php';
                     <!-- MINI ACCOUNT CARD -->
                     <div class="bg-white dark:bg-[#112240] border border-slate-200 dark:border-slate-700/60 rounded-2xl p-4 shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-brand-blue/10 text-brand-blue flex items-center justify-center font-black shrink-0">RC</div>
+                            <div class="w-10 h-10 rounded-xl bg-brand-blue/10 text-brand-blue flex items-center justify-center font-black shrink-0" id="miniAccountInitials"><?= $attr(strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $acct['company_name'] ?: 'AC'), 0, 2))) ?></div>
                             <div class="min-w-0">
-                                <p class="text-xs font-bold text-slate-800 dark:text-white truncate">Robles Cargo Corp.</p>
-                                <p class="text-[11px] text-slate-400 truncate">ops@roblescargo.ph</p>
+                                <p class="text-xs font-bold text-slate-800 dark:text-white truncate" id="miniAccountName"><?= $attr($acct['company_name'] ?: 'Your company') ?></p>
+                                <p class="text-[11px] text-slate-400 truncate" id="miniAccountEmail"><?= $attr($acct['email'] ?: '—') ?></p>
                             </div>
                         </div>
                         <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
                             <span class="text-slate-400">Plan</span>
-                            <span class="font-semibold text-brand-blue">Enterprise</span>
+                            <span class="font-semibold text-brand-blue" id="miniAccountPlan"><?= $attr($acct['tier'] ?: 'Standard') ?></span>
                         </div>
                     </div>
                 </aside>
@@ -115,8 +176,8 @@ include_once '../../includes/sidebar.php';
                                     <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Account status</span>
                                     <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i class="fa-solid fa-circle-check text-xs"></i></div>
                                 </div>
-                                <p class="text-lg font-extrabold text-slate-900 dark:text-white mt-3">Active</p>
-                                <p class="text-[11px] text-slate-400 mt-1">Verified · Enterprise</p>
+                                <p class="text-lg font-extrabold text-slate-900 dark:text-white mt-3" id="overviewAccountStatus"><?= $attr($acct['status'] ?: 'Active') ?></p>
+                                <p class="text-[11px] text-slate-400 mt-1">Verified · <span id="overviewPlan"><?= $attr($acct['tier'] ?: 'Standard') ?></span></p>
                             </div>
                             <div class="bg-white dark:bg-[#112240] border border-slate-200 dark:border-slate-700/60 rounded-2xl p-5 shadow-sm">
                                 <div class="flex items-center justify-between">
@@ -141,8 +202,8 @@ include_once '../../includes/sidebar.php';
                                     <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">2FA</span>
                                     <div class="p-1.5 rounded-lg bg-rose-50 text-rose-600"><i class="fa-solid fa-lock text-xs"></i></div>
                                 </div>
-                                <p class="text-lg font-extrabold text-slate-900 dark:text-white mt-3">Off</p>
-                                <p class="text-[11px] text-rose-500 font-semibold mt-1">Recommended on</p>
+                                <p class="text-lg font-extrabold text-slate-900 dark:text-white mt-3" id="overviewTwoFactor">Off</p>
+                                <p class="text-[11px] text-rose-500 font-semibold mt-1" id="overviewTwoFactorHint">Recommended on</p>
                             </div>
                         </div>
 
@@ -179,45 +240,54 @@ include_once '../../includes/sidebar.php';
                         <div class="bg-white dark:bg-[#112240] border border-slate-200 dark:border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
                             <div>
                                 <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Account Details</h3>
-                                <p class="text-xs text-slate-400 dark:text-slate-500">Robles Cargo Corp. · Acct #8841</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">
+                                    <span id="profileCompanyName"><?= $attr($acct['company_name'] ?: 'Your company') ?></span>
+                                    · Acct #<span id="profileAccountId"><?= $attr($acct['customer_id'] ?: '—') ?></span>
+                                </p>
                             </div>
 
                             <form onsubmit="stageAccountDetails(event)" class="space-y-5">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Company name</label>
-                                        <input type="text" id="settingCompany" value="Robles Cargo Corp." required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                        <input type="text" id="settingCompany" value="<?= $attr($acct['company_name']) ?>" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Contact email</label>
-                                        <input type="email" id="settingEmail" value="ops@roblescargo.ph" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                        <input type="email" id="settingEmail" value="<?= $attr($acct['email']) ?>" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Contact number</label>
-                                        <input type="tel" id="settingPhone" value="+63 917 000 1234" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                        <input type="tel" id="settingPhone" value="<?= $attr($acct['phone_number']) ?>" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Default warehouse</label>
                                         <select id="settingWarehouse" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors cursor-pointer">
-                                            <option value="Caloocan Hub" selected>Caloocan Hub</option>
-                                            <option value="Manila South Harbor Hub">Manila South Harbor Hub</option>
-                                            <option value="Cebu Logistics Center">Cebu Logistics Center</option>
-                                            <option value="Davao Regional Hub">Davao Regional Hub</option>
+                                            <?php
+                                            $warehouses = ['Caloocan Hub', 'Manila South Harbor Hub', 'Cebu Logistics Center', 'Davao Regional Hub'];
+                                            $savedWarehouse = $settings['default_warehouse'] ?? 'Caloocan Hub';
+                                            if (!in_array($savedWarehouse, $warehouses, true)) {
+                                                // Keep unknown saved values visible so they are not silently reset.
+                                                $warehouses[] = $savedWarehouse;
+                                            }
+                                            foreach ($warehouses as $wh): ?>
+                                                <option value="<?= $attr($wh) ?>" <?= $wh === $savedWarehouse ? 'selected' : '' ?>><?= $attr($wh) ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Billing address</label>
-                                    <input type="text" id="settingAddress" value="12 Rizal Ave, Caloocan City, Metro Manila" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                    <input type="text" id="settingAddress" value="<?= $attr($settings['billing_address'] ?? '') ?>" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                 </div>
 
                                 <div class="flex justify-end gap-3 pt-3">
                                     <button type="button" onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors">Cancel</button>
-                                    <button type="submit" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Save changes</button>
+                                    <button type="submit" id="saveAccountBtn" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Save changes</button>
                                 </div>
                             </form>
                         </div>
@@ -284,7 +354,7 @@ include_once '../../includes/sidebar.php';
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500">Email + SMS when a waybill changes status</p>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'shipment')" class="sr-only peer">
+                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'shipment')" data-notif-channel="shipment" class="sr-only peer">
                                         <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue dark:bg-slate-600"></div>
                                     </label>
                                 </div>
@@ -295,7 +365,7 @@ include_once '../../includes/sidebar.php';
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500">Immediate notice when a commitment is at risk</p>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'sla')" class="sr-only peer">
+                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'sla')" data-notif-channel="sla" class="sr-only peer">
                                         <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue dark:bg-slate-600"></div>
                                     </label>
                                 </div>
@@ -306,7 +376,7 @@ include_once '../../includes/sidebar.php';
                                         <p class="text-[11px] text-slate-400 dark:text-slate-500">3 days before an invoice is due</p>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'invoice')" class="sr-only peer">
+                                        <input type="checkbox" checked onchange="stageNotification(this.checked,'invoice')" data-notif-channel="invoice" class="sr-only peer">
                                         <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue dark:bg-slate-600"></div>
                                     </label>
                                 </div>
@@ -318,6 +388,16 @@ include_once '../../includes/sidebar.php';
                             <div>
                                 <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Notification Sound</h3>
                                 <p class="text-xs text-slate-400 dark:text-slate-500">Played for portal notifications and chat replies</p>
+                            </div>
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <h4 class="font-extrabold text-slate-900 dark:text-white">Play sounds</h4>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Off mutes portal notifications and chat replies</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                    <input type="checkbox" checked onchange="stageSoundEnabled(this.checked)" id="soundEnabledToggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-blue dark:bg-slate-600"></div>
+                                </label>
                             </div>
                             <div class="flex items-center gap-2">
                                 <select id="notifSoundSelect" onchange="stageNotificationSound(this.value)" class="bg-slate-50 dark:bg-slate-900 dark:border-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-brand-blue cursor-pointer">
@@ -346,22 +426,22 @@ include_once '../../includes/sidebar.php';
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">New password</label>
-                                        <input type="password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                        <input type="password" id="inputNewPassword" autocomplete="new-password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Confirm password</label>
-                                        <input type="password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
+                                        <input type="password" id="inputConfirmPassword" autocomplete="new-password" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 text-xs focus:bg-white dark:focus:bg-slate-900 focus:border-brand-blue focus:outline-none transition-colors">
                                     </div>
                                 </div>
                                 <div class="flex justify-end gap-3 pt-1">
-                                    <button type="submit" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Update password</button>
+                                    <button type="submit" id="savePasswordBtn" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Update password</button>
                                 </div>
                             </form>
 
                             <div class="py-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-4">
                                 <div>
                                     <h4 class="font-extrabold text-slate-900 dark:text-white">Two-factor authentication</h4>
-                                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Require a one-time code at sign-in</p>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Require a one-time code at sign-in · <span id="twoFactorStatus" class="font-semibold text-slate-400">Disabled</span></p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="twoFactorToggle" onchange="toggleTwoFactor(this.checked)" class="sr-only peer">
@@ -377,7 +457,7 @@ include_once '../../includes/sidebar.php';
                                 <button type="button" onclick="endAllSessions()" class="text-[11px] font-semibold text-rose-600 hover:text-rose-700 transition-colors">End all other sessions</button>
                             </div>
                             <div class="divide-y divide-slate-100 dark:divide-slate-700/60 text-xs" id="sessionList">
-                                <div class="py-3 flex items-center justify-between gap-4">
+                                <div class="py-3 flex items-center justify-between gap-4" data-current-session>
                                     <div class="flex items-center gap-3">
                                         <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-brand-blue flex items-center justify-center"><i class="fa-solid fa-desktop text-sm"></i></div>
                                         <div>
@@ -432,8 +512,8 @@ include_once '../../includes/sidebar.php';
                                 </div>
                             </div>
                             <div class="mt-6 flex flex-wrap gap-3">
-                                <button onclick="alert('Opening invoice history...')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors">View invoices</button>
-                                <button onclick="alert('Opening plan comparison...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Manage plan</button>
+                                <button onclick="stageBillingAction('invoices')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors">View invoices</button>
+                                <button onclick="stageBillingAction('upgrade-plan')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-500/20">Manage plan</button>
                             </div>
                         </div>
 
@@ -441,7 +521,7 @@ include_once '../../includes/sidebar.php';
                             <h3 class="text-base font-extrabold text-rose-600 dark:text-rose-400">Danger zone</h3>
                             <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">These actions are irreversible. Proceed with caution.</p>
                             <div class="mt-4 flex flex-wrap gap-3">
-                                <button onclick="alert('A data export link will be emailed to you.')" class="border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors">Download my data</button>
+                                <button onclick="exportAccountData()" class="border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors">Download my data</button>
                                 <button onclick="if(confirm('Close your account? This cannot be undone.')) alert('Account closure requested.')" class="border border-rose-200 dark:border-rose-500/40 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-semibold text-xs px-5 py-2.5 rounded-xl transition-colors">Close account</button>
                             </div>
                         </div>
@@ -469,6 +549,7 @@ include_once '../../includes/sidebar.php';
 
     <!-- Scripts -->
     <script src="../../../assets/js/customer/customer_dashboard.js"></script>
+    <script src="../../../assets/js/customer/customer_settings.js"></script>
 
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>

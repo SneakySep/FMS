@@ -11,25 +11,9 @@
 
 <!-- Custom CSS Styles -->
 <link rel="stylesheet" href="/assets/css/style.css">
+<!-- Design tokens + component layer ("Navy & White"). Must load AFTER
+     style.css so its html.dark rules win on equal specificity. -->
+<link rel="stylesheet" href="/assets/css/theme.css">
 
 <!-- Tailwind Config Customization -->
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    brand: {
-                        blue: '#1D2E6A',
-                        darkblue: '#152252',
-                        navy: '#0a1628',
-                        navycard: '#112240',
-                        lightbg: '#f4f7fa',
-                    }
-                },
-                fontFamily: {
-                    sans: ['Inter', 'sans-serif'],
-                }
-            }
-        }
-    }
-</script>
+<?php include_once __DIR__ . '/../includes/tailwind_config.php'; ?>

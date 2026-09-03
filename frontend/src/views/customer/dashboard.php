@@ -1,5 +1,4 @@
 <?php
-$page_title = "Customer Dashboard � SwiftFreight";
 $page_title = "Customer Dashboard - Priority Handling";
 
 
@@ -19,16 +18,67 @@ $shipments     = $shipments_res['data'] ?? [];
 $customer_id     = $profile['customer_id'] ?? '8B41';
 $company_name    = $profile['company_name'] ?? 'Charlie Hub Inc.';
 $contract_status = $profile['status'] ?? 'Newly Onboarded';
-$metrics         = $profile['metrics'] ?? [
-    'active_shipments' => 0,
-    'in_transit'       => 0,
-    'delayed'          => 0,
-    'delivered_30d'    => 0
-];
 // Derived performance metrics (graceful fallbacks)
 $on_time_pct   = $profile['on_time_pct'] ?? 94;
 $open_breaches = $profile['open_breaches'] ?? 1;
 $documents     = $profile['initial_documents'] ?? $profile['documents'] ?? [];
+
+// 4. Fetch Active Campaign / Promo Posts (published by Sales Agents)
+//    Endpoint: GET /api/v1/campaigns/active-posts - returns a bare JSON list
+//    already filtered to is_active = True and auto-drops expired posts.
+$campaign_res = make_api_request('/api/v1/campaigns/active-posts', 'GET');
+$campaigns    = $campaign_res['data'] ?? [];
+if (!is_array($campaigns)) {
+    $campaigns = [];
+}
+
+// Demo fallback kapag down ang backend API
+if (empty($campaigns)) {
+    $campaigns = [
+        [
+            'title'          => 'Free Tumbler Promo on All Domestic Shipments',
+            'description'    => 'Book at least 5 domestic shipments this month and get a limited-edition Priority Handling tumbler for your office.',
+            'image_url'      => '',
+            'is_permanent'   => false,
+            'expires_at'     => date('c', strtotime('+36 hours')),
+            'author_name'    => 'M. Reyes',
+            'author_role'    => 'Sales Agent',
+            'is_ending_soon' => true,
+        ],
+        [
+            'title'          => 'Quarterly Rate Review - Priority Lane',
+            'description'    => 'Our account team will walk through your Q1 volume and confirm your priority-lane rates for the next quarter.',
+            'image_url'      => '',
+            'is_permanent'   => true,
+            'expires_at'     => null,
+            'author_name'    => 'Account Team',
+            'author_role'    => 'Priority Handling',
+            'is_ending_soon' => false,
+        ],
+    ];
+}
+
+// 5. Fetch Notifications (same source as notification.php)
+$notif_res  = make_api_request('/api/v1/portal/notifications', 'GET');
+$notif_data = $notif_res['data']['data'] ?? $notif_res['data'] ?? null;
+if (!empty($notif_data) && is_array($notif_data)) {
+    $notifications = array_slice($notif_data, 0, 4);
+} else {
+    $notifications = [
+        ['id' => 1, 'type' => 'urgent',  'title' => 'SLA Breach - WB12345',        'message' => 'Delivery exceeded the SLA window. Escalated to Ops.', 'time' => '2h ago', 'link' => 'sla-monitoring.php'],
+        ['id' => 2, 'type' => 'warning', 'title' => 'Document Pending - WB208812', 'message' => 'Commercial Invoice awaiting your review.',              'time' => '1d ago', 'link' => 'documents.php'],
+        ['id' => 3, 'type' => 'success', 'title' => 'POD Confirmed - WB208835',    'message' => 'Proof of Delivery uploaded for Cebu-Manila.',          'time' => '2d ago', 'link' => 'documents.php'],
+    ];
+}
+$unread_count = count($notifications);
+
+// Shared notification type styling (header dropdown + right-column widget)
+$notif_styles = [
+    'urgent'  => ['dot' => 'bg-rose-500',   'label' => 'Urgent',    'text' => 'text-rose-600'],
+    'warning' => ['dot' => 'bg-amber-500',  'label' => 'Warning',   'text' => 'text-amber-600'],
+    'success' => ['dot' => 'bg-emerald-500','label' => 'Confirmed', 'text' => 'text-emerald-600'],
+    'info'    => ['dot' => 'bg-sky-500',    'label' => 'Info',      'text' => 'text-sky-600'],
+];
 
 // Helper function para sa dynamic status pill badging
 function getStatusBadgeClass($status) {
@@ -77,10 +127,50 @@ function getStatusBadgeClass($status) {
 
         <!-- Header Actions -->
         <div class="flex items-center gap-3">
-            <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors shrink-0">
-                <i class="fa-solid fa-bell text-xs"></i>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <!-- Notification Bell + Dropdown -->
+            <div class="relative shrink-0" id="notifBellWrap" data-notif-store="crm_read_notifs_<?= htmlspecialchars((string) $customer_id) ?>">
+                <button type="button" id="notifBellBtn" aria-haspopup="true" aria-expanded="false" title="Notifications"
+                        class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
+                    <i class="fa-solid fa-bell text-xs"></i>
+                    <span id="notifBadge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full items-center justify-center border-2 border-white <?= $unread_count > 0 ? 'flex' : 'hidden' ?>"><?= (int) $unread_count ?></span>
+                </button>
+
+                <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/10 z-50 overflow-hidden">
+                    <div class="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-900">Notifications</h3>
+                        <span id="notifUnreadPill" class="text-[10px] font-bold text-brand-blue bg-blue-100 px-2 py-0.5 rounded-full"><?= (int) $unread_count ?> new</span>
+                    </div>
+                    <div class="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                        <?php if (!empty($notifications)): ?>
+                            <?php foreach ($notifications as $n_idx => $note): ?>
+                                <?php
+                                    $n_id    = isset($note['id']) ? (int) $note['id'] : 'idx-' . $n_idx;
+                                    $n_style = $notif_styles[$note['type'] ?? 'info'] ?? $notif_styles['info'];
+                                    $n_title = htmlspecialchars($note['title'] ?? 'Notification');
+                                    $n_msg   = htmlspecialchars($note['message'] ?? '');
+                                    $n_time  = htmlspecialchars($note['time'] ?? '');
+                                    $n_link  = htmlspecialchars($note['link'] ?? 'notification.php');
+                                ?>
+                                <a href="<?= $n_link ?>" data-notif-id="<?= $n_id ?>"
+                                   class="notif-item flex items-start gap-3 px-4 py-3 hover:bg-blue-50/60 transition">
+                                    <span class="w-2 h-2 rounded-full <?= $n_style['dot'] ?> mt-1.5 shrink-0"></span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex items-center justify-between gap-2">
+                                            <span class="text-xs font-bold text-slate-800 truncate"><?= $n_title ?></span>
+                                            <span class="text-[10px] <?= $n_style['text'] ?> font-semibold shrink-0"><?= $n_style['label'] ?></span>
+                                        </span>
+                                        <span class="block text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2"><?= $n_msg ?></span>
+                                        <span class="block text-[10px] text-slate-400 mt-1">&bull; <?= $n_time ?></span>
+                                    </span>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-xs text-slate-400 italic py-6 text-center">You're all caught up.</p>
+                        <?php endif; ?>
+                    </div>
+                    <a href="notification.php" class="block text-center text-[11px] font-semibold text-brand-blue hover:bg-slate-50 py-2.5 border-t border-slate-100">View all notifications &rarr;</a>
+                </div>
+            </div>
             <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
                 Help Desk <i class="fa-solid fa-headset text-xs"></i>
             </button>
@@ -100,7 +190,7 @@ function getStatusBadgeClass($status) {
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <?= htmlspecialchars($contract_status) ?>
                 </span>
-                <h1 class="text-2xl lg:text-3xl font-black italic tracking-tight mt-3">Welcome back, <?= htmlspecialchars($company_name) ?> &#128075;</h1>
+                <h1 class="text-2xl lg:text-3xl font-black italic text-white tracking-tight mt-3">Welcome back, <?= htmlspecialchars($company_name) ?> &#128075;</h1>
                 <p class="text-sm text-blue-100 mt-1.5 max-w-md">Here is a live snapshot of your shipments and account health. Track, manage, and book freight in one place.</p>
                 <div class="flex flex-wrap gap-3 mt-5">
                     <a href="javascript:void(0)" onclick="openBookingModal()" class="bg-white text-brand-blue hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-xl transition-colors shadow-sm flex items-center gap-2">
@@ -116,71 +206,91 @@ function getStatusBadgeClass($status) {
             </div>
         </section>
 
-        <!-- ROW 1: TOP KPI METRICS -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-            <!-- Active Shipments -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-slate-500">Active Shipments</span>
-                    <div class="p-2 rounded-xl bg-blue-50 text-brand-blue">
-                        <i class="fa-solid fa-boxes-stacked text-sm"></i>
-                    </div>
+        <!-- ROW 1.5: CAMPAIGNS & PROMOTIONS FEED -->
+        <section class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Campaigns &amp; Promotions</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Latest offers and announcements from your account team</p>
                 </div>
-                <div class="mt-4">
-                    <p class="text-3xl font-extrabold text-slate-900"><?= htmlspecialchars((string)($metrics['active_shipments'] ?? 0)) ?></p>
-                    <p class="text-xs text-emerald-600 font-semibold mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> Active in pipeline
-                    </p>
-                </div>
-            </div>
-
-            <!-- In Transit -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-slate-500">In Transit</span>
-                    <div class="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-                        <i class="fa-solid fa-truck-fast text-sm"></i>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-3xl font-extrabold text-slate-900"><?= htmlspecialchars((string)($metrics['in_transit'] ?? 0)) ?></p>
-                    <p class="text-xs text-slate-500 font-medium mt-2">Currently moving</p>
+                <div class="flex items-center gap-2">
+                    <?php $ending_soon = array_filter($campaigns, fn($c) => !empty($c['is_ending_soon'])); ?>
+                    <?php if (!empty($ending_soon)): ?>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100">
+                            <i class="fa-solid fa-fire text-[9px]"></i> <?= count($ending_soon) ?> ending soon
+                        </span>
+                    <?php endif; ?>
+                    <span id="campaignCountBadge" class="text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full"><?= count($campaigns) ?> Active</span>
                 </div>
             </div>
 
-            <!-- Delayed -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-slate-500">Delayed</span>
-                    <div class="p-2 rounded-xl bg-rose-50 text-rose-500">
-                        <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+            <div id="campaignGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                <?php if (!empty($campaigns)): ?>
+                    <?php foreach ($campaigns as $camp): ?>
+                        <?php
+                            $camp_title   = htmlspecialchars($camp['title'] ?? 'Untitled Campaign');
+                            $camp_desc    = htmlspecialchars($camp['description'] ?? 'No description provided.');
+                            $camp_image   = trim((string) ($camp['image_url'] ?? ''));
+                            $is_permanent = !empty($camp['is_permanent']);
+                            $expires_at   = $camp['expires_at'] ?? $camp['end_date'] ?? null;
+                            $author_name  = htmlspecialchars($camp['author_name'] ?? 'Account Team');
+                            $author_role  = htmlspecialchars($camp['author_role'] ?? 'Priority Handling');
+                        ?>
+                        <article class="campaign-card bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                            <!-- Poster -->
+                            <div class="relative h-40 bg-gradient-to-br from-brand-blue to-brand-darkblue">
+                                <?php if ($camp_image !== ''): ?>
+                                    <img src="<?= htmlspecialchars($camp_image) ?>" alt="<?= $camp_title ?>"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                                    <div class="hidden absolute inset-0 flex items-center justify-center text-white/80">
+                                        <i class="fa-solid fa-bullhorn text-3xl"></i>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center text-white/80">
+                                        <i class="fa-solid fa-bullhorn text-3xl"></i>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="absolute top-3 right-3">
+                                    <?php if ($is_permanent): ?>
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 text-emerald-600 border border-emerald-100">Permanent</span>
+                                    <?php else: ?>
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 text-amber-600 border border-amber-100">Limited-Time</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <!-- Body -->
+                            <div class="p-4 space-y-1.5">
+                                <h3 class="font-bold text-slate-800 text-sm leading-snug tracking-tight"><?= $camp_title ?></h3>
+                                <p class="text-[11px] text-slate-500 leading-relaxed line-clamp-3"><?= $camp_desc ?></p>
+                            </div>
+                            <!-- Footer: author + countdown -->
+                            <div class="px-4 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+                                <span class="flex items-center gap-1.5 text-[10px] text-slate-400 font-medium min-w-0">
+                                    <i class="fa-solid fa-user-tie text-[9px] shrink-0"></i>
+                                    <span class="truncate"><?= $author_name ?> &middot; <?= $author_role ?></span>
+                                </span>
+                                <?php if ($is_permanent): ?>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0">
+                                        <i class="fa-solid fa-infinity text-[9px]"></i> Active
+                                    </span>
+                                <?php else: ?>
+                                    <span class="campaign-timer inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 shrink-0"
+                                          data-expires="<?= htmlspecialchars((string) ($expires_at ?? '')) ?>">
+                                        <i class="fa-solid fa-clock text-[9px]"></i> <span class="campaign-timer-text">&mdash;</span>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full py-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
+                        No active campaigns right now. Check back soon for offers from your account team.
                     </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-3xl font-extrabold text-slate-900"><?= htmlspecialchars((string)($metrics['delayed'] ?? 0)) ?></p>
-                    <p class="text-xs text-rose-600 font-semibold mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i> Requires attention
-                    </p>
-                </div>
-            </div>
-
-            <!-- Delivered (30d) -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex justify-between items-start">
-                    <span class="text-xs font-medium text-slate-500">Delivered (30d)</span>
-                    <div class="p-2 rounded-xl bg-amber-50 text-amber-600">
-                        <i class="fa-solid fa-circle-check text-sm"></i>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-3xl font-extrabold text-slate-900"><?= htmlspecialchars((string)($metrics['delivered_30d'] ?? 0)) ?></p>
-                    <p class="text-xs text-emerald-600 font-semibold mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-check text-[10px]"></i> Completed past month
-                    </p>
-                </div>
+                <?php endif; ?>
             </div>
         </section>
+
         <!-- ROW 2: MAIN DASHBOARD GRID -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -248,6 +358,40 @@ function getStatusBadgeClass($status) {
 
             <!-- RIGHT COLUMN WIDGETS -->
             <div class="lg:col-span-4 space-y-6">
+
+                <!-- NOTIFICATIONS WIDGET -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900">Notifications</h2>
+                            <p class="text-xs text-slate-400"><?= htmlspecialchars((string) $unread_count) ?> recent alerts</p>
+                        </div>
+                        <a href="notification.php" class="text-xs font-semibold text-brand-blue hover:text-brand-darkblue">View all &rarr;</a>
+                    </div>
+
+                    <div class="space-y-3">
+                        <?php foreach ($notifications as $note):
+                            $n_type  = $note['type'] ?? 'info';
+                            $n_style = $notif_styles[$n_type] ?? $notif_styles['info'];
+                            $n_title = htmlspecialchars($note['title'] ?? 'Notification');
+                            $n_msg   = htmlspecialchars($note['message'] ?? '');
+                            $n_time  = htmlspecialchars($note['time'] ?? '');
+                            $n_link  = htmlspecialchars($note['link'] ?? 'notification.php');
+                        ?>
+                            <a href="<?= $n_link ?>" class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-100 transition">
+                                <span class="w-2 h-2 rounded-full <?= $n_style['dot'] ?> mt-1.5 shrink-0"></span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="flex items-center justify-between gap-2">
+                                        <span class="text-xs font-bold text-slate-800 truncate"><?= $n_title ?></span>
+                                        <span class="text-[10px] <?= $n_style['text'] ?> font-semibold shrink-0"><?= $n_style['label'] ?></span>
+                                    </span>
+                                    <span class="block text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2"><?= $n_msg ?></span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">&bull; <?= $n_time ?></span>
+                                </span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
                 <!-- ON-TIME DELIVERY (replaces SLA Health) -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
@@ -367,6 +511,8 @@ function getStatusBadgeClass($status) {
 
 <!-- Scripts -->
 <script src="/assets/js/customer/customer_dashboard.js"></script>
+<script src="/assets/js/customer/campaign_countdown.js"></script>
+<script src="/assets/js/customer/notification_bell.js"></script>
 
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>

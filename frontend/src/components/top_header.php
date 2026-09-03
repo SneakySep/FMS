@@ -8,83 +8,76 @@ $hasNotifications = isset($new_inquiry) && $new_inquiry > 0;
 ?>
 
 <!-- TOP NAVIGATION HEADER -->
-<header class="w-full bg-white border-b border-slate-200/80 px-6 py-3 mb-6 shadow-md shadow-slate-200/60 relative z-20">
-  <div class="flex items-center justify-between gap-4">
-    
-    <!-- LEFT SECTION: Mobile Toggle, Plain Page Title & Dropdowns -->
-<div class="flex items-center gap-4">
-  <!-- Mobile Sidebar Toggle -->
-  <button 
-    type="button" 
-    onclick="toggleSidebar()" 
-    class="md:hidden text-slate-600 hover:text-slate-900 p-1.5 rounded-lg bg-slate-100 border border-slate-200 transition shrink-0"
-    aria-label="Toggle Sidebar"
-  >
-    <i class="fa-solid fa-bars text-sm"></i>
-  </button>
+<header class="crm-topbar w-full mb-6">
+  <div class="flex items-center gap-4 min-w-0">
+    <!-- Mobile Sidebar Toggle -->
+    <button
+      type="button"
+      onclick="toggleSidebar()"
+      class="md:hidden crm-icon-btn !h-9 !w-9 border border-line shrink-0"
+      aria-label="Toggle Sidebar"
+    >
+      <i class="fa-solid fa-bars text-sm"></i>
+    </button>
 
-  <!-- Plain Text Title -->
-  <span class="text-sm font-bold text-slate-800 whitespace-nowrap">
-    <?= htmlspecialchars($pageTitle) ?>
-  </span>
+    <!-- Page Title -->
+    <div class="min-w-0">
+      <span class="crm-topbar-title block truncate"><?= htmlspecialchars($pageTitle) ?></span>
+    </div>
+  </div>
 
-</div>
+  <!-- RIGHT SECTION: Search, Action, Clock & Profile Pill -->
+  <div class="crm-topbar-group shrink-0">
 
-    <!-- RIGHT SECTION: Search, Action, Clock & Profile Pill -->
-    <div class="flex items-center gap-3 shrink-0">
-      
-      <!-- EXPANDABLE SEARCH BAR -->
-      <div class="relative flex items-center">
-        <input 
-          type="text" 
-          placeholder="Search..." 
-          class="w-10 focus:w-48 sm:focus:w-64 transition-all duration-300 ease-in-out bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs text-slate-800 placeholder-slate-400 pl-8 pr-3 py-1.5 rounded-full border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 cursor-pointer focus:cursor-text shadow-xs"
-        />
-        <i class="fa-solid fa-magnifying-glass text-xs text-slate-400 absolute left-3 pointer-events-none"></i>
-      </div>
+    <!-- EXPANDABLE SEARCH BAR -->
+    <div class="relative hidden sm:flex items-center">
+      <i class="fa-solid fa-magnifying-glass crm-search-ico"></i>
+      <input
+        type="text"
+        placeholder="Search..."
+        class="crm-input !h-9 !w-10 focus:!w-56 !pl-9 !pr-3 !rounded-full !text-xs transition-all duration-300 ease-in-out cursor-pointer focus:cursor-text"
+      />
+    </div>
 
-      <!-- Action Button -->
-      <?php if ($role === 'sales_agent'): ?>
-        <button type="button" onclick="openLeadModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow-sm hover:shadow-indigo-200 flex items-center gap-1.5 active:scale-95 whitespace-nowrap">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span class="hidden sm:inline">New Leads</span>
-        </button>
-      <?php elseif ($role === 'admin'): ?>
-        <a href="tickets.php?action=new" class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5 active:scale-95 whitespace-nowrap">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span class="hidden sm:inline">Create Ticket</span>
-        </a>
-      <?php elseif ($role === 'customer'): ?>
-        <a href="shipments.php?action=new" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow-sm hover:shadow-blue-200 flex items-center gap-1.5 active:scale-95 whitespace-nowrap">
-          <i class="fa-solid fa-box-archive text-[10px]"></i>
-          <span class="hidden sm:inline">New Booking</span>
-        </a>
-      <?php endif; ?>
-
-      <!-- Notification Bell -->
-      <button 
-        type="button" 
-        class="relative p-1.5 text-slate-500 hover:text-slate-800 transition shrink-0 rounded-lg hover:bg-slate-100"
-        title="Notifications"
-      >
-        <i class="fa-regular fa-bell text-sm"></i>
-        <?php if ($hasNotifications): ?>
-          <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white animate-pulse"></span>
-        <?php endif; ?>
+    <!-- Action Button -->
+    <?php if ($role === 'sales_agent'): ?>
+      <button type="button" onclick="openLeadModal()" class="crm-btn crm-btn-primary !h-9 !px-3.5 !text-xs">
+        <i class="fa-solid fa-plus text-[10px]"></i>
+        <span class="hidden sm:inline">New Leads</span>
       </button>
+    <?php elseif ($role === 'admin'): ?>
+      <a href="tickets.php?action=new" class="crm-btn crm-btn-primary !h-9 !px-3.5 !text-xs">
+        <i class="fa-solid fa-plus text-[10px]"></i>
+        <span class="hidden sm:inline">Create Ticket</span>
+      </a>
+    <?php elseif ($role === 'customer'): ?>
+      <a href="shipments.php?action=new" class="crm-btn crm-btn-primary !h-9 !px-3.5 !text-xs">
+        <i class="fa-solid fa-box-archive text-[10px]"></i>
+        <span class="hidden sm:inline">New Booking</span>
+      </a>
+    <?php endif; ?>
 
-      <!-- TIME & PROFILE PILL BADGE -->
-      <div class="flex items-center bg-slate-100 border border-slate-200/80 rounded-full pl-3 pr-1 py-1 gap-2.5 text-xs font-semibold text-slate-700 shadow-xs">
-        <div class="flex items-center gap-1.5 text-[11px] font-mono text-slate-600">
-          <i class="fa-regular fa-clock text-[10px] text-slate-400"></i>
-          <span id="headerClock">--:-- --</span>
-        </div>
+    <!-- Notification Bell -->
+    <button
+      type="button"
+      class="crm-icon-btn !h-9 !w-9 relative shrink-0"
+      title="Notifications"
+    >
+      <i class="fa-regular fa-bell text-sm"></i>
+      <?php if ($hasNotifications): ?>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-navy-900 animate-pulse"></span>
+      <?php endif; ?>
+    </button>
 
-        <div class="w-6 h-6 rounded-full bg-slate-800 text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-xs">
-          <?= htmlspecialchars($userInitials) ?>
-        </div>
+    <!-- TIME & PROFILE PILL BADGE -->
+    <div class="hidden md:flex items-center gap-2.5 pl-3 pr-1 py-1 rounded-full border border-line bg-surface">
+      <div class="flex items-center gap-1.5 text-[11px] font-mono text-navy-500">
+        <i class="fa-regular fa-clock text-[10px] text-navy-300"></i>
+        <span id="headerClock">--:-- --</span>
       </div>
-
+      <div class="crm-avatar !w-6 !h-6 !rounded-full !text-[10px]">
+        <?= htmlspecialchars($userInitials) ?>
+      </div>
     </div>
 
   </div>

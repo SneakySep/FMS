@@ -4,30 +4,53 @@ $pageTitle = "Customer Directory";
 include_once '../../includes/header.php';
 require_once '../../helpers/api_helper.php';
 
-// 1. Parameters mula sa URL Filter
-$current_tier  = $_GET['tier'] ?? 'all';
-$search_query = $_GET['search'] ?? '';
+// 1. Parameters mula sa URL Filter at Pagination
+$current_tier  = strtolower($_GET['tier'] ?? 'all');
+$search_query  = $_GET['search'] ?? '';
+$current_page  = max(1, (int)($_GET['page'] ?? 1));
+$limit         = 5; // 5 Items per page limit
 
 // 2. Fetch Live Stats
 $stats_res  = make_api_request('/api/v1/customers/stats', 'GET');
 $stats_data = $stats_res['data']['data'] ?? $stats_res['data'] ?? [];
 
-$count_all      = (int)($stats_data['all'] ?? 0);
+$count_all      = (int)($stats_data['all'] ?? $stats_data['total'] ?? 0);
 $count_bronze   = (int)($stats_data['bronze'] ?? 0);
 $count_silver   = (int)($stats_data['silver'] ?? 0);
 $count_gold     = (int)($stats_data['gold'] ?? 0);
 $count_platinum = (int)($stats_data['platinum'] ?? 0);
 
 // 3. Build API Endpoint Query String
-$api_url = "/api/v1/customers?tier=" . urlencode($current_tier);
+$api_url = "/api/v1/customers?tier=" . urlencode($current_tier) . "&page=" . $current_page . "&limit=" . $limit;
 
 if (!empty($search_query)) {
     $api_url .= "&search=" . urlencode($search_query);
 }
 
-// Fetch Customers List
+// Fetch Customers List mula sa API
 $customers_res  = make_api_request($api_url, 'GET');
-$customers_list = $customers_res['data']['data'] ?? $customers_res['data'] ?? [];
+$raw_data       = $customers_res['data'] ?? [];
+
+// Dynamic array response extraction
+$customers_list = $raw_data['data'] ?? (is_array($raw_data) && !isset($raw_data['total']) ? $raw_data : []);
+
+// Alamin ang total items 
+switch ($current_tier) {
+    case 'bronze':   $total_items = $count_bronze; break;
+    case 'silver':   $total_items = $count_silver; break;
+    case 'gold':     $total_items = $count_gold; break;
+    case 'platinum': $total_items = $count_platinum; break;
+    default:         $total_items = $count_all > 0 ? $count_all : count($customers_list); break;
+}
+
+// Client-side Slicing Fallback 
+if (count($customers_list) > $limit) {
+    $total_items    = count($customers_list);
+    $offset         = ($current_page - 1) * $limit;
+    $customers_list = array_slice($customers_list, $offset, $limit);
+}
+
+$total_pages = max(1, ceil($total_items / $limit));
 
 // Helper function para sa Tier Status Badge
 function getCustomerTierBadge($tier) {

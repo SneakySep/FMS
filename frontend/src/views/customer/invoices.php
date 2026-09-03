@@ -266,7 +266,7 @@ include_once '../../includes/sidebar.php';
                         <i class="fa-solid fa-file-invoice absolute -right-4 -bottom-4 text-[90px] opacity-10"></i>
                         <div class="relative z-10">
                             <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-100">Due soon</span>
-                            <h3 class="text-2xl font-black mt-1">₱48,200</h3>
+                            <h3 class="text-2xl font-black text-white mt-1">₱48,200</h3>
                             <p class="text-xs text-blue-100 mt-1">2 invoices due by Aug 6, 2026</p>
                             <button onclick="payInvoice('INV-2026-0841')" class="mt-4 w-full bg-white text-brand-blue hover:bg-blue-50 font-semibold text-xs py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-credit-card"></i> Pay Now

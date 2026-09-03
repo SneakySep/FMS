@@ -130,12 +130,20 @@ if (!is_array($contracts)) $contracts = [];
 
   </div>
 
+  <!-- MODALS -->
   <?php include_once 'components/lead_modal.php'; ?>
-  <?php include_once '../../components/chat_widget.php' ?>
-  
+
+  </div><!-- end .p-6 lg:p-8 wrapper -->
 
 </main>
 
+<?php include_once 'components/alert.php'; ?>
+
+<!-- SCRIPT  -->
+
+<script src="../../../assets/js/sales_agent/kpi.js"></script>
+<script src="../../../assets/js/sales_agent/new_leads.js"></script>
+<script src="../../../assets/js/sales_agent/top_routes.js"></script>
 
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>

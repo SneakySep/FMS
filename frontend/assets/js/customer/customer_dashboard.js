@@ -84,26 +84,10 @@
     alert('New ticket form would open here. (Demo)');
   };
 
-  /* ---------- Settings: staged apply bar ---------- */
-  var staged = {};
-  function showApplyBar(show) {
-    var bar = byId('applyBar');
-    if (bar) bar.classList.toggle('hidden', !show);
-  }
-  window.stageAppearanceDark = function (checked) { staged.dark = checked; showApplyBar(true); };
-  window.stageNotificationSound = function (val) { staged.sound = val; showApplyBar(true); };
-  window.previewNotificationSound = function () {
-    console.log('Preview sound:', staged.sound || '(default)');
-  };
-  window.applySettings = function () {
-    alert('Settings applied:\nDark mode: ' + (staged.dark ? 'ON' : 'OFF') +
-          '\nSound: ' + (staged.sound || 'default'));
-    showApplyBar(false);
-  };
-  window.discardSettings = function () {
-    staged = {};
-    showApplyBar(false);
-  };
+  /* ---------- Settings page ---------- */
+  // The settings screen is fully driven by assets/js/customer/customer_settings.js
+  // (staged apply bar, appearance, notifications, profile, security, billing).
+  // Only the tab switcher below is shared with other portal pages.
 
   /* ---------- Live Tracking (Leaflet) ---------- */
   var trackMap = null, trackMarker = null;
@@ -136,7 +120,7 @@
 
   /* ---------- Booking Shipment Modal (ported from Booking Shipment.html) ---------- */
   // Matches the base used by the chat widget (config API_BASE_URL default).
-  var BOOKING_API_BASE = 'http://127.0.0.1:8000/api/v1';
+  var BOOKING_API_BASE = window.APP_CONFIG.API_BASE_URL + '/api/v1';
 
   window.openBookingModal = function () {
     var modal = byId('bookingModal');

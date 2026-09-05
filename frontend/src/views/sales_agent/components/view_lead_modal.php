@@ -14,28 +14,33 @@
   #viewModal:not(.hidden) { animation: lmBackdropIn .25s ease-out both; }
   #viewModal:not(.hidden) > .lm-panel { animation: lmPanelIn .32s cubic-bezier(.22,1,.36,1) both; }
 
-  /* Pipeline stepper */
+  /* Pipeline stepper - navy ramp (mirrors --line / --brand-* / --navy-*). */
   .lm-step { position: relative; }
   .lm-step::before {
     content: ""; position: absolute; left: 50%; top: 13px; transform: translateX(-50%);
-    width: 100%; height: 2px; background: #e2e8f0; z-index: 0;
+    width: 100%; height: 2px; background: var(--line, #dfe3ee); z-index: 0;
   }
   .lm-step:last-child::before { display: none; }
   .lm-dot {
     position: relative; z-index: 1; width: 26px; height: 26px; border-radius: 9999px;
-    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800;
-    background: #f1f5f9; color: #94a3b8; border: 2px solid #e2e8f0; transition: all .25s ease;
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+    background: var(--brand-soft, #eef1f9); color: var(--fg-muted, #6e6e6e);
+    border: 2px solid var(--brand-line, #dbe1f1); transition: all .25s ease;
   }
-  .lm-step.is-done .lm-dot { background: #ede9fe; color: #7c3aed; border-color: #c4b5fd; }
+  .lm-step.is-done .lm-dot {
+    background: var(--navy-100, #dbe1f1); color: var(--navy-700, #1d2e6a);
+    border-color: var(--navy-200, #b9c4e3);
+  }
   .lm-step.is-active .lm-dot {
-    background: linear-gradient(135deg,#7c3aed,#6366f1); color: #fff; border-color: #a78bfa;
-    box-shadow: 0 0 0 4px rgba(124,58,237,.18);
+    background: linear-gradient(135deg, var(--navy-700, #1d2e6a), var(--teal-600, #084163));
+    color: #fff; border-color: var(--navy-700, #1d2e6a);
+    box-shadow: 0 0 0 4px rgba(29, 46, 106, .18);
   }
-  .lm-step.is-done::before, .lm-step.is-active::before { background: #c4b5fd; }
-  .lm-label { font-size: 9.5px; line-height: 1.1; }
+  .lm-step.is-done::before, .lm-step.is-active::before { background: var(--navy-700, #1d2e6a); }
+  .lm-label { font-size: 12px; line-height: 1.1; }
 </style>
 
-<div id="viewModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 transition-all duration-300">
+<div id="viewModal" data-brand="priority" class="fixed inset-0 z-50 hidden items-center justify-center p-4 transition-all duration-300">
   <div class="absolute inset-0 bg-slate-900/55 backdrop-blur-sm" onclick="closeViewModal()"></div>
 
   <div class="lm-panel relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl shadow-indigo-900/20 ring-1 ring-slate-900/5">

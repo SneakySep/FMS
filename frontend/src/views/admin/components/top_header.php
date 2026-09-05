@@ -18,6 +18,17 @@
       />
     </div>
 
+    <!-- Theme Toggle -->
+    <button
+      type="button"
+      id="crmThemeToggle"
+      class="crm-icon-btn shrink-0 border border-line bg-surface"
+      aria-label="Toggle dark mode"
+      title="Toggle dark mode"
+    >
+      <i class="fa-regular fa-moon text-sm crm-theme-ico"></i>
+    </button>
+
     <!-- Notification Bell Button -->
     <button
       type="button"
@@ -32,3 +43,26 @@
   </div>
 
 </div>
+
+<script>
+(function () {
+  var btn = document.getElementById('crmThemeToggle');
+  if (!btn) return;
+
+  function paint() {
+    var dark = document.documentElement.classList.contains('dark');
+    btn.innerHTML = dark
+      ? '<i class="fa-regular fa-sun text-sm"></i>'
+      : '<i class="fa-regular fa-moon text-sm"></i>';
+    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  }
+
+  btn.addEventListener('click', function () {
+    var dark = !document.documentElement.classList.contains('dark');
+    if (window.crmSetDarkMode) { window.crmSetDarkMode(dark); }
+    paint();
+  });
+
+  paint();
+})();
+</script>

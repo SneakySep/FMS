@@ -39,6 +39,10 @@ document.addEventListener("DOMContentLoaded", function () {
         winLossChartInstance.destroy();
     }
 
+    // Won/lost take the semantic green/red the rest of the portal already uses
+    // for those states, instead of a blue-vs-red palette that clashed with it.
+    const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
     const options = {
         series: series,
         chart: {
@@ -49,8 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
             zoom: { enabled: false },
             fontFamily: 'Inter, sans-serif'
         },
-        // Shades of Blue para sa Won Deals at Shades of Red para sa Lost Deals
-        colors: ['#3B82F6', '#EF4444', '#60A5FA', '#F87171'],
+        colors: [P.stage.won, P.stage.lost],
         fill: {
             opacity: 0.95
         },
@@ -65,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         dataLabels: { enabled: false },
         grid: {
-            borderColor: '#F1F5F9',
+            borderColor: P.grid,
             strokeDashArray: 3,
             yaxis: { lines: { show: true } },
             xaxis: { lines: { show: false } }
@@ -76,8 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
             axisTicks: { show: false },
             labels: {
                 style: {
-                    colors: '#94A3B8',
-                    fontSize: '11px',
+                    colors: P.muted,
+                    fontSize: '12px',
                     fontWeight: 600
                 }
             }
@@ -87,8 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
             min: 0,
             labels: {
                 style: {
-                    colors: '#94A3B8',
-                    fontSize: '10px',
+                    colors: P.muted,
+                    fontSize: '12px',
                     fontWeight: 500
                 },
                 formatter: (val) => Math.floor(val)
@@ -97,10 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
         legend: {
             position: 'top',
             horizontalAlign: 'right',
-            fontSize: '11px',
+            fontSize: '12px',
             fontWeight: 600,
             offsetY: -5,
-            labels: { colors: '#64748B' },
+            labels: { colors: P.muted },
             markers: { width: 8, height: 8, radius: 12 }
         },
         tooltip: {

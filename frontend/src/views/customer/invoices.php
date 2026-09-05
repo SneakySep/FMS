@@ -1,8 +1,8 @@
-﻿<?php
+<?php
 $page_title = "Invoices & Billing · Priority Handling Logistics";
 $activePage = 'invoices';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
 ?>
 
 
@@ -10,37 +10,16 @@ include_once '../../includes/sidebar.php';
     <main class="flex-1 flex flex-col min-w-0">
 
         <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3 min-w-0">
-                <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                <div class="min-w-0">
-                    <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Invoices &amp; Billing</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Charlie Hub Inc. &middot; Acct #8B41 &middot; Billing dashboard</p>
-                </div>
-            </div>
-
-            <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="invoiceSearchInput" onkeyup="applyInvoiceFilters()" placeholder="Search invoice, waybill, or amount..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors shrink-0">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    <i class="fa-solid fa-plus text-xs"></i> Book Shipment
-                </button>
-            </div>
-        </header>
+        <?php
+        $pageTitle    = 'Invoices & Billing';
+        $pageSubtitle = 'Charlie Hub Inc. · Acct #8B41 · Billing dashboard';
+        $headerSearch = [
+            'id'          => 'invoiceSearchInput',
+            'onkeyup'     => 'applyInvoiceFilters()',
+            'placeholder' => 'Search invoice, waybill, or amount...',
+        ];
+        include_once __DIR__ . '/../../components/customer_header.php';
+        ?>
 
         <!-- INVOICES & BILLING CONTENT BODY -->
         <div class="p-6 lg:p-8 space-y-8 w-full">
@@ -171,11 +150,11 @@ include_once '../../includes/sidebar.php';
                                 <p class="text-xs text-slate-400">Billing history for Charlie Hub Inc.</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1">
-                                    <button onclick="setInvoiceStatus('all', this)" class="inv-filter-tab bg-brand-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all">All</button>
-                                    <button onclick="setInvoiceStatus('pending', this)" class="inv-filter-tab text-slate-500 hover:text-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all">Pending</button>
-                                    <button onclick="setInvoiceStatus('paid', this)" class="inv-filter-tab text-slate-500 hover:text-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all">Paid</button>
-                                    <button onclick="setInvoiceStatus('overdue', this)" class="inv-filter-tab text-slate-500 hover:text-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all">Overdue</button>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="setInvoiceStatus('all', this)" class="inv-filter-tab crm-pill is-active">All</button>
+                                    <button onclick="setInvoiceStatus('pending', this)" class="inv-filter-tab crm-pill">Pending</button>
+                                    <button onclick="setInvoiceStatus('paid', this)" class="inv-filter-tab crm-pill">Paid</button>
+                                    <button onclick="setInvoiceStatus('overdue', this)" class="inv-filter-tab crm-pill">Overdue</button>
                                 </div>
                                 <button onclick="exportInvoicesCSV()" class="text-xs font-semibold text-brand-blue hover:underline flex items-center gap-1">
                                     <i class="fa-solid fa-file-csv"></i> Export
@@ -338,7 +317,7 @@ include_once '../../includes/sidebar.php';
 
         </div>
     </main>
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Scripts -->
     <script src="/assets/js/customer/customer_dashboard.js"></script>
@@ -361,11 +340,12 @@ include_once '../../includes/sidebar.php';
             };
 
             window.setInvoiceStatus = function (status, btn) {
-                currentStatus = status;
-                document.querySelectorAll('.inv-filter-tab').forEach(function (t) {
-                    t.className = 'inv-filter-tab text-slate-500 hover:text-slate-800 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all';
-                });
-                if (btn) btn.className = 'inv-filter-tab bg-brand-blue text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all';
+                currentStatus = status || 'all';
+                // Reuse the shared tab helper from customer_dashboard.js so the
+                // active state stays a single `.is-active` class (styled by .crm-pill).
+                if (window.setActiveTab) {
+                    window.setActiveTab('.inv-filter-tab', btn);
+                }
                 window.applyInvoiceFilters();
             };
 
@@ -406,5 +386,5 @@ include_once '../../includes/sidebar.php';
     </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>
 

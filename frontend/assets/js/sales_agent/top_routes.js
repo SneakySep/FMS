@@ -67,6 +67,9 @@ async function fetchLeadsAndRoutes() {
       statusContainer.innerHTML = statusHTML;
     }
 
+    // Map markers use the brand navy ramp rather than a generic indigo.
+    const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
     // 2. Paginated Top Routes Render
     routesData = res.top_routes || [];
     currentRoutesPage = 1;
@@ -79,8 +82,8 @@ async function fetchLeadsAndRoutes() {
         for (const [key, coords] of Object.entries(hubCoords)) {
           if (routeLower.includes(key)) {
             L.circleMarker(coords, {
-              color: '#6366f1',
-              fillColor: '#818cf8',
+              color: P.navy,
+              fillColor: P.sky,
               fillOpacity: 0.8,
               radius: 6
             }).addTo(map).bindTooltip(item.route);

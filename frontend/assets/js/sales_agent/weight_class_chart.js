@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const chartElement = document.querySelector("#weightClassBarChart");
         if (!chartElement) return;
 
+        // Transport modes stay distinguishable but come off one navy ramp:
+        // Air = sky-brand, Sea = brand navy, Land = navy-200.
+        const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
         if (weightChartInstance) {
             weightChartInstance.destroy();
         }
@@ -37,8 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 toolbar: { show: false },
                 fontFamily: 'Inter, sans-serif'
             },
-            // Air Freight: Sky Blue (#38BDF8), Sea Freight: Dark Blue (#1D4ED8), Land Transport: Light Blue (#93C5FD)
-            colors: ['#38BDF8', '#1D4ED8', '#93C5FD'],
+            colors: [P.chart[2], P.chart[0], P.chart[4]],
             plotOptions: {
                 bar: {
                     horizontal: false,
@@ -48,20 +51,20 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             dataLabels: {
                 enabled: true,
-                style: { fontSize: '10px', fontWeight: 'bold' }
+                style: { fontSize: '12px', fontWeight: 'bold' }
             },
             grid: {
-                borderColor: '#F1F5F9',
+                borderColor: P.grid,
                 strokeDashArray: 3
             },
             xaxis: {
                 categories: categories,
-                labels: { style: { colors: '#475569', fontWeight: 600, fontSize: '11px' } }
+                labels: { style: { colors: P.muted, fontWeight: 600, fontSize: '12px' } }
             },
             legend: {
                 position: 'top',
                 horizontalAlign: 'center',
-                fontSize: '11px',
+                fontSize: '12px',
                 fontWeight: 600
             },
             tooltip: {

@@ -2,8 +2,8 @@
 $page_title = "Customer Dashboard - Priority Handling";
 
 
-include_once '../../includes/header.php';
-require_once '../../helpers/api_helper.php';
+include_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
 
 // 1. Fetch Dynamic Profile Data mula sa FastAPI
 $profile_res = make_api_request('/api/v1/portal/profile', 'GET');
@@ -100,85 +100,22 @@ function getStatusBadgeClass($status) {
 ?>
 
 <!-- SIDEBAR INCLUDE -->
-<?php include_once '../../includes/sidebar.php'; ?>
+<?php include_once __DIR__ . '/../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
 <main class="flex-1 flex flex-col min-w-0">
 
-    <!-- TOP HEADER BAR -->
-    <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-            <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
-            <div class="min-w-0">
-                <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Priority Handling</h2>
-                <p class="text-xs text-slate-400 font-medium mt-0.5"><?= htmlspecialchars($company_name) ?> &middot; Acct #<?= htmlspecialchars($customer_id) ?></p>
-            </div>
-        </div>
-
-        <!-- Global Search -->
-        <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" placeholder="Track a waybill, invoice, or document..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-            </div>
-        </div>
-
-        <!-- Header Actions -->
-        <div class="flex items-center gap-3">
-            <!-- Notification Bell + Dropdown -->
-            <div class="relative shrink-0" id="notifBellWrap" data-notif-store="crm_read_notifs_<?= htmlspecialchars((string) $customer_id) ?>">
-                <button type="button" id="notifBellBtn" aria-haspopup="true" aria-expanded="false" title="Notifications"
-                        class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span id="notifBadge" class="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full items-center justify-center border-2 border-white <?= $unread_count > 0 ? 'flex' : 'hidden' ?>"><?= (int) $unread_count ?></span>
-                </button>
-
-                <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-900/10 z-50 overflow-hidden">
-                    <div class="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100">
-                        <h3 class="text-xs font-bold text-slate-900">Notifications</h3>
-                        <span id="notifUnreadPill" class="text-[10px] font-bold text-brand-blue bg-blue-100 px-2 py-0.5 rounded-full"><?= (int) $unread_count ?> new</span>
-                    </div>
-                    <div class="max-h-72 overflow-y-auto divide-y divide-slate-100">
-                        <?php if (!empty($notifications)): ?>
-                            <?php foreach ($notifications as $n_idx => $note): ?>
-                                <?php
-                                    $n_id    = isset($note['id']) ? (int) $note['id'] : 'idx-' . $n_idx;
-                                    $n_style = $notif_styles[$note['type'] ?? 'info'] ?? $notif_styles['info'];
-                                    $n_title = htmlspecialchars($note['title'] ?? 'Notification');
-                                    $n_msg   = htmlspecialchars($note['message'] ?? '');
-                                    $n_time  = htmlspecialchars($note['time'] ?? '');
-                                    $n_link  = htmlspecialchars($note['link'] ?? 'notification.php');
-                                ?>
-                                <a href="<?= $n_link ?>" data-notif-id="<?= $n_id ?>"
-                                   class="notif-item flex items-start gap-3 px-4 py-3 hover:bg-blue-50/60 transition">
-                                    <span class="w-2 h-2 rounded-full <?= $n_style['dot'] ?> mt-1.5 shrink-0"></span>
-                                    <span class="min-w-0 flex-1">
-                                        <span class="flex items-center justify-between gap-2">
-                                            <span class="text-xs font-bold text-slate-800 truncate"><?= $n_title ?></span>
-                                            <span class="text-[10px] <?= $n_style['text'] ?> font-semibold shrink-0"><?= $n_style['label'] ?></span>
-                                        </span>
-                                        <span class="block text-[11px] text-slate-500 leading-snug mt-0.5 line-clamp-2"><?= $n_msg ?></span>
-                                        <span class="block text-[10px] text-slate-400 mt-1">&bull; <?= $n_time ?></span>
-                                    </span>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="text-xs text-slate-400 italic py-6 text-center">You're all caught up.</p>
-                        <?php endif; ?>
-                    </div>
-                    <a href="notification.php" class="block text-center text-[11px] font-semibold text-brand-blue hover:bg-slate-50 py-2.5 border-t border-slate-100">View all notifications &rarr;</a>
-                </div>
-            </div>
-            <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                Help Desk <i class="fa-solid fa-headset text-xs"></i>
-            </button>
-            <button onclick="openBookingModal()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                <i class="fa-solid fa-plus text-xs"></i> Book Shipment
-            </button>
-        </div>
-    </header>
+    <?php
+    // Shared top bar: title + subtitle, global search, notification bell, actions.
+    $pageTitle    = 'Priority Handling';
+    $pageSubtitle = $company_name . ' · Acct #' . $customer_id;
+    $headerSearch = ['placeholder' => 'Track a waybill, invoice, or document...'];
+    $headerBell   = [
+        'store' => 'crm_read_notifs_' . $customer_id,
+        'count' => $unread_count,
+        'items' => $notifications,
+    ];
+    include_once __DIR__ . '/../../components/customer_header.php'; ?>
 
     <!-- DASHBOARD CONTENT BODY -->
     <div class="p-6 lg:p-8 2xl:px-10 space-y-8 w-full">
@@ -505,9 +442,9 @@ function getStatusBadgeClass($status) {
     </div>
 </main>
 
-<?php include_once '../../components/booking_modal.php'; ?>
+<?php include_once __DIR__ . '/../../components/booking_modal.php'; ?>
 
-<?php include_once '../../components/chat_widget.php'; ?>
+<?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
 <!-- Scripts -->
 <script src="/assets/js/customer/customer_dashboard.js"></script>
@@ -515,4 +452,4 @@ function getStatusBadgeClass($status) {
 <script src="/assets/js/customer/notification_bell.js"></script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

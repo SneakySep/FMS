@@ -6,7 +6,7 @@ include_once '../../includes/sidebar.php';
 ?>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 flex flex-col min-w-0">
+    <main data-brand="priority" class="flex-1 flex flex-col min-w-0">
 
         <!-- TOP HEADER BAR -->
         <header class="bg-white dark:bg-[#0e1b33] border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center">

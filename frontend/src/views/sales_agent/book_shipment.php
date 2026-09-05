@@ -5,7 +5,7 @@ include_once '../../includes/sidebar.php';
 ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-slate-50 p-6 lg:p-8">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-slate-50 p-6 lg:p-8">
 
   <?php 
   $header_title = "Book New Shipment";

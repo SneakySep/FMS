@@ -88,7 +88,7 @@ function kanbanMoney($value) {
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC]">
 
   <?php 
   $header_title = "Kanban Pipeline";

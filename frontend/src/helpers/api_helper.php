@@ -27,7 +27,7 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 
     $headers = [];
-    
+
     // I-attach ang Auth Token kung may valid session
     if (isset($_SESSION['access_token']) && !empty($_SESSION['access_token'])) {
         $headers[] = 'Authorization: Bearer ' . $_SESSION['access_token'];
@@ -36,6 +36,19 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     // Isama ang Anumang Custom Headers (tulad ng x-user-id)
     if (!empty($custom_headers) && is_array($custom_headers)) {
         $headers = array_merge($headers, $custom_headers);
+    }
+
+    // Auto-attach ang x-user-id header para sa logged-in user (portal endpoints
+    // like /api/v1/portal/* require it). Custom headers can still override it.
+    $has_user_id_header = false;
+    foreach ($headers as $h) {
+        if (stripos($h, 'x-user-id:') === 0) {
+            $has_user_id_header = true;
+            break;
+        }
+    }
+    if (!$has_user_id_header && !empty($_SESSION['user_id'])) {
+        $headers[] = 'x-user-id: ' . $_SESSION['user_id'];
     }
 
     // Body / Payload Processing

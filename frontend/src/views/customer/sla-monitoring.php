@@ -1,9 +1,9 @@
 <?php
 $page_title = "SLA Monitoring · Priority Handling Logistics";
 $activePage = 'sla-monitoring';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
-require_once '../../helpers/api_helper.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
 
 // --- Fetch live SLA data from the backend API, with demo fallback ---
 $sla_res  = make_api_request('/api/v1/portal/sla', 'GET');
@@ -58,39 +58,16 @@ if (!empty($sla_data) && is_array($sla_data)) {
 <main class="flex-1 flex flex-col min-w-0">
 
   <!-- TOP HEADER BAR -->
-  <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-    <div class="flex items-center gap-3 min-w-0">
-      <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-        <i class="fa-solid fa-bars text-lg"></i>
-      </button>
-      <div class="min-w-0">
-        <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">SLA Monitoring</h2>
-        <p class="text-xs text-slate-400 font-medium mt-0.5">Service level agreement performance &middot; Acct #8B41</p>
-      </div>
-    </div>
-
-    <!-- Global Search -->
-    <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="slaSearchInput" onkeyup="searchBreachLog()" placeholder="Search waybill, commitment, or status..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-      </div>
-    </div>
-
-    <!-- Header Actions -->
-    <div class="flex items-center gap-3">
-      <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors shrink-0">
-        <i class="fa-solid fa-bell text-xs"></i>
-        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-      </button>
-      <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-        Help Desk <i class="fa-solid fa-headset text-xs"></i>
-      </button>
-      <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-        <i class="fa-solid fa-plus text-xs"></i> Book Shipment
-      </button>
-    </div>
-  </header>
+  <?php
+  $pageTitle    = 'SLA Monitoring';
+  $pageSubtitle = 'Service level agreement performance · Acct #8B41';
+  $headerSearch = [
+      'id'          => 'slaSearchInput',
+      'onkeyup'     => 'searchBreachLog()',
+      'placeholder' => 'Search waybill, commitment, or status...',
+  ];
+  include_once __DIR__ . '/../../components/customer_header.php';
+  ?>
 
   <!-- SLA MONITORING CONTENT BODY -->
   <div class="p-6 lg:p-8 2xl:px-10 space-y-8 w-full">
@@ -418,7 +395,7 @@ if (!empty($sla_data) && is_array($sla_data)) {
   </div>
 </main>
 
-<?php include_once '../../components/chat_widget.php'; ?>
+<?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
 <!-- Scripts -->
 <script src="/assets/js/customer/customer_dashboard.js"></script>
@@ -445,4 +422,4 @@ if (!empty($sla_data) && is_array($sla_data)) {
 </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

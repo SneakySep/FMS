@@ -1,9 +1,9 @@
 <?php
 $page_title = "Settings · Priority Handling Logistics";
 $activePage = 'settings';
-require_once '../../includes/header.php';
-require_once '../../helpers/api_helper.php';
-include_once '../../includes/sidebar.php';
+require_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
 
 // ---------------------------------------------------------------------------
 // Hydrate the settings screen with the signed-in customer's real profile and
@@ -21,8 +21,8 @@ $settings     = is_array($raw_settings) ? ($raw_settings['data'] ?? $raw_setting
 // Appearance values are read by the no-flash bootstrap in header.php, so they
 // must be emitted as real data attributes on <html> as well as on this root.
 $dark_mode    = !empty($settings['dark_mode']);
-$accent_color = in_array($settings['accent_color'] ?? '', ['blue', 'violet', 'emerald', 'amber', 'rose'], true)
-    ? $settings['accent_color'] : 'blue';
+$accent_color = in_array($settings['accent_color'] ?? '', ['navy', 'blue', 'violet', 'emerald', 'amber', 'rose'], true)
+    ? $settings['accent_color'] : 'navy';
 $density      = ($settings['density'] ?? 'comfortable') === 'compact' ? 'compact' : 'comfortable';
 
 $attr = function ($value) {
@@ -70,32 +70,14 @@ $acct = [
 
 
         <!-- TOP HEADER BAR (matches the rest of the portal) -->
-        <header class="bg-white dark:bg-[#0e1b33] border-b border-slate-200 dark:border-slate-800 px-8 py-4 flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-black italic text-slate-900 dark:text-white tracking-tight">Settings</h2>
-                <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">Manage your account, preferences & security</p>
-            </div>
-
-            <div class="flex-1 max-w-md mx-8">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" placeholder="Track, a waybill, invoice, or document..." class="w-full bg-slate-50 dark:bg-slate-900 dark:border-slate-700 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white dark:focus:bg-slate-900 transition-all">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button onclick="toggleChat()" class="bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100 dark:border-blue-500/20">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    + Book Shipment
-                </button>
-            </div>
-        </header>
+        <?php
+        $pageTitle    = 'Settings';
+        $pageSubtitle = 'Manage your account, preferences & security';
+        // Settings has no global search target, so hide the field instead of
+        // rendering a dead input.
+        $headerSearch = false;
+        include_once __DIR__ . '/../../components/customer_header.php';
+        ?>
 
 
         <!-- SETTINGS DASHBOARD BODY -->
@@ -317,11 +299,12 @@ $acct = [
                                 <h4 class="font-extrabold text-slate-900 dark:text-white mb-1">Accent colour</h4>
                                 <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3">Used for highlights and active states</p>
                                 <div class="flex items-center gap-3" id="accentSwatches">
-                                    <button type="button" onclick="setAccent('#0066ff','blue')"   data-accent="blue"   class="w-8 h-8 rounded-full bg-[#0066ff] ring-2 ring-offset-2 ring-transparent dark:ring-offset-[#112240] transition"></button>
-                                    <button type="button" onclick="setAccent('#7c3aed','violet')" data-accent="violet" class="w-8 h-8 rounded-full bg-[#7c3aed] ring-2 ring-offset-2 ring-transparent dark:ring-offset-[#112240] transition"></button>
-                                    <button type="button" onclick="setAccent('#059669','emerald')" data-accent="emerald" class="w-8 h-8 rounded-full bg-[#059669] ring-2 ring-offset-2 ring-transparent dark:ring-offset-[#112240] transition"></button>
-                                    <button type="button" onclick="setAccent('#d97706','amber')" data-accent="amber" class="w-8 h-8 rounded-full bg-[#d97706] ring-2 ring-offset-2 ring-transparent dark:ring-offset-[#112240] transition"></button>
-                                    <button type="button" onclick="setAccent('#dc2626','rose')" data-accent="rose" class="w-8 h-8 rounded-full bg-[#dc2626] ring-2 ring-offset-2 ring-transparent dark:ring-offset-[#112240] transition"></button>
+                                    <button type="button" onclick="setAccent('#1d2e6a','navy')"   data-accent="navy"    class="w-8 h-8 rounded-full bg-priority-navy ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
+                                    <button type="button" onclick="setAccent('#0066ff','blue')"   data-accent="blue"    class="w-8 h-8 rounded-full bg-[#0066ff] ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
+                                    <button type="button" onclick="setAccent('#7c3aed','violet')" data-accent="violet" class="w-8 h-8 rounded-full bg-[#7c3aed] ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
+                                    <button type="button" onclick="setAccent('#059669','emerald')" data-accent="emerald" class="w-8 h-8 rounded-full bg-[#059669] ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
+                                    <button type="button" onclick="setAccent('#d97706','amber')" data-accent="amber" class="w-8 h-8 rounded-full bg-[#d97706] ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
+                                    <button type="button" onclick="setAccent('#dc2626','rose')" data-accent="rose" class="w-8 h-8 rounded-full bg-[#dc2626] ring-2 ring-offset-2 ring-transparent dark:ring-offset-navy-850 transition"></button>
                                 </div>
                             </div>
 
@@ -545,12 +528,12 @@ $acct = [
 
     </main>
 
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Scripts -->
-    <script src="../../../assets/js/customer/customer_dashboard.js"></script>
-    <script src="../../../assets/js/customer/customer_settings.js"></script>
+    <script src="/assets/js/customer/customer_dashboard.js"></script>
+    <script src="/assets/js/customer/customer_settings.js"></script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>
 

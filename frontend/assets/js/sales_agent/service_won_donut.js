@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const chartElement = document.querySelector("#serviceWonDonutChart");
         if (!chartElement) return;
 
+        // Sequential navy ramp from the theme tokens - replaces the five
+        // hand-picked blues this card used to invent for itself.
+        const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
         if (donutChartInstance) {
             donutChartInstance.destroy();
         }
@@ -47,11 +51,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 height: 210,
                 fontFamily: 'Inter, sans-serif'
             },
-            // Monochromatic Blue Palette katulad ng sa reference UI
-            colors: ['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'],
+            colors: P.chart,
             stroke: {
                 show: true,
-                colors: ['#FFFFFF'],
+                colors: [P.surface],
                 width: 2
             },
             plotOptions: {
@@ -63,9 +66,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             total: {
                                 show: true,
                                 label: 'Total Won',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 600,
-                                color: '#94A3B8',
+                                color: P.muted,
                                 formatter: function (w) {
                                     return w.globals.seriesTotals.reduce((a, b) => a + b, 0) + " deals";
                                 }
@@ -80,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return val.toFixed(1) + "%";
                 },
                 style: {
-                    fontSize: '10px',
+                    fontSize: '12px',
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: 'bold'
                 },
@@ -89,9 +92,9 @@ document.addEventListener("DOMContentLoaded", function () {
             legend: {
                 position: 'top',
                 horizontalAlign: 'center',
-                fontSize: '11px',
+                fontSize: '12px',
                 fontWeight: 600,
-                labels: { colors: '#64748B' },
+                labels: { colors: P.muted },
                 markers: { width: 8, height: 8, radius: 12 },
                 itemMargin: { horizontal: 6, vertical: 2 }
             },

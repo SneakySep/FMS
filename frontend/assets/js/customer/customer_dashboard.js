@@ -25,11 +25,22 @@
     });
   };
 
-  window.filterDocuments = function (category, btn) {
-    document.querySelectorAll('.doc-filter-tab').forEach(function (t) {
-      t.className = 'doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all';
+  /* ---------- Filter tabs ------------------------------------------------
+     Active state is driven by the single `.is-active` class (styled by
+     .crm-pill in assets/css/theme.css). Toggling one class instead of
+     reassigning `className` keeps every other utility - including dark:
+     variants - intact.
+     ---------------------------------------------------------------------- */
+  function setActiveTab(scopeSelector, activeBtn) {
+    document.querySelectorAll(scopeSelector).forEach(function (t) {
+      t.classList.toggle('is-active', t === activeBtn);
     });
-    if (btn) btn.className = 'doc-filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all';
+  }
+  // Exposed so page-level scripts (e.g. invoices.php) reuse one implementation.
+  window.setActiveTab = setActiveTab;
+
+  window.filterDocuments = function (category, btn) {
+    setActiveTab('.doc-filter-tab', btn);
     document.querySelectorAll('.doc-item').forEach(function (row) {
       row.style.display = (category === 'all' || row.getAttribute('data-category') === category) ? '' : 'none';
     });
@@ -51,13 +62,43 @@
   };
 
   window.filterShipments = function (status, btn) {
-    document.querySelectorAll('.filter-tab').forEach(function (t) {
-      t.className = 'filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all';
-    });
-    if (btn) btn.className = 'filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all';
+    setActiveTab('.filter-tab', btn);
     document.querySelectorAll('.shipment-row').forEach(function (row) {
       row.style.display = (status === 'all' || row.getAttribute('data-status') === status) ? '' : 'none';
     });
+  };
+
+  /* ---------- Shipments: CSV export (client-side, from rendered table) ---------- */
+  window.exportShipmentsCSV = function () {
+    var table = byId('shipmentsTable');
+    if (!table) { alert('No shipments table found on this page.'); return; }
+    var rows = [];
+    var headCells = table.querySelectorAll('thead th');
+    var header = [];
+    headCells.forEach(function (th) { header.push(th.textContent.trim()); });
+    if (header.length) rows.push(header);
+    table.querySelectorAll('tbody tr.shipment-row').forEach(function (row) {
+      if (row.style.display === 'none') return; // respect active filter
+      var cells = [];
+      row.querySelectorAll('td').forEach(function (td) {
+        cells.push(td.textContent.replace(/\s+/g, ' ').trim());
+      });
+      rows.push(cells);
+    });
+    var csv = rows.map(function (r) {
+      return r.map(function (v) {
+        var s = String(v).replace(/"/g, '""');
+        return /[",\n]/.test(s) ? '"' + s + '"' : s;
+      }).join(',');
+    }).join('\n');
+    var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'shipments_export_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
   };
 
   /* ---------- Invoices: search ---------- */
@@ -70,14 +111,32 @@
     });
   };
 
-  /* ---------- Tickets: search + new ticket ---------- */
-  window.searchTicketsList = function () {
+  /* ---------- Tickets: search + status filter + new ticket ---------- */
+  var currentTicketStatus = 'all';
+
+  function applyTicketFilters() {
     var input = byId('ticketSearchInput');
-    if (!input) return;
-    var q = input.value.toLowerCase();
+    var q = input ? input.value.toLowerCase() : '';
+    var visible = 0;
     document.querySelectorAll('.ticket-item').forEach(function (row) {
-      row.style.display = textOf(row).indexOf(q) > -1 ? '' : 'none';
+      var matchStatus = (currentTicketStatus === 'all' || row.getAttribute('data-status') === currentTicketStatus);
+      var matchText = !q || textOf(row).indexOf(q) > -1;
+      var show = matchStatus && matchText;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
     });
+    var empty = byId('ticketEmpty');
+    if (empty) empty.classList.toggle('hidden', visible > 0);
+  }
+
+  window.filterTickets = function (status, btn) {
+    currentTicketStatus = status || 'all';
+    setActiveTab('.filter-tab', btn);
+    applyTicketFilters();
+  };
+
+  window.searchTicketsList = function () {
+    applyTicketFilters();
   };
 
   window.createNewTicket = function () {
@@ -120,13 +179,17 @@
 
   /* ---------- Booking Shipment Modal (ported from Booking Shipment.html) ---------- */
   // Matches the base used by the chat widget (config API_BASE_URL default).
-  var BOOKING_API_BASE = window.APP_CONFIG.API_BASE_URL + '/api/v1';
+  var BOOKING_API_BASE = ((window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL)
+    ? window.APP_CONFIG.API_BASE_URL : 'http://127.0.0.1:8000') + '/api/v1';
 
   window.openBookingModal = function () {
     var modal = byId('bookingModal');
     if (modal) {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
+    } else {
+      // Pages outside the dashboard do not ship components/booking_modal.php.
+      alert('Opening Freight Booking Form...');
     }
   };
 
@@ -160,6 +223,10 @@
     var form = byId('bookingForm');
     if (!form) return;
     var cid = val('bookingCustomerId');
+    if (!cid) {
+      alert('Your account is not linked to a customer profile yet, so bookings cannot be submitted. Please contact support.');
+      return;
+    }
 
     // Service type (selected "Type of Service" checkboxes)
     var serviceType = checkedValues('service') || 'Freight Shipping';

@@ -120,6 +120,73 @@ $showAgentChatHead = !$isChatPage && $currentUserRole !== 'customer';
     })();
     </script>
 
+    <!-- ===========================================================================
+       DESIGN TOKEN BRIDGE
+       Publishes the theme.css custom properties to JavaScript so the ApexCharts /
+       Chart.js widgets (assets/js/sales_agent/*) colour themselves from the same
+       source of truth as the CSS instead of hardcoding their own hexes.
+       crmPalette() re-reads live, so it returns the dark-mode values after the
+       bootstrap above has toggled html.dark.
+       =========================================================================== -->
+    <script>
+    window.crmPalette = function () {
+        var cs = getComputedStyle(document.documentElement);
+        var v = function (name, fallback) {
+            var val = cs.getPropertyValue(name).trim();
+            return val || fallback;
+        };
+        return {
+            chart: [
+                v('--chart-1', '#1d2e6a'), v('--chart-2', '#084163'),
+                v('--chart-3', '#4e83c5'), v('--chart-4', '#8d9dd0'),
+                v('--chart-5', '#b9c4e3'), v('--chart-6', '#dbe1f1')
+            ],
+            stage: {
+                new:         v('--stage-new', '#8d9dd0'),
+                qualifying:  v('--stage-qualifying', '#4e83c5'),
+                quote:       v('--stage-quote', '#2b3f7c'),
+                negotiation: v('--stage-negotiation', '#1d2e6a'),
+                won:         v('--stage-won', '#047857'),
+                wonSoft:     v('--stage-won-soft', '#ecfdf5'),
+                lost:        v('--stage-lost', '#b91c1c'),
+                lostSoft:    v('--stage-lost-soft', '#fef2f2')
+            },
+            navy:    v('--navy-700', '#1d2e6a'),
+            navy600: v('--navy-600', '#2b3f7c'),
+            navy300: v('--navy-300', '#8d9dd0'),
+            navy100: v('--navy-100', '#dbe1f1'),
+            sky:     v('--sky-brand', '#4e83c5'),
+            ink:     v('--fg-heading', '#1b1b1c'),
+            muted:   v('--fg-muted', '#6e6e6e'),
+            grid:    v('--line', '#dfe3ee'),
+            surface: v('--surface', '#ffffff'),
+            canvas:  v('--canvas', '#f2f4f9')
+        };
+    };
+    window.CRM_COLORS = window.crmPalette();
+
+    /* Toggle the dark scheme and persist it in the same 'crm_customer_prefs'
+       record the customer settings page writes, so a user's choice carries
+       across both portals instead of forking into a second preference store. */
+    window.crmSetDarkMode = function (on) {
+        document.documentElement.classList.toggle('dark', on);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', on ? '#080d1f' : '#f2f4f9');
+        try {
+            var raw = window.localStorage.getItem('crm_customer_prefs');
+            var prefs = raw ? JSON.parse(raw) : {};
+            prefs.dark_mode = !!on;
+            window.localStorage.setItem('crm_customer_prefs', JSON.stringify(prefs));
+        } catch (e) {
+            /* Storage unavailable: the toggle still applies for this page. */
+        }
+        document.dispatchEvent(new CustomEvent('crm:theme-change', {
+            detail: { dark: !!on }
+        }));
+    };
+    </script>
+
+
     <!-- Optional per-page <head> assets (e.g. tracking.php Leaflet CSS) -->
     <?php if (!empty($extraHead)) { echo $extraHead; } ?>
 

@@ -20,22 +20,22 @@
     <!-- Tier Legend -->
     <div class="grid grid-cols-2 gap-3 mt-4">
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+        <span class="w-3 h-3 rounded-full" style="background: var(--chart-1)"></span>
         <span class="text-xs text-slate-600">Platinum</span>
         <span class="text-xs font-bold text-slate-900"><?= $tier_platinum ?></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
+        <span class="w-3 h-3 rounded-full" style="background: var(--chart-2)"></span>
         <span class="text-xs text-slate-600">Gold</span>
         <span class="text-xs font-bold text-slate-900"><?= $tier_gold ?></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 bg-slate-400 rounded-full"></span>
+        <span class="w-3 h-3 rounded-full" style="background: var(--chart-3)"></span>
         <span class="text-xs text-slate-600">Silver</span>
         <span class="text-xs font-bold text-slate-900"><?= $tier_silver ?></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 bg-amber-600 rounded-full"></span>
+        <span class="w-3 h-3 rounded-full" style="background: var(--chart-4)"></span>
         <span class="text-xs text-slate-600">Bronze</span>
         <span class="text-xs font-bold text-slate-900"><?= $tier_bronze ?></span>
       </div>

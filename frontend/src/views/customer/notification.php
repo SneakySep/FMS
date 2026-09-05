@@ -1,8 +1,9 @@
 <?php
-$page_title = "Notification · Rising Red Dragon";
+$page_title = "Notification · Priority Handling Logistics";
 
-include_once '../../includes/header.php';
-require_once '../../helpers/api_helper.php';
+include_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
 
 // --- Fetch live notifications from the backend API, with demo fallback ---
 $notif_res  = make_api_request('/api/v1/portal/notifications', 'GET');
@@ -13,118 +14,103 @@ if (!empty($notif_data) && is_array($notif_data)) {
 } else {
     // Demo fallback when API is unreachable
     $notifications = [
-        ['id' => 1, 'type' => 'urgent',   'title' => 'SLA Breach - WB12345',       'message' => 'Delivery Exceeded SLA window by 3h 40m. Escalated to Ops.',     'time' => '2h ago',  'action' => 'View Details', 'link' => '/sla-monitoring'],
-        ['id' => 2, 'type' => 'warning',  'title' => 'Document Pending - WB208812', 'message' => 'Commercial Invoice awaiting your review and approval.',          'time' => '1d ago',  'action' => 'Review Doc',   'link' => '/documents'],
-        ['id' => 3, 'type' => 'success',  'title' => 'POD Confirmed - WB208835',   'message' => 'Proof of Delivery uploaded for Cebu-Manila shipment.',           'time' => '2d ago',  'action' => 'View POD',     'link' => '/documents'],
-        ['id' => 4, 'type' => 'info',     'title' => 'Inquiry Resolved - INQ-1245','message' => 'Billing clarification closed by your account manager.',          'time' => '3d ago',  'action' => 'View',         'link' => '/tickets'],
-        ['id' => 5, 'type' => 'warning',  'title' => 'Shipment Delay - WB-1245',   'message' => 'New ETA +2h due to traffic advisory on route.',                  'time' => '3d ago',  'action' => 'Track',        'link' => '/tracking'],
+        ['id' => 1, 'type' => 'urgent',   'title' => 'SLA Breach - WB12345',       'message' => 'Delivery Exceeded SLA window by 3h 40m. Escalated to Ops.',     'time' => '2h ago',  'action' => 'View Details', 'link' => 'sla-monitoring.php'],
+        ['id' => 2, 'type' => 'warning',  'title' => 'Document Pending - WB208812', 'message' => 'Commercial Invoice awaiting your review and approval.',          'time' => '1d ago',  'action' => 'Review Doc',   'link' => 'documents.php'],
+        ['id' => 3, 'type' => 'success',  'title' => 'POD Confirmed - WB208835',   'message' => 'Proof of Delivery uploaded for Cebu-Manila shipment.',           'time' => '2d ago',  'action' => 'View POD',     'link' => 'documents.php'],
+        ['id' => 4, 'type' => 'info',     'title' => 'Inquiry Resolved - INQ-1245','message' => 'Billing clarification closed by your account manager.',          'time' => '3d ago',  'action' => 'View',         'link' => 'tickets.php'],
+        ['id' => 5, 'type' => 'warning',  'title' => 'Shipment Delay - WB-1245',   'message' => 'New ETA +2h due to traffic advisory on route.',                  'time' => '3d ago',  'action' => 'Track',        'link' => 'tracking.php'],
     ];
 }
 
 // Count alert types for the badge
 $alert_count = count($notifications);
+
+// Presentation map per notification type: dot colour, badge class and label.
+$notif_styles = [
+    'urgent'  => ['dot' => 'bg-rose-500',   'badge' => 'crm-badge-red',   'label' => 'Urgent'],
+    'warning' => ['dot' => 'bg-amber-500',  'badge' => 'crm-badge-amber', 'label' => 'Warning'],
+    'success' => ['dot' => 'bg-emerald-500','badge' => 'crm-badge-green', 'label' => 'Confirmed'],
+    'info'    => ['dot' => 'bg-sky-500',    'badge' => 'crm-badge-blue',  'label' => 'Resolved'],
+];
 ?>
 
-<div class="app-container">
+<!-- MAIN CONTENT AREA -->
+<main class="flex-1 flex flex-col min-w-0">
 
-  <!-- SIDEBAR INCLUDE -->
-  <?php include_once '../../includes/sidebar.php'; ?>
+    <?php
+    // Shared top bar. The bell is intentionally omitted: this page IS the
+    // notification centre, and there is no search target to wire up.
+    $pageTitle    = 'Notifications';
+    $pageSubtitle = 'Alerts for your accounts · ' . $alert_count . ' total';
+    $headerSearch = false;
+    include_once __DIR__ . '/../../components/customer_header.php';
+    ?>
 
-  <!-- MAIN CONTENT – NOTIFICATION DASHBOARD -->
-  <main class="main-content mesh-bg relative overflow-y-auto">
+    <!-- NOTIFICATION CONTENT BODY -->
+    <div class="p-6 lg:p-8 2xl:px-10 space-y-6 w-full">
 
-    <!-- Mobile toggle button -->
-    <button onclick="toggleSidebar()" class="mobile-toggle fixed top-4 left-4 z-30 p-2 rounded-lg bg-slate-800/80 backdrop-blur border border-slate-700 text-slate-300 hover:text-white transition" aria-label="Open sidebar">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
-    </button>
-
-    <div class="max-w-5xl mx-auto fade-in">
-
-      <!-- PAGE HEADER -->
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">Notification</h1>
-          <p class="text-sm text-slate-400 mt-0.5">Notification - Alerts for your accounts</p>
-        </div>
-        <!-- Session time + notification count -->
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2 text-sm">
-            <span class="text-slate-400">🔔</span>
-            <span class="text-slate-300"><?= $alert_count ?> alerts</span>
-          </div>
-          <div class="text-right">
-            <p class="text-xs text-slate-500">Session Active</p>
-            <p class="text-sm font-mono text-sky-400 font-semibold" id="sessionTime">5:38:45 PM</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- NOTIFICATION LIST -->
-      <div class="glass-card rounded-2xl p-5">
-
-        <!-- Header with actions -->
-        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/50">
-          <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Recent Alerts</h2>
-          <button onclick="markAllRead()" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium">
-            Mark all as read
-          </button>
-        </div>
-
-        <!-- Notification items -->
-        <div class="space-y-4">
-
-          <?php
-          $notif_styles = [
-              'urgent'   => ['dot' => 'bg-rose-500',  'badge' => 'text-rose-400',  'label' => 'Urgent',     'panel_class' => 'notif-urgent'],
-              'warning'  => ['dot' => 'bg-amber-500', 'badge' => 'text-amber-400', 'label' => 'Warning',    'panel_class' => 'notif-warning'],
-              'success'  => ['dot' => 'bg-emerald-500','badge' => 'text-emerald-400','label' => 'Confirmed', 'panel_class' => 'notif-success'],
-              'info'     => ['dot' => 'bg-sky-500',   'badge' => 'text-sky-400',   'label' => 'Resolved',   'panel_class' => 'notif-info'],
-          ];
-          foreach ($notifications as $notif):
-              $type   = $notif['type'] ?? 'info';
-              $style  = $notif_styles[$type] ?? $notif_styles['info'];
-              $title  = htmlspecialchars($notif['title'] ?? 'Notification');
-              $msg    = htmlspecialchars($notif['message'] ?? '');
-              $time   = htmlspecialchars($notif['time'] ?? '');
-              $action = htmlspecialchars($notif['action'] ?? 'View');
-              $link   = $notif['link'] ?? '#';
-          ?>
-          <div class="<?= $style['panel_class'] ?> glass-panel rounded-xl p-4 hover:bg-white/5 transition cursor-pointer" onclick="viewNotification('<?= $title ?>')">
-            <div class="flex items-start gap-3">
-              <div class="w-2 h-2 rounded-full <?= $style['dot'] ?> mt-2 flex-shrink-0"></div>
-              <div class="flex-1">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h3 class="text-sm font-semibold text-white"><?= $title ?></h3>
-                  <span class="text-xs <?= $style['badge'] ?> font-medium"><?= $style['label'] ?></span>
+        <section class="crm-card crm-fade-up">
+            <div class="crm-panel-head">
+                <div>
+                    <h2 class="crm-panel-title">Recent Alerts</h2>
+                    <span class="crm-panel-sub">Newest first · click a row to open the full details</span>
                 </div>
-                <p class="text-sm text-slate-300 mt-0.5">
-                  <?= $msg ?>
-                </p>
-                <div class="flex items-center gap-4 mt-2">
-                  <span class="text-xs text-slate-500">⏱️ <?= $time ?></span>
-                  <a href="<?= $link ?>" class="text-xs text-sky-400 hover:text-sky-300 transition font-medium"><?= $action ?> →</a>
-                </div>
-              </div>
+                <button type="button" onclick="markAllRead()" class="crm-btn crm-btn-subtle !h-8 !px-3 !text-xs">
+                    <i class="fa-solid fa-check-double text-xs"></i>
+                    Mark all as read
+                </button>
             </div>
-          </div>
-          <?php endforeach; ?>
 
-      </div>
-      </div>
+            <?php if (!empty($notifications)): ?>
+                <div class="divide-y" style="border-color: var(--line);">
+                    <?php foreach ($notifications as $notif):
+                        $type   = $notif['type'] ?? 'info';
+                        $style  = $notif_styles[$type] ?? $notif_styles['info'];
+                        $title  = htmlspecialchars($notif['title'] ?? 'Notification', ENT_QUOTES, 'UTF-8');
+                        $msg    = htmlspecialchars($notif['message'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $time   = htmlspecialchars($notif['time'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $action = htmlspecialchars($notif['action'] ?? 'View', ENT_QUOTES, 'UTF-8');
+                        $link   = htmlspecialchars($notif['link'] ?? '#', ENT_QUOTES, 'UTF-8');
+                    ?>
+                        <div class="flex items-start gap-3.5 px-5 py-4 transition-colors hover:bg-navy-50 dark:hover:bg-navy-850 cursor-pointer" data-title="<?= $title ?>" onclick="viewNotification(this)">
+                            <span class="w-2 h-2 rounded-full <?= $style['dot'] ?> mt-2 shrink-0"></span>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <h3 class="text-sm font-bold truncate" style="color: var(--fg-heading);"><?= $title ?></h3>
+                                    <span class="crm-badge <?= $style['badge'] ?> shrink-0"><?= $style['label'] ?></span>
+                                </div>
+                                <p class="text-xs leading-relaxed mt-1" style="color: var(--fg-body);"><?= $msg ?></p>
+                                <div class="flex items-center gap-4 mt-2">
+                                    <span class="text-xs flex items-center gap-1.5" style="color: var(--fg-muted);">
+                                        <i class="fa-regular fa-clock text-[10px]"></i> <?= $time ?>
+                                    </span>
+                                    <a href="<?= $link ?>" onclick="event.stopPropagation()" class="text-xs font-semibold text-brand-blue hover:underline">
+                                        <?= $action ?> &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="crm-empty">
+                    <span class="crm-empty-ico"><i class="fa-regular fa-bell-slash text-lg"></i></span>
+                    <p class="crm-empty-title">No notifications yet</p>
+                    <p class="crm-empty-sub">Shipment, SLA and billing alerts will appear here as they happen.</p>
+                </div>
+            <?php endif; ?>
+        </section>
 
-      <!-- FOOTER COPYRIGHT -->
-      <p class="text-center text-[10px] text-slate-500 mt-8 pt-4 border-t border-white/5">© 2026 CargoNet Systems. Global Logistics Solutions.</p>
+        <!-- FOOTER COPYRIGHT -->
+        <p class="text-center text-xs pt-4" style="color: var(--fg-muted); border-top: 1px solid var(--line);">&copy; 2026 CargoNet Systems. Global Logistics Solutions.</p>
 
     </div>
-  </main>
-
-</div>
+</main>
 
 <!-- PAGE SPECIFIC SCRIPT -->
 <script>
-  function viewNotification(title) {
+  function viewNotification(row) {
+    var title = row && row.dataset ? row.dataset.title : 'Notification';
     alert(`📬 Notification: ${title}\n\nIn production, this would open the full notification details.`);
   }
 
@@ -133,19 +119,7 @@ $alert_count = count($notifications);
       alert('✅ All notifications marked as read.');
     }
   }
-
-  function updateSessionTime() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const el = document.getElementById('sessionTime');
-    if (el) el.textContent = timeStr;
-  }
-  
-  document.addEventListener('DOMContentLoaded', function() {
-    updateSessionTime();
-    setInterval(updateSessionTime, 1000);
-  });
 </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

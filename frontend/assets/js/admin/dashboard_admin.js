@@ -14,6 +14,14 @@
   // Grab injected data from PHP (set in dashboard.php)
   var DATA = window.ADMIN_DASHBOARD_DATA || {};
 
+  /* Colours come from the theme tokens (see window.crmPalette in header.php)
+     so the charts follow the Priority navy scale instead of hardcoding their
+     own indigo/violet hexes. Each chart builds its options through a function
+     so a theme flip can re-read the tokens rather than reuse a frozen set. */
+  var palette = function () {
+    return (window.crmPalette || function () { return window.CRM_COLORS; })();
+  };
+
   // ------------------------------------------------------------------
   // 1. Revenue / Lead Trend Bar Chart (#admin-revenue-chart)
   // ------------------------------------------------------------------
@@ -37,7 +45,10 @@
       xLabels = defaultLabels.slice(0, counts.length || 7);
     }
 
-        var options = {
+    var options = buildOptions(palette());
+
+    function buildOptions(P) {
+      return {
       chart: {
         type: 'bar',
         height: 260,
@@ -63,7 +74,7 @@
           columnWidth: '65%',
           columnGap: '6px',
           distributed: false,
-          foregroundShadow: 'rgba(99, 102, 241, 0.15)',
+          foregroundShadow: 'rgba(29, 46, 106, 0.15)',
           barHeight: '70%'
         }
       },
@@ -72,7 +83,7 @@
         gradient: {
           shade: 'light',
           type: 'vertical',
-          gradientToColors: ['#818cf8'],
+          gradientToColors: [P.sky],
           stops: [0, 100],
           opacityFrom: 0.9,
           opacityTo: 0.6
@@ -81,7 +92,7 @@
       xaxis: {
         categories: xLabels,
         labels: {
-          style: { colors: '#94a3b8', fontSize: '11px', fontWeight: 500 },
+          style: { colors: P.muted, fontSize: '11px', fontWeight: 500 },
           padding: { left: -4 }
         },
         axisBorder: { show: false },
@@ -92,25 +103,25 @@
         min: 0,
         tickAmount: 5,
         labels: {
-          style: { colors: '#cbd5e1', fontSize: '11px', fontWeight: 500 },
+          style: { colors: P.muted, fontSize: '11px', fontWeight: 500 },
           formatter: function (val) { return Math.round(val); }
         },
         crosshairs: { show: false }
       },
       grid: {
-        borderColor: '#e2e8f0',
+        borderColor: P.grid,
         strokeDashArray: 3,
         y: { lines: { show: true } },
         x: { lines: { show: false } }
       },
-      colors: ['#6366f1'],
+      colors: [P.navy],
       dataLabels: {
         enabled: true,
         position: 'top',
         style: {
           fontSize: '11px',
           fontWeight: 700,
-          colors: ['#0f172a']
+          colors: [P.ink]
         },
         formatter: function (val) {
           return val > 0 ? val : '';
@@ -143,7 +154,7 @@
         }
       },
       responsive: [{
-        breakpoint: { table: 640 },
+        breakpoint: 640,
         options: {
           chart: { height: 200 },
           plotOptions: {
@@ -158,10 +169,15 @@
           }
         }
       }]
-    };
+      };
+    }
 
     var chart = new ApexCharts(el, options);
     chart.render();
+
+    document.addEventListener('crm:theme-change', function () {
+      chart.updateOptions(buildOptions(palette()), false, true);
+    });
   })();
 
   // ------------------------------------------------------------------
@@ -179,7 +195,10 @@
 
     var total = platinum + gold + silver + bronze;
 
-    var options = {
+    var options = buildOptions(palette());
+
+    function buildOptions(P) {
+      return {
       chart: {
         type: 'donut',
         height: 240,
@@ -188,7 +207,10 @@
       },
       series: [platinum, gold, silver, bronze],
       labels: ['Platinum', 'Gold', 'Silver', 'Bronze'],
-      colors: ['#8b5cf6', '#eab308', '#94a3b8', '#d97706'],
+      /* Tiers are ordinal (Platinum > Gold > Silver > Bronze), so they take
+         the sequential navy ramp rather than four unrelated hues. The legend
+         dots in customer_monitoring.php mirror this order. */
+      colors: [P.chart[0], P.chart[1], P.chart[2], P.chart[3]],
       plotOptions: {
         pie: {
           donut: {
@@ -203,7 +225,7 @@
                 },
                 fontSize: '14px',
                 fontWeight: 700,
-                color: '#0f172a'
+                color: P.ink
               }
             }
           }
@@ -219,7 +241,7 @@
         }
       },
       responsive: [{
-        breakpoint: { table: 640 },
+        breakpoint: 640,
         options: {
           chart: { height: 200 },
           plotOptions: {
@@ -229,10 +251,15 @@
           }
         }
       }]
-    };
+      };
+    }
 
     var chart = new ApexCharts(el, options);
     chart.render();
+
+    document.addEventListener('crm:theme-change', function () {
+      chart.updateOptions(buildOptions(palette()), false, true);
+    });
   })();
 
 })();

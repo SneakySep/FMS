@@ -19,8 +19,8 @@ $extraHead = '
     @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
   </style>
 ';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
 
 /* Shipment data source (single source of truth; mirrors shipments.php demo set).
    Swap for make_api_request('/api/v1/portal/shipments','GET') in production. */
@@ -50,37 +50,14 @@ function trackBadge($status){ switch($status){
     <main class="flex-1 flex flex-col min-w-0">
 
         <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3 min-w-0">
-                <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                <div class="min-w-0">
-                    <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Live Tracking</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Real-time status, milestone timeline &amp; GPS route map</p>
-                </div>
-            </div>
-
-            <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="liveTrackInput" placeholder="Track a waybill, invoice, or document..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    + Book Shipment
-                </button>
-            </div>
-        </header>
+        <?php
+        $pageTitle    = 'Live Tracking';
+        $pageSubtitle = 'Real-time status, milestone timeline & GPS route map';
+        // Decorative global search, matching the previous inline header: the
+        // page tracks by waybill dropdown (#waybillSelect), not by free text.
+        $headerSearch = ['placeholder' => 'Track a waybill, invoice, or document...'];
+        include_once __DIR__ . '/../../components/customer_header.php';
+        ?>
 
         <!-- LIVE TRACKING CONTENT BODY -->
         <div class="p-6 lg:p-8 w-full space-y-6">
@@ -241,7 +218,7 @@ function trackBadge($status){ switch($status){
         </div>
     </main>
 
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -387,4 +364,4 @@ function trackBadge($status){ switch($status){
     </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

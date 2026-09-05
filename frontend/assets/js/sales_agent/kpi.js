@@ -56,6 +56,10 @@ function renderForecastChart(forecast) {
     const chartContainer = document.querySelector("#revenueForecastChart");
     if (!chartContainer) return;
 
+    // Colours come from the theme tokens (see window.crmPalette in header.php)
+    // so this chart re-skins itself with dark mode instead of hardcoding greys.
+    const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
     // Default safety values
     const labels = (forecast && forecast.labels && forecast.labels.length) 
         ? forecast.labels 
@@ -101,7 +105,7 @@ function renderForecastChart(forecast) {
             dashArray: [0, 4],
             curve: 'smooth'
         },
-        colors: ['#F3F4F6', '#9CA3AF'],
+        colors: [P.navy300, P.navy],
         fill: {
             opacity: [0.85, 1],
             type: ['gradient', 'solid'],
@@ -114,9 +118,9 @@ function renderForecastChart(forecast) {
                 stops: [0, 100],
                 colorStops: [
                     [
-                        { offset: 0, color: "#6366F1", opacity: 1 },
-                        { offset: 15, color: "#F3F4F6", opacity: 0.6 },
-                        { offset: 100, color: "#F9FAFB", opacity: 0.1 }
+                        { offset: 0, color: P.navy, opacity: 1 },
+                        { offset: 15, color: P.navy300, opacity: 0.6 },
+                        { offset: 100, color: P.surface, opacity: 0.1 }
                     ]
                 ]
             }
@@ -126,14 +130,14 @@ function renderForecastChart(forecast) {
             axisBorder: { show: false },
             axisTicks: { show: false },
             labels: {
-                style: { colors: '#9CA3AF', fontSize: '12px' }
+                style: { colors: P.muted, fontSize: '12px' }
             }
         },
         yaxis: {
             min: 0,
             forceNiceScale: true,
             labels: {
-                style: { colors: '#9CA3AF', fontSize: '12px' },
+                style: { colors: P.muted, fontSize: '12px' },
                 formatter: function (val) {
                     if (val >= 1000) {
                         return "₱" + (val / 1000).toFixed(0) + "k";
@@ -143,7 +147,7 @@ function renderForecastChart(forecast) {
             }
         },
         grid: {
-            borderColor: '#F3F4F6',
+            borderColor: P.grid,
             strokeDashArray: 4,
             xaxis: { lines: { show: false } },
             yaxis: { lines: { show: true } }

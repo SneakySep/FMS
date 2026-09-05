@@ -6,7 +6,7 @@
  * Opened from the customer dashboard "Book Shipment" / "New Booking" / "Book" actions.
  */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$customer_id = $_SESSION['customer_id'] ?? '8B41';
+$customer_id = $_SESSION['customer_id'] ?? $_SESSION['user_id'] ?? '';
 ?>
 <style>
     :root {

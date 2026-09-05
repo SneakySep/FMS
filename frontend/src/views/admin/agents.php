@@ -20,6 +20,14 @@ if ($agents_res['status_code'] === 200 && !empty($agents_res['data'])) {
     }
 }
 
+// Track whether the API actually answered, so the view can tell "no agents
+// yet" apart from "backend unavailable". Placeholder rows are never injected:
+// an admin panel that invents agents and revenue is a data-integrity hazard.
+$agents_error = false;
+if ($agents_res['status_code'] !== 200) {
+    $agents_error = true;
+}
+
 // Normalize into a flat array the table expects
 $agents = [];
 if (is_array($agents_raw)) {
@@ -46,21 +54,13 @@ if (is_array($agents_raw)) {
     }
 }
 
-// Fallback placeholder if API is down or returns nothing
-if (empty($agents)) {
-    $agents = [
-        ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'status' => 'Active', 'sales' => 125000],
-        ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'status' => 'Inactive', 'sales' => 89000],
-        ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'status' => 'Active', 'sales' => 150000],
-    ];
-}
 ?>
 
 <!-- SIDEBAR INCLUDE -->
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
     <!-- TOP HEADER -->
     <?php include_once 'components/top_header.php'; ?>
@@ -158,6 +158,19 @@ if (empty($agents)) {
                     </td>
                 </tr>
                 <?php endforeach; ?>
+                <?php if (empty($agents)): ?>
+                <tr>
+                    <td colspan="5" class="px-6 py-14 text-center">
+                        <i class="fas <?php echo $agents_error ? 'fa-triangle-exclamation text-amber-500' : 'fa-user-slash text-slate-300'; ?> text-2xl mb-3"></i>
+                        <p class="text-sm font-semibold text-gray-800">
+                            <?php echo $agents_error ? 'Could not reach the agents service' : 'No agents yet'; ?>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <?php echo $agents_error ? 'The backend returned an error. Check the API status and reload.' : 'Add your first sales agent to start tracking performance.'; ?>
+                        </p>
+                    </td>
+                </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -165,7 +178,7 @@ if (empty($agents)) {
 </main>
 
 <!-- Add Agent Modal -->
-<div id="addAgentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+<div data-brand="priority" id="addAgentModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
         <h2 class="text-xl font-bold mb-4">Add New Agent</h2>
         <form>

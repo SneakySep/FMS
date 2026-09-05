@@ -1,9 +1,9 @@
 <?php
 $page_title = "Documents · Priority Handling Logistics";
 $activePage = 'documents';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
-require_once '../../helpers/api_helper.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
 
 // --- Fetch live documents from the backend API, with demo fallback ---
 $docs_res  = make_api_request('/api/v1/portal/documents', 'GET');
@@ -37,37 +37,26 @@ $uploaded_count = $total_docs - $pending_count;
     <main class="flex-1 flex flex-col min-w-0">
 
         <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3 min-w-0">
-                <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                <div class="min-w-0">
-                    <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Documents</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Shipment paperwork, contracts &amp; certificates</p>
-                </div>
-            </div>
-
-            <div class="flex-1 max-w-md mx-8">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="docSearchInput" onkeyup="searchDocVault()" placeholder="Search a waybill, invoice, or document..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="triggerUploadDoc()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up text-xs"></i> Upload
-                </button>
-            </div>
-        </header>
+        <?php
+        $pageTitle    = 'Documents';
+        $pageSubtitle = 'Shipment paperwork, contracts & certificates';
+        $headerSearch = [
+            'id'          => 'docSearchInput',
+            'onkeyup'     => 'searchDocVault()',
+            'placeholder' => 'Search a waybill, invoice, or document...',
+        ];
+        ob_start(); ?>
+        <button onclick="toggleChat()" class="crm-btn crm-btn-ghost !h-9 !px-3.5 !text-xs">
+            <span class="hidden sm:inline">Help Desk</span>
+            <i class="fa-solid fa-headset text-xs"></i>
+        </button>
+        <button onclick="triggerUploadDoc()" class="crm-btn crm-btn-primary !h-9 !px-3.5 !text-xs">
+            <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+            <span class="hidden sm:inline">Upload</span>
+        </button>
+        <?php $headerActions = ob_get_clean();
+        include_once __DIR__ . '/../../components/customer_header.php';
+        ?>
 
         <!-- DOCUMENTS DASHBOARD BODY -->
         <div class="px-4 sm:px-6 lg:px-8 py-8 space-y-6 w-full">
@@ -143,12 +132,12 @@ $uploaded_count = $total_docs - $pending_count;
                     </div>
 
                     <!-- CATEGORY FILTER TABS -->
-                    <div class="flex flex-wrap items-center gap-2 p-1.5 bg-slate-200/50 rounded-2xl w-fit text-xs font-semibold">
-                        <button onclick="filterDocuments('all', this)" class="doc-filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all">All <span class="ml-1 opacity-80">18</span></button>
-                        <button onclick="filterDocuments('bol', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Bills of Lading <span class="ml-1 opacity-80">6</span></button>
-                        <button onclick="filterDocuments('customs', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Customs Forms <span class="ml-1 opacity-80">5</span></button>
-                        <button onclick="filterDocuments('pod', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Proof of Delivery <span class="ml-1 opacity-80">4</span></button>
-                        <button onclick="filterDocuments('invoice', this)" class="doc-filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Invoices <span class="ml-1 opacity-80">3</span></button>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button onclick="filterDocuments('all', this)" class="doc-filter-tab crm-pill is-active">All <span class="opacity-80">18</span></button>
+                        <button onclick="filterDocuments('bol', this)" class="doc-filter-tab crm-pill">Bills of Lading <span class="opacity-80">6</span></button>
+                        <button onclick="filterDocuments('customs', this)" class="doc-filter-tab crm-pill">Customs Forms <span class="opacity-80">5</span></button>
+                        <button onclick="filterDocuments('pod', this)" class="doc-filter-tab crm-pill">Proof of Delivery <span class="opacity-80">4</span></button>
+                        <button onclick="filterDocuments('invoice', this)" class="doc-filter-tab crm-pill">Invoices <span class="opacity-80">3</span></button>
                     </div>
 
 
@@ -451,7 +440,7 @@ $uploaded_count = $total_docs - $pending_count;
         </div>
     </main>
 
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Hidden File Input for Upload Simulation -->
     <input type="file" id="hiddenFileInput" class="hidden" onchange="handleFileSelected(event)">
@@ -467,5 +456,5 @@ $uploaded_count = $total_docs - $pending_count;
     </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>
 

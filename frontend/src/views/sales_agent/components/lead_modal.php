@@ -1,5 +1,5 @@
 <!-- CREATE NEW LEAD MODAL -->
-<div id="newLeadModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+<div id="newLeadModal" data-brand="priority" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
   <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
     
     <!-- MODAL HEADER -->

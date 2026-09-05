@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
             labels: {
                 style: {
                     colors: '#FFFFFF',
-                    fontSize: '10px',
+                    fontSize: '12px',
                     fontWeight: 500
                 }
             }

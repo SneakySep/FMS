@@ -1,8 +1,8 @@
 <?php
 $page_title = "Support Tickets · Priority Handling Logistics";
 $activePage = 'tickets';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
 ?>
 
 <style>
@@ -16,26 +16,26 @@ include_once '../../includes/sidebar.php';
 <main class="flex-1 flex flex-col min-w-0">
 
   <!-- TOP HEADER BAR -->
-  <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-    <div class="flex items-center gap-3 min-w-0">
-      <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0"><i class="fa-solid fa-bars text-lg"></i></button>
-      <div class="min-w-0">
-        <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Support Tickets</h2>
-        <p class="text-xs text-slate-400 font-medium mt-0.5">Requests routed through the Notification Hub</p>
-      </div>
-    </div>
-    <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="ticketSearchInput" onkeyup="searchTicketsList()" placeholder="Search ticket ID, subject, or waybill..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-      </div>
-    </div>
-    <div class="flex items-center gap-3">
-      <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors shrink-0"><i class="fa-solid fa-bell text-xs"></i><span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span></button>
-      <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">Help Desk <i class="fa-solid fa-headset text-xs"></i></button>
-      <button onclick="createNewTicket()" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2"><i class="fa-solid fa-plus text-xs"></i> New Ticket</button>
-    </div>
-  </header>
+  <?php
+  $pageTitle    = 'Support Tickets';
+  $pageSubtitle = 'Requests routed through the Notification Hub';
+  $headerSearch = [
+      'id'          => 'ticketSearchInput',
+      'onkeyup'     => 'searchTicketsList()',
+      'placeholder' => 'Search ticket ID, subject, or waybill...',
+  ];
+  ob_start(); ?>
+  <button onclick="toggleChat()" class="crm-btn crm-btn-ghost !h-9 !px-3.5 !text-xs">
+      <span class="hidden sm:inline">Help Desk</span>
+      <i class="fa-solid fa-headset text-xs"></i>
+  </button>
+  <button onclick="createNewTicket()" class="crm-btn crm-btn-primary !h-9 !px-3.5 !text-xs">
+      <i class="fa-solid fa-plus text-[10px]"></i>
+      <span class="hidden sm:inline">New Ticket</span>
+  </button>
+  <?php $headerActions = ob_get_clean();
+  include_once __DIR__ . '/../../components/customer_header.php';
+  ?>
 
   <!-- TICKETS CONTENT BODY -->
   <div class="p-6 lg:p-8 2xl:px-10 space-y-8 w-full">
@@ -89,11 +89,11 @@ include_once '../../includes/sidebar.php';
         </div>
 
         <!-- FILTER TABS -->
-        <div class="flex flex-wrap gap-2">
-          <button onclick="filterTickets('all', this)" class="filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all text-xs font-semibold">All</button>
-          <button onclick="filterTickets('in-progress', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all text-xs font-semibold border border-slate-200">In Progress</button>
-          <button onclick="filterTickets('awaiting', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all text-xs font-semibold border border-slate-200">Awaiting Reply</button>
-          <button onclick="filterTickets('resolved', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all text-xs font-semibold border border-slate-200">Resolved</button>
+        <div class="flex flex-wrap gap-1.5">
+          <button onclick="filterTickets('all', this)" class="filter-tab crm-pill is-active">All</button>
+          <button onclick="filterTickets('in-progress', this)" class="filter-tab crm-pill">In Progress</button>
+          <button onclick="filterTickets('awaiting', this)" class="filter-tab crm-pill">Awaiting Reply</button>
+          <button onclick="filterTickets('resolved', this)" class="filter-tab crm-pill">Resolved</button>
         </div>
 
         <!-- TICKETS LIST -->
@@ -298,10 +298,10 @@ include_once '../../includes/sidebar.php';
   </div>
 </main>
 
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Scripts -->
     <script src="/assets/js/customer/customer_dashboard.js"></script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>

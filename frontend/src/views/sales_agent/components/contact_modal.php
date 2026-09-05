@@ -1,5 +1,5 @@
 <!-- CONTACT OPTIONS MODAL COMPONENT -->
-<div id="contactOptionsModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+<div id="contactOptionsModal" data-brand="priority" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
   <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in duration-150">
     
     <!-- CLOSE BUTTON -->

@@ -28,7 +28,7 @@
    * ------------------------------------------------------------------ */
   var DEFAULTS = {
     dark_mode: false,
-    accent_color: 'blue',
+    accent_color: 'navy',
     density: 'comfortable',
     notif_sound: 'notification-1.mp3',
     sound_enabled: true,
@@ -198,6 +198,7 @@
    * Appearance: live application
    * ------------------------------------------------------------------ */
   var ACCENT_SWATCHES = {
+    navy: '#1d2e6a',
     blue: '#0066ff',
     violet: '#7c3aed',
     emerald: '#059669',
@@ -224,7 +225,7 @@
 
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.setAttribute('content', values.dark_mode ? '#0a1628' : '#f4f7fa');
+      meta.setAttribute('content', values.dark_mode ? '#080d1f' : '#f2f4f9');
     }
   }
 

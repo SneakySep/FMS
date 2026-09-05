@@ -1,8 +1,11 @@
 /* ==========================================================================
-   CRM DESIGN TOKENS  —  "NAVY & WHITE"
+   CRM DESIGN TOKENS  —  "PRIORITY NAVY"
    --------------------------------------------------------------------------
    Single source of truth for the portal's modernised look. Loaded AFTER
    assets/css/style.css from includes/header.php and components/head.php.
+
+   Palette anchored on the Priority PH brand navy (#1D2E6A) with its deep
+   teal-navy companions (#003A5F / #084163) and soft brand blue (#4E83C5).
 
    Scheme: the sidebar navy is the brand surface, everything else is white.
    Navy owns STRUCTURE (rail, buttons, headings, table heads, chrome) while
@@ -17,61 +20,167 @@
    1. TOKENS
    -------------------------------------------------------------------------- */
 :root {
-    /* Navy scale - anchored on the live sidebar colour #080e1e */
-    --navy-950: #050914;   /* deepest: rail base, page footer, overlays   */
-    --navy-900: #080e1e;   /* sidebar surface (brand anchor)              */
-    --navy-850: #0b1326;   /* raised dark surface                         */
-    --navy-800: #0f172a;   /* headings, primary buttons                   */
-    --navy-700: #1e293b;   /* strong secondary text                       */
-    --navy-600: #334155;   /* labels                                      */
-    --navy-500: #475569;   /* body text                                   */
-    --navy-400: #64748b;   /* subdued text                                */
-    --navy-300: #94a3b8;   /* muted / placeholder                         */
-    --navy-200: #cbd5e1;   /* disabled strokes                            */
-    --navy-100: #e2e8f0;   /* dividers on white                           */
-    --navy-50:  #f1f5f9;   /* zebra / chip fills                          */
+    /* Navy scale - anchored on the Priority PH brand navy #1D2E6A */
+    --navy-950: #0a0f24;   /* deepest: rail base, page footer, overlays   */
+    --navy-900: #0f1734;   /* sidebar surface                             */
+    --navy-850: #131d43;   /* raised dark surface                         */
+    --navy-800: #182554;   /* headings, primary buttons                   */
+    --navy-700: #1d2e6a;   /* BRAND ANCHOR - strong secondary text        */
+    --navy-600: #2b3f7c;   /* labels                                      */
+    --navy-500: #3d5494;   /* body emphasis                               */
+    --navy-400: #5f74b5;   /* subdued text                                */
+    --navy-300: #8d9dd0;   /* muted / placeholder                         */
+    --navy-200: #b9c4e3;   /* disabled strokes                            */
+    --navy-100: #dbe1f1;   /* dividers on white                           */
+    --navy-50:  #eef1f9;   /* zebra / chip fills                          */
 
-    /* Light canvas */
-    --canvas:        #f7f8fc;
+    /* Priority PH brand extensions */
+    --brand-navy:  #1d2e6a;   /* site brand navy                          */
+    --brand-button: #213854;  /* button navy from priority-ph.com         */
+    --teal-700:    #003a5f;   /* deep teal-navy - gradient stop           */
+    --teal-600:    #084163;   /* deep teal-navy - gradient stop           */
+    --sky-brand:   #4e83c5;   /* soft brand blue - accents, charts        */
+    --brand-violet: #290f74;  /* the actual logo mark colour, sampled from
+                                 assets/image/logo.png - reserved for the
+                                 brand mark and AI/insight surfaces.       */
+    --brand-grad:  linear-gradient(120deg, var(--brand-navy) 0%, var(--teal-600) 55%, var(--teal-700) 100%);
+
+    /* Text tiers that sit ON the navy rail / dark surfaces. Kept as tokens
+       so the sidebar never drifts from the rest of the navy family. */
+    --on-navy-strong: #e6ebfa;   /* active pill fill, highest emphasis    */
+    --on-navy-200:    #b9c4e3;   /* count badges                          */
+    --on-navy-300:    #a8b4d4;   /* idle nav labels                       */
+    --on-navy-400:    #8d9bc0;   /* icon tiles, secondary nav text        */
+    --on-navy-500:    #6f7fa8;   /* brand badge                           */
+    --on-navy-600:    #7385b0;   /* section group headers (lowest tier)   */
+
+    /* Light canvas - cool tint of the Priority #F0F0F0 surface */
+    --canvas:        #f2f4f9;
     --surface:       #ffffff;
-    --surface-muted: #f8fafc;
-    --surface-hover: #f2f5fb;
-    --line:          #e5e9f2;
-    --line-strong:   #d7deeb;
+    --surface-muted: #eef1f7;
+    --surface-hover: #e7ecf6;
+    --line:          #dfe3ee;
+    --line-strong:   #c9d0e2;
 
-    /* Text roles */
-    --fg-heading: var(--navy-900);
-    --fg-body:    var(--navy-600);
-    --fg-muted:   var(--navy-400);
+    /* Text roles - Priority near-black + AA-safe muted grey */
+    --fg-heading: #1b1b1c;
+    --fg-body:    #3d4451;
+    --fg-muted:   #6e6e6e;   /* 4.6:1 on white - passes AA for body text  */
 
     /* Brand + focus (follows the accent picker) */
     --brand:        rgb(var(--accent-rgb));
     --brand-strong: rgb(var(--accent-strong-rgb));
     --ring:         rgb(var(--accent-rgb) / 0.28);
 
-    /* Elevation */
-    --shadow-card: 0 1px 2px rgba(8, 14, 30, .04), 0 1px 3px rgba(8, 14, 30, .06);
-    --shadow-lift: 0 12px 32px -14px rgba(8, 14, 30, .20);
-    --shadow-navy: 0 8px 20px -10px rgba(8, 14, 30, .55);
+    /* Elevation - shadows tinted with the brand navy, not neutral black */
+    --shadow-card: 0 1px 2px rgba(29, 46, 106, .05), 0 1px 3px rgba(29, 46, 106, .07);
+    --shadow-lift: 0 12px 32px -14px rgba(29, 46, 106, .24);
+    --shadow-navy: 0 8px 20px -10px rgba(29, 46, 106, .55);
 
     /* Geometry */
     --radius-card: 1rem;
     --radius-ctl:  .625rem;
     --radius-pill: 999px;
+
+    /* ------------------------------------------------------------------
+       Priority brand extensions - pipeline stage semantics
+       ------------------------------------------------------------------
+       Replaces the purple / violet / amber "stage soup" that was hardcoded
+       in dashboard.php + bi_analytics.php. The five stages form a monotone
+       lightness ramp through the navy family (light -> dark = early -> late
+       in the funnel), so the series stay distinguishable at 2px chart-line
+       weight while reading as one brand. Won/lost keep their universal
+       green/red so the terminal states still pop out of the ramp. */
+    --stage-new:         #8d9dd0;   /* navy-300  */
+    --stage-qualifying:  #4e83c5;   /* sky-brand */
+    --stage-quote:       #2b3f7c;   /* navy-600  */
+    --stage-negotiation: #1d2e6a;   /* navy-700 - brand anchor */
+    --stage-won:         #047857;   /* emerald-700 */
+    --stage-won-soft:    #ecfdf5;
+    --stage-lost:        #b91c1c;   /* red-700     */
+    --stage-lost-soft:   #fef2f2;
+
+    /* Semantic aliases over the stage ramp. Status colours already existed as
+       pipeline-stage tokens, which made them awkward to reach for in a form
+       alert; these names read as intent. Kept as references so the two can
+       never drift apart. */
+    --danger:        var(--stage-lost);
+    --danger-soft:   var(--stage-lost-soft);
+    --success:       var(--stage-won);
+    --success-soft:  var(--stage-won-soft);
+
+    /* Priority PH's own purple is reserved as a single deliberate accent for
+       AI / insight surfaces - never as a general primary colour. */
+    --brand-purple: #403375;
+
+    /* Sequential chart ramp - one palette for every ApexCharts / Chart.js
+       widget so the six analytics cards stop each inventing their own blues. */
+    --chart-1: #1d2e6a;
+    --chart-2: #084163;
+    --chart-3: #4e83c5;
+    --chart-4: #8d9dd0;
+    --chart-5: #b9c4e3;
+    --chart-6: #dbe1f1;
+
+    /* Soft brand tints - the single pair that every purple-50/100,
+       indigo-50/100 and one-off #ebf3fa fill collapses into. */
+    --brand-soft:   #eef1f9;
+    --brand-softer: #f6f8fc;
+    --brand-line:   #dbe1f1;
+    --brand-line-2: #c9d0e2;
+
+    /* Type scale - documented here and enforced by section 17. The portal
+       used 9/10/11px for real content; 12px is the floor that stays legible. */
+    --text-micro: 0.75rem;
+    --text-xs:    0.75rem;
+    --text-sm:    0.8125rem;
+    --text-base:  0.875rem;
+    --text-lg:    1rem;
+    --text-xl:    1.25rem;
+    --text-2xl:   1.5rem;
+
+    /* Radii - two steps only. --radius-card already exists above; --radius-tile
+       covers chips, icon tiles and inputs. */
+    --radius-tile: 0.75rem;
+
 }
 
-/* Dark mode re-tune: same navy family, inverted canvas. */
+/* Dark mode re-tune: same navy family, inverted canvas. Text roles keep a
+   three-step hierarchy (heading > body > muted) instead of flattening. */
 html.dark {
-    --canvas:        #050914;
-    --surface:       #0b1326;
-    --surface-muted: #0f172a;
-    --surface-hover: #131e38;
-    --line:          rgba(148, 163, 184, .16);
-    --line-strong:   rgba(148, 163, 184, .30);
+    --canvas:        #080d1f;
+    --surface:       #0f1734;
+    --surface-muted: #131d43;
+    --surface-hover: #1a2650;
+    --line:          rgba(157, 172, 208, .17);
+    --line-strong:   rgba(157, 172, 208, .32);
 
-    --fg-heading: #f1f5f9;
-    --fg-body:    #b6c2d6;
-    --fg-muted:   #8494ab;
+    --fg-heading: #eef1f9;
+    --fg-body:    #b7c1da;
+    --fg-muted:   #8b96b3;
+
+    /* Stage + chart ramps brighten a step so they survive on the dark
+       canvas; soft tints become translucent navy instead of light fills. */
+    --stage-new:         #a8b4d4;
+    --stage-qualifying:  #6f9dd8;
+    --stage-quote:       #8d9dd0;
+    --stage-negotiation: #b9c4e3;
+    --stage-won:         #10b981;
+    --stage-won-soft:    rgba(16, 185, 129, .12);
+    --stage-lost:        #f87171;
+    --stage-lost-soft:   rgba(248, 113, 113, .12);
+
+    --chart-1: #4e83c5;
+    --chart-2: #6f9dd8;
+    --chart-3: #8d9dd0;
+    --chart-4: #b9c4e3;
+    --chart-5: #2b3f7c;
+    --chart-6: #182554;
+
+    --brand-soft:   rgba(141, 157, 208, .14);
+    --brand-softer: rgba(141, 157, 208, .08);
+    --brand-line:   rgba(157, 172, 208, .22);
+    --brand-line-2: rgba(157, 172, 208, .34);
 
     --shadow-card: 0 1px 2px rgba(0, 0, 0, .45);
     --shadow-lift: 0 16px 40px -16px rgba(0, 0, 0, .70);
@@ -99,9 +208,14 @@ html body.crm-body {
 
 /* --------------------------------------------------------------------------
    3. SIDEBAR  -  navy rail
+   --------------------------------------------------------------------------
+   The rail is pinned to the viewport on desktop from the markup, not here:
+   includes/sidebar.php carries h-screen + md:sticky md:top-0 md:self-start
+   md:overflow-y-auto. Keep that utility set intact - a min-h-screen or
+   md:relative on #sidebar lets the whole rail scroll away with <main>.
    -------------------------------------------------------------------------- */
 .crm-sidebar {
-    background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+    background: linear-gradient(180deg, var(--navy-700) 0%, var(--navy-950) 100%);
     border-right: 1px solid rgba(148, 163, 184, .10);
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, .02);
 }
@@ -125,7 +239,7 @@ html body.crm-body {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #a9b8cf;
+    color: var(--on-navy-500);
 }
 
 /* Section headers */
@@ -136,7 +250,7 @@ html body.crm-body {
     font-weight: 800;
     letter-spacing: .13em;
     text-transform: uppercase;
-    color: #5b6b85;
+    color: var(--on-navy-600);
 }
 
 /* Nav items */
@@ -150,7 +264,7 @@ html body.crm-body {
     padding: .375rem .5rem;
     border-radius: var(--radius-ctl);
     border: 1px solid transparent;
-    color: #94a3b8;
+    color: #a8b4d4;
     font-size: .75rem;
     font-weight: 500;
     text-align: left;
@@ -169,7 +283,7 @@ html body.crm-body {
     box-shadow: var(--shadow-navy);
 }
 html.dark .crm-nav-item.is-active {
-    background: #e8eefb;
+    background: #e6ebfa;
     color: var(--navy-950);
 }
 
@@ -183,7 +297,7 @@ html.dark .crm-nav-item.is-active {
     justify-content: center;
     border-radius: .5rem;
     background: rgba(255, 255, 255, .05);
-    color: #8fa0ba;
+    color: var(--on-navy-400);
     font-size: .75rem;
     transition: background-color .18s ease, color .18s ease;
 }
@@ -219,7 +333,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
     gap: .55rem;
     padding: .3rem .5rem;
     border-radius: .5rem;
-    color: #7f8ea8;
+    color: var(--on-navy-400);
     font-size: .6875rem;
     font-weight: 500;
     transition: background-color .16s ease, color .16s ease;
@@ -243,7 +357,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
     padding: .05rem .35rem;
     border-radius: var(--radius-pill);
     background: rgba(148, 163, 184, .18);
-    color: #cbd5e1;
+    color: #b9c4e3;
     font-size: .5625rem;
     font-weight: 800;
     text-align: center;
@@ -281,7 +395,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
     align-items: center;
     justify-content: center;
     border-radius: .625rem;
-    background: linear-gradient(140deg, #26364f 0%, var(--navy-950) 100%);
+    background: linear-gradient(140deg, var(--navy-700) 0%, var(--navy-950) 100%);
     border: 1px solid rgba(255, 255, 255, .12);
     color: #ffffff;
     font-size: .6875rem;
@@ -291,7 +405,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
 .crm-side-name {
     font-size: .6875rem;
     font-weight: 700;
-    color: #f1f5f9;
+    color: #eef1f9;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -302,7 +416,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
     font-weight: 600;
     letter-spacing: .04em;
     text-transform: uppercase;
-    color: #7f8ea8;
+    color: var(--on-navy-400);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -315,7 +429,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
     align-items: center;
     justify-content: center;
     border-radius: .5rem;
-    color: #7f8ea8;
+    color: var(--on-navy-400);
     transition: background-color .16s ease, color .16s ease;
 }
 .crm-logout-btn:hover {
@@ -433,7 +547,7 @@ html.dark .crm-nav-item.is-active .crm-nav-ico {
 }
 .crm-btn-primary:hover { background: var(--navy-900); }
 html.dark .crm-btn-primary {
-    background: #e8eefb;
+    background: var(--on-navy-strong);
     color: var(--navy-950);
     box-shadow: none;
 }
@@ -538,7 +652,7 @@ html.dark .crm-input,
 html.dark .crm-select,
 html.dark .crm-textarea {
     background: var(--surface-muted);
-    color: #e8eefb;
+    color: var(--on-navy-strong);
 }
 
 .crm-label {
@@ -685,8 +799,8 @@ html.dark .crm-badge-slate {
     box-shadow: var(--shadow-navy);
 }
 html.dark .crm-pill.is-active {
-    background: #e8eefb;
-    border-color: #e8eefb;
+    background: var(--on-navy-strong);
+    border-color: var(--on-navy-strong);
     color: var(--navy-950);
 }
 
@@ -709,7 +823,7 @@ html.dark .crm-pill.is-active {
     border-bottom: 1px solid var(--line);
 }
 html.dark .crm-topbar {
-    background: rgba(11, 19, 38, .82);
+    background: rgba(15, 23, 52, .82);
     border-bottom-color: var(--line);
 }
 .crm-topbar-title {
@@ -820,7 +934,7 @@ html.dark .crm-delta-down { color: #fb7185; }
 html.dark .crm-kpi-ico {
     background: rgba(148, 163, 184, .10);
     border-color: rgba(148, 163, 184, .18);
-    color: #cbd5e1;
+    color: var(--on-navy-200);
 }
 
 /* --------------------------------------------------------------------------
@@ -867,6 +981,7 @@ html.dark .crm-kpi-ico {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--line);
     background: var(--surface-muted);
+}
 
 /* --------------------------------------------------------------------------
    12. EMPTY STATE + PAGINATION
@@ -990,9 +1105,6 @@ html[data-density="compact"] .crm-table thead th { padding: .5rem .75rem; }
 html[data-density="compact"] .crm-panel-head { padding: .75rem 1rem; }
 html[data-density="compact"] .crm-panel-body { padding: .875rem 1rem; }
 
-    border-radius: 0 0 1.25rem 1.25rem;
-}
-
 
 /* --------------------------------------------------------------------------
    16. MOBILE RAIL
@@ -1007,5 +1119,503 @@ html[data-density="compact"] .crm-panel-body { padding: .875rem 1rem; }
        these id-scoped rules win on specificity and drive the open state. */
     #sidebar.is-open { transform: translateX(0); }
     #sidebarOverlay.is-active { display: block; }
+}
+
+
+/* --------------------------------------------------------------------------
+   17. BRAND RECONCILIATION  -  [data-brand="priority"]
+   --------------------------------------------------------------------------
+   The sales_agent views were written before this token layer existed and
+   hand-roll Tailwind utilities, using purple / violet / indigo as a primary
+   colour (~250 occurrences) plus generic blue and several one-off hexes.
+   That gives three competing "brand" hues side by side, so nothing reads as
+   the Priority navy.
+
+   Rather than rewrite every view, these rules retint the off-brand utilities
+   onto the token scale. They are scoped to [data-brand="priority"], which the
+   sales_agent <main> elements carry, so the admin and customer portals are
+   untouched. Specificity (0,2,0) beats a Tailwind utility (0,1,0), and the
+   :hover / :focus forms beat (0,2,0) at (0,3,0).
+
+   This is a deliberate bridge, not the end state: new markup should use the
+   .crm-* component classes or priority.*/
+
+
+
+/* --- A. Primary fills: every "brand" hue collapses to the navy anchor ---- */
+[data-brand="priority"] .bg-purple-600,
+[data-brand="priority"] .bg-purple-500,
+[data-brand="priority"] .bg-indigo-600,
+[data-brand="priority"] .bg-indigo-500,
+[data-brand="priority"] .bg-blue-600,
+[data-brand="priority"] .bg-blue-500 {
+    background-color: var(--navy-700);
+}
+[data-brand="priority"] .checked\:bg-indigo-600:checked {
+    background-color: var(--navy-700);
+}
+
+/* --- B. Hover fills: one step darker ------------------------------------- */
+[data-brand="priority"] .hover\:bg-purple-700:hover,
+[data-brand="priority"] .hover\:bg-purple-600:hover,
+[data-brand="priority"] .hover\:bg-indigo-700:hover,
+[data-brand="priority"] .hover\:bg-indigo-600:hover,
+[data-brand="priority"] .hover\:bg-blue-700:hover {
+    background-color: var(--navy-800);
+}
+
+/* --- C. Soft tints: one light fill instead of five ----------------------- */
+[data-brand="priority"] .bg-purple-50,
+[data-brand="priority"] .bg-purple-100,
+[data-brand="priority"] .bg-violet-50,
+[data-brand="priority"] .bg-indigo-50,
+[data-brand="priority"] .bg-indigo-100,
+[data-brand="priority"] .bg-blue-50,
+[data-brand="priority"] .bg-blue-100,
+[data-brand="priority"] .hover\:bg-purple-50:hover,
+[data-brand="priority"] .hover\:bg-blue-100:hover {
+    background-color: var(--brand-soft);
+}
+/* Decorative blur blobs and translucent chart backdrops. */
+[data-brand="priority"] .bg-violet-200\/30,
+[data-brand="priority"] .bg-indigo-50\/30,
+[data-brand="priority"] .bg-blue-500\/10,
+[data-brand="priority"] .hover\:bg-blue-500\/20:hover {
+    background-color: var(--brand-softer);
+}
+
+/* --- D. Text: navy for emphasis, navy-400 for icon accents --------------- */
+[data-brand="priority"] .text-purple-600,
+[data-brand="priority"] .text-purple-700,
+[data-brand="priority"] .text-violet-600,
+[data-brand="priority"] .text-indigo-500,
+[data-brand="priority"] .text-indigo-600,
+[data-brand="priority"] .text-indigo-700,
+[data-brand="priority"] .text-indigo-800,
+[data-brand="priority"] .text-blue-600,
+[data-brand="priority"] .text-blue-700,
+[data-brand="priority"] .text-blue-800 {
+    color: var(--navy-600);
+}
+[data-brand="priority"] .hover\:text-purple-600:hover,
+[data-brand="priority"] .hover\:text-purple-700:hover,
+[data-brand="priority"] .hover\:text-indigo-700:hover,
+[data-brand="priority"] .hover\:text-indigo-800:hover,
+[data-brand="priority"] .hover\:text-blue-600:hover,
+[data-brand="priority"] .hover\:text-blue-800:hover {
+    color: var(--navy-700);
+}
+/* Tailwind emits `.group:hover .group-hover\:x` at (0,3,0), which would tie
+   with a plain [attr] .class:hover rule and win on source order. Repeating the
+   .group:hover chain keeps these above it. */
+[data-brand="priority"] .group:hover .group-hover\:text-purple-600,
+[data-brand="priority"] .group:hover .group-hover\:text-purple-700,
+[data-brand="priority"] .group:hover .group-hover\:text-indigo-600 {
+    color: var(--navy-700);
+}
+[data-brand="priority"] .text-purple-400,
+[data-brand="priority"] .text-indigo-400,
+[data-brand="priority"] .text-blue-400 {
+    color: var(--navy-400);
+}
+
+
+/* --- E. Borders ---------------------------------------------------------- */
+[data-brand="priority"] .border-purple-100,
+[data-brand="priority"] .border-purple-200,
+[data-brand="priority"] .border-purple-500,
+[data-brand="priority"] .border-indigo-100,
+[data-brand="priority"] .border-indigo-200,
+[data-brand="priority"] .border-indigo-300,
+[data-brand="priority"] .border-indigo-400,
+[data-brand="priority"] .border-indigo-500,
+[data-brand="priority"] .border-blue-100,
+[data-brand="priority"] .border-blue-200,
+[data-brand="priority"] .border-blue-500,
+[data-brand="priority"] .border-blue-500\/20 {
+    border-color: var(--brand-line);
+}
+[data-brand="priority"] .hover\:border-purple-100:hover,
+[data-brand="priority"] .hover\:border-purple-200:hover,
+[data-brand="priority"] .hover\:border-indigo-300:hover,
+[data-brand="priority"] .hover\:border-indigo-400:hover {
+    border-color: var(--navy-200);
+}
+[data-brand="priority"] .focus\:border-purple-500:focus,
+[data-brand="priority"] .focus\:border-indigo-400:focus,
+[data-brand="priority"] .focus\:border-indigo-500:focus,
+[data-brand="priority"] .focus\:border-blue-500:focus {
+    border-color: var(--navy-700);
+}
+
+/* --- F. Focus rings ------------------------------------------------------ */
+[data-brand="priority"] .ring-purple-500,
+[data-brand="priority"] .ring-indigo-500,
+[data-brand="priority"] .ring-blue-500,
+[data-brand="priority"] .focus\:ring-purple-500:focus,
+[data-brand="priority"] .focus\:ring-indigo-500:focus,
+[data-brand="priority"] .focus\:ring-blue-500:focus {
+    --tw-ring-color: var(--navy-700);
+}
+[data-brand="priority"] .ring-purple-500\/20,
+[data-brand="priority"] .ring-indigo-500\/40,
+[data-brand="priority"] .ring-violet-100,
+[data-brand="priority"] .focus\:ring-purple-500\/20:focus,
+[data-brand="priority"] .focus\:ring-indigo-500\/40:focus {
+    --tw-ring-color: var(--brand-line);
+}
+
+/* --- G. Coloured shadows -> navy-tinted ---------------------------------- */
+[data-brand="priority"] .shadow-purple-200,
+[data-brand="priority"] .shadow-indigo-100,
+[data-brand="priority"] .shadow-indigo-200,
+[data-brand="priority"] .shadow-indigo-500\/30,
+[data-brand="priority"] .shadow-indigo-900\/20,
+[data-brand="priority"] .shadow-blue-500\/20,
+[data-brand="priority"] .hover\:shadow-indigo-200:hover,
+[data-brand="priority"] .hover\:shadow-indigo-500\/30:hover {
+    --tw-shadow-color: rgba(29, 46, 106, .18);
+    --tw-shadow: var(--tw-shadow-colored);
+}
+
+
+/* --- H. Gradients: brand ramp instead of violet -> indigo ---------------- */
+[data-brand="priority"] .from-purple-500,
+[data-brand="priority"] .from-violet-500,
+[data-brand="priority"] .from-violet-600,
+[data-brand="priority"] .from-violet-700,
+[data-brand="priority"] .from-indigo-500,
+[data-brand="priority"] .from-indigo-600 {
+    --tw-gradient-from: var(--navy-700);
+    --tw-gradient-to: rgba(29, 46, 106, 0);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+[data-brand="priority"] .via-indigo-600,
+[data-brand="priority"] .via-indigo-500 {
+    --tw-gradient-to: rgba(24, 37, 84, 0);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--navy-800), var(--tw-gradient-to);
+}
+[data-brand="priority"] .to-violet-500,
+[data-brand="priority"] .to-violet-600,
+[data-brand="priority"] .to-indigo-600,
+[data-brand="priority"] .to-indigo-700 {
+    --tw-gradient-to: var(--teal-600);
+}
+[data-brand="priority"] .hover\:from-violet-700:hover {
+    --tw-gradient-from: var(--navy-800);
+    --tw-gradient-stops: var(--tw-gradient-from), rgba(24, 37, 84, 0);
+}
+[data-brand="priority"] .hover\:to-indigo-700:hover {
+    --tw-gradient-to: var(--teal-700);
+}
+/* Soft gradient washes used as card-header backdrops. */
+[data-brand="priority"] .from-violet-50\/80,
+[data-brand="priority"] .from-indigo-50\/60,
+[data-brand="priority"] .from-indigo-50\/70 {
+    --tw-gradient-from: var(--brand-soft);
+    --tw-gradient-stops: var(--tw-gradient-from), rgba(238, 241, 249, 0);
+}
+[data-brand="priority"] .via-indigo-50\/60 {
+    --tw-gradient-stops: var(--tw-gradient-from), var(--brand-softer), var(--tw-gradient-to);
+}
+
+/* --- I. Canvas: one page background -------------------------------------- */
+/* Only the <main> itself carries the page canvas; inner bg-slate-50 fills are
+   left alone because they are used as subtle table-head / icon-tile fills.
+   Scoped to main so it cannot paint over a modal's dark backdrop. */
+main[data-brand="priority"] { background-color: var(--canvas); }
+[data-brand="priority"] .bg-\[\#F8FAFC\] { background-color: var(--canvas); }
+/* One-off fills that duplicated the soft tint. */
+[data-brand="priority"] .bg-\[\#ebf3fa\] { background-color: var(--navy-50); }
+
+/* --- J. Typography: 9/10/11px carried real content, not decoration ------- */
+[data-brand="priority"] .text-\[9px\],
+[data-brand="priority"] .text-\[10px\],
+[data-brand="priority"] .text-\[11px\] {
+    font-size: var(--text-micro);
+}
+/* slate-300/400 were used for meaningful secondary text at ~2.5:1. */
+[data-brand="priority"] .text-slate-300,
+[data-brand="priority"] .text-slate-400 {
+    color: var(--fg-muted);
+}
+
+/* --- K. Radii: two steps, no 2rem "hero" corners ------------------------- */
+[data-brand="priority"] .rounded-\[2rem\],
+[data-brand="priority"] .rounded-\[2\.2rem\],
+[data-brand="priority"] .rounded-3xl {
+    border-radius: var(--radius-card);
+}
+
+/* --- L. Elevation: one rest shadow, hover lifts -------------------------- */
+[data-brand="priority"] .shadow-sm,
+[data-brand="priority"] .shadow-md {
+    box-shadow: var(--shadow-card);
+}
+
+/* --- M. One-off arbitrary-value hexes ------------------------------------ */
+/* The two "hero" stat cards each invented their own blue gradient. */
+[data-brand="priority"] .from-\[\#689dff\] {
+    --tw-gradient-from: var(--navy-600);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--teal-600), var(--navy-800);
+}
+[data-brand="priority"] .via-\[\#4b82f6\],
+[data-brand="priority"] .to-\[\#3b70e6\] {
+    --tw-gradient-to: var(--teal-700);
+}
+/* view_customer.php profile banner: navy -> purple. The stops are declared in
+   full on both the from- and via- rules so the cascade order between them
+   cannot flatten the gradient. */
+[data-brand="priority"] .from-\[\#0f1b3d\],
+[data-brand="priority"] .via-\[\#1d2e6a\] {
+    --tw-gradient-from: var(--navy-800);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--navy-700), var(--teal-700);
+}
+[data-brand="priority"] .to-\[\#3b1d6e\] { --tw-gradient-to: var(--teal-700); }
+/* settings.php invented a second, darker navy for its surfaces. */
+[data-brand="priority"] .dark\:bg-\[\#0e1b33\]:is(.dark *),
+[data-brand="priority"] .dark\:bg-\[\#112240\]:is(.dark *) {
+    background-color: var(--surface-muted);
+}
+[data-brand="priority"] .dark\:bg-\[\#0e1b33\]\/95:is(.dark *) {
+    background-color: rgba(19, 29, 67, .95);
+}
+[data-brand="priority"] .from-\[\#0b1528\] {
+    --tw-gradient-from: var(--navy-900);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--navy-800), var(--navy-700);
+}
+[data-brand="priority"] .via-\[\#0e1b33\],
+[data-brand="priority"] .to-\[\#103a8a\] { --tw-gradient-to: var(--navy-700); }
+
+/* --- N. dark: variants --------------------------------------------------- */
+/* Tailwind's CDN injects its stylesheet after theme.css, so a rule that only
+   ties with `.dark .foo` on specificity would lose. These match the dark:
+   compound selectors directly and add the [data-brand] attribute on top. */
+[data-brand="priority"] .dark\:bg-blue-500\/10:is(.dark *),
+[data-brand="priority"] .dark\:hover\:bg-blue-500\/20:hover:is(.dark *) {
+    background-color: var(--brand-soft);
+}
+[data-brand="priority"] .dark\:border-blue-500\/20:is(.dark *) {
+    border-color: var(--brand-line);
+}
+
+
+/* --------------------------------------------------------------------------
+   18. ADMIN RECONCILIATION  -  [data-brand="priority"]  (neutral + accent)
+   --------------------------------------------------------------------------
+   Section 17 was written for the sales_agent portal, whose off-brand colour
+   was purple / violet / indigo. The admin views instead lean on two families
+   that 17 never touched:
+
+     1. The Tailwind "gray" scale (agents.php, logs.php) - a warm neutral that
+        sits visibly beside the cool "slate" scale used everywhere else, so
+        adjacent cards read as two different greys.
+     2. teal / sky / cyan used as a *brand accent* (customer_monitoring.php
+        paints its card icons and "View All" links teal-600) - a fourth hue
+        competing with the navy.
+
+   Status colours (green / emerald / rose / red / amber / yellow) are
+   deliberately NOT remapped here. They carry meaning - a Closed Won badge
+   must stay green - and the token layer already reserves green/red for the
+   won/lost terminal states. Collapsing them would cost information.
+
+   Every light-mode rule below is paired with an html.dark counterpart at
+   (0,3,0). style.css already ships html.dark remaps for the slate scale at
+   (0,2,0); because theme.css loads after it, an unpaired (0,2,0) rule here
+   would win the tie and freeze those surfaces light in dark mode.
+   -------------------------------------------------------------------------- */
+
+/* --- A. Warm "gray" scale -> the cool neutral token scale ---------------- */
+[data-brand="priority"] .text-gray-900,
+[data-brand="priority"] .text-gray-800 {
+    color: var(--fg-heading);
+}
+[data-brand="priority"] .text-gray-700,
+[data-brand="priority"] .text-gray-600 {
+    color: var(--fg-body);
+}
+[data-brand="priority"] .text-gray-500,
+[data-brand="priority"] .text-gray-400 {
+    color: var(--fg-muted);
+}
+[data-brand="priority"] .border-gray-100,
+[data-brand="priority"] .border-gray-200,
+[data-brand="priority"] .border-gray-200\/80 {
+    border-color: var(--line);
+}
+[data-brand="priority"] .border-gray-300 {
+    border-color: var(--line-strong);
+}
+[data-brand="priority"] .divide-gray-100 > * + *,
+[data-brand="priority"] .divide-gray-200 > * + * {
+    border-color: var(--line);
+}
+[data-brand="priority"] .bg-gray-50,
+[data-brand="priority"] .bg-gray-100 {
+    background-color: var(--surface-muted);
+}
+[data-brand="priority"] .hover\:bg-gray-50:hover,
+[data-brand="priority"] .hover\:bg-gray-100:hover {
+    background-color: var(--surface-hover);
+}
+
+/* --- B. Slate text tiers -> the three documented roles ------------------- */
+/* slate-300/400 are already lifted to --fg-muted by 17-J; the darker tiers
+   map onto the heading / body roles so the hierarchy matches the .crm-*
+   components instead of Tailwind's blue-tinted greys. */
+[data-brand="priority"] .text-slate-900,
+[data-brand="priority"] .text-slate-800 {
+    color: var(--fg-heading);
+}
+[data-brand="priority"] .text-slate-700,
+[data-brand="priority"] .text-slate-600 {
+    color: var(--fg-body);
+}
+[data-brand="priority"] .text-slate-500 {
+    color: var(--fg-muted);
+}
+[data-brand="priority"] .border-slate-100,
+[data-brand="priority"] .border-slate-200,
+[data-brand="priority"] .border-slate-200\/80,
+[data-brand="priority"] .divide-slate-100 > * + * {
+    border-color: var(--line);
+}
+[data-brand="priority"] .bg-slate-50,
+[data-brand="priority"] .bg-slate-50\/30,
+[data-brand="priority"] .bg-slate-50\/50,
+[data-brand="priority"] .bg-slate-50\/70 {
+    background-color: var(--surface-muted);
+}
+[data-brand="priority"] .bg-slate-100,
+[data-brand="priority"] .bg-slate-100\/70,
+[data-brand="priority"] .bg-slate-100\/80 {
+    background-color: var(--navy-50);
+}
+[data-brand="priority"] .hover\:bg-slate-50:hover,
+[data-brand="priority"] .hover\:bg-slate-100:hover {
+    background-color: var(--surface-hover);
+}
+
+/* --- C. teal / sky / cyan as brand accents -> the navy family ------------ */
+[data-brand="priority"] .bg-teal-600,
+[data-brand="priority"] .bg-teal-500,
+[data-brand="priority"] .bg-sky-500,
+[data-brand="priority"] .bg-cyan-500 {
+    background-color: var(--navy-700);
+}
+[data-brand="priority"] .text-teal-600,
+[data-brand="priority"] .text-teal-700,
+[data-brand="priority"] .text-teal-800,
+[data-brand="priority"] .text-sky-600,
+[data-brand="priority"] .text-sky-700,
+[data-brand="priority"] .text-cyan-600 {
+    color: var(--navy-600);
+}
+[data-brand="priority"] .hover\:text-teal-700:hover,
+[data-brand="priority"] .hover\:text-teal-800:hover,
+[data-brand="priority"] .hover\:text-sky-700:hover,
+[data-brand="priority"] .hover\:text-sky-800:hover {
+    color: var(--navy-800);
+}
+[data-brand="priority"] .bg-teal-50,
+[data-brand="priority"] .bg-teal-100,
+[data-brand="priority"] .bg-sky-50,
+[data-brand="priority"] .bg-sky-100 {
+    background-color: var(--brand-soft);
+}
+[data-brand="priority"] .border-teal-200,
+[data-brand="priority"] .border-sky-200 {
+    border-color: var(--brand-line);
+}
+
+/* --- D. Modal scrims and dark fills -------------------------------------- */
+/* bg-slate-900 does double duty in the admin views: it is the modal scrim on
+   the fixed inset-0 root, and a solid button fill inside customers.php. The
+   scrim form is matched structurally so the button keeps an opaque colour.
+   Tailwind writes the /40 alpha straight into background-color, so the
+   override has to carry its own. */
+[data-brand="priority"] .fixed.inset-0.bg-slate-900\/40,
+[data-brand="priority"] .fixed.inset-0.bg-slate-900 {
+    background-color: rgba(10, 15, 36, .55);
+}
+[data-brand="priority"] .bg-gray-600 {
+    background-color: var(--navy-950);
+}
+[data-brand="priority"] .bg-slate-900 {
+    background-color: var(--navy-950);
+}
+[data-brand="priority"] .hover\:bg-slate-800:hover {
+    background-color: var(--navy-800);
+}
+
+/* --- E. Dark-mode counterparts ------------------------------------------- */
+html.dark [data-brand="priority"] .text-gray-900,
+html.dark [data-brand="priority"] .text-gray-800,
+html.dark [data-brand="priority"] .text-slate-900,
+html.dark [data-brand="priority"] .text-slate-800 { color: #eef1f9; }
+html.dark [data-brand="priority"] .text-gray-700,
+html.dark [data-brand="priority"] .text-gray-600,
+html.dark [data-brand="priority"] .text-slate-700,
+html.dark [data-brand="priority"] .text-slate-600 { color: #c3cbe0; }
+html.dark [data-brand="priority"] .text-gray-500,
+html.dark [data-brand="priority"] .text-gray-400,
+html.dark [data-brand="priority"] .text-slate-500 { color: #a2aecb; }
+
+html.dark [data-brand="priority"] .border-gray-100,
+html.dark [data-brand="priority"] .border-gray-200,
+html.dark [data-brand="priority"] .border-gray-200\/80,
+html.dark [data-brand="priority"] .border-slate-100,
+html.dark [data-brand="priority"] .border-slate-200,
+html.dark [data-brand="priority"] .border-slate-200\/80,
+html.dark [data-brand="priority"] .divide-gray-100 > * + *,
+html.dark [data-brand="priority"] .divide-gray-200 > * + *,
+html.dark [data-brand="priority"] .divide-slate-100 > * + * {
+    border-color: rgba(148, 163, 184, .18);
+}
+html.dark [data-brand="priority"] .border-gray-300 {
+    border-color: rgba(148, 163, 184, .28);
+}
+
+html.dark [data-brand="priority"] .bg-gray-50,
+html.dark [data-brand="priority"] .bg-gray-100,
+html.dark [data-brand="priority"] .bg-slate-50,
+html.dark [data-brand="priority"] .bg-slate-50\/30,
+html.dark [data-brand="priority"] .bg-slate-50\/50,
+html.dark [data-brand="priority"] .bg-slate-50\/70 {
+    background-color: var(--navy-800);
+}
+html.dark [data-brand="priority"] .bg-slate-100,
+html.dark [data-brand="priority"] .bg-slate-100\/70,
+html.dark [data-brand="priority"] .bg-slate-100\/80 {
+    background-color: var(--navy-850);
+}
+html.dark [data-brand="priority"] .hover\:bg-gray-50:hover,
+html.dark [data-brand="priority"] .hover\:bg-gray-100:hover,
+html.dark [data-brand="priority"] .hover\:bg-slate-50:hover,
+html.dark [data-brand="priority"] .hover\:bg-slate-100:hover {
+    background-color: var(--navy-700);
+}
+
+/* The soft brand tints are near-white; in dark mode they must invert to a
+   navy wash or every chip and icon tile becomes a bright block. */
+html.dark [data-brand="priority"] .bg-teal-50,
+html.dark [data-brand="priority"] .bg-teal-100,
+html.dark [data-brand="priority"] .bg-sky-50,
+html.dark [data-brand="priority"] .bg-sky-100 {
+    background-color: rgba(78, 131, 197, .16);
+}
+html.dark [data-brand="priority"] .text-teal-600,
+html.dark [data-brand="priority"] .text-teal-700,
+html.dark [data-brand="priority"] .text-teal-800,
+html.dark [data-brand="priority"] .text-sky-600,
+html.dark [data-brand="priority"] .text-sky-700,
+html.dark [data-brand="priority"] .text-cyan-600 {
+    color: var(--sky-brand);
+}
+html.dark [data-brand="priority"] .bg-teal-600,
+html.dark [data-brand="priority"] .bg-teal-500,
+html.dark [data-brand="priority"] .bg-sky-500,
+html.dark [data-brand="priority"] .bg-cyan-500 {
+    background-color: var(--sky-brand);
 }
 

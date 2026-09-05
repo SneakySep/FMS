@@ -1,9 +1,9 @@
 <?php
 $page_title = "Shipments · Priority Handling Logistics";
 $activePage = 'shipments';
-require_once '../../includes/header.php';
-include_once '../../includes/sidebar.php';
-require_once '../../helpers/api_helper.php';
+require_once __DIR__ . '/../../includes/header.php';
+include_once __DIR__ . '/../../includes/sidebar.php';
+require_once __DIR__ . '/../../helpers/api_helper.php';
 
 /*
  * Shipment data source — live from the backend API.
@@ -69,37 +69,16 @@ function carrierInitials($name) {
     <main class="flex-1 flex flex-col min-w-0">
 
         <!-- TOP HEADER BAR -->
-        <header class="bg-white border-b border-slate-200 px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3 min-w-0">
-                <button onclick="toggleSidebar()" class="sm:hidden text-slate-600 hover:text-slate-900 p-1.5 shrink-0">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                <div class="min-w-0">
-                    <h2 class="text-2xl font-black italic text-slate-900 tracking-tight">Shipments</h2>
-                    <p class="text-xs text-slate-400 font-medium mt-0.5">Waybill manifest &amp; live tracking · Robles Cargo Corp.</p>
-                </div>
-            </div>
-
-            <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="shipmentSearchInput" onkeyup="searchShipmentsTable()" placeholder="Track a waybill, carrier, or route..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-all">
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <button class="relative w-9 h-9 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-colors shrink-0">
-                    <i class="fa-solid fa-bell text-xs"></i>
-                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <button onclick="toggleChat()" class="bg-blue-50 hover:bg-blue-100 text-brand-blue font-semibold text-xs px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-blue-100">
-                    Help Desk <i class="fa-solid fa-headset text-xs"></i>
-                </button>
-                <button onclick="alert('Opening Freight Booking Form...')" class="bg-brand-blue hover:bg-brand-darkblue text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2">
-                    <i class="fa-solid fa-plus text-xs"></i> Book Shipment
-                </button>
-            </div>
-        </header>
+        <?php
+        $pageTitle    = 'Shipments';
+        $pageSubtitle = 'Waybill manifest & live tracking · Robles Cargo Corp.';
+        $headerSearch = [
+            'id'          => 'shipmentSearchInput',
+            'onkeyup'     => 'searchShipmentsTable()',
+            'placeholder' => 'Track a waybill, carrier, or route...',
+        ];
+        include_once __DIR__ . '/../../components/customer_header.php';
+        ?>
 
         <!-- SHIPMENTS DASHBOARD BODY -->
         <div class="p-6 lg:p-8 2xl:px-10 space-y-8 w-full">
@@ -180,12 +159,12 @@ function carrierInitials($name) {
 
                         <!-- STATUS FILTER TABS -->
                         <div class="px-6 pb-5">
-                            <div class="flex flex-wrap items-center gap-2 p-1.5 bg-slate-100 rounded-2xl w-fit text-xs font-semibold">
-                                <button data-status-key="all" onclick="filterShipments('all', this)" class="filter-tab bg-brand-blue text-white px-4 py-2 rounded-xl shadow-sm transition-all">All (<?= $counts['all'] ?>)</button>
-                                <button data-status-key="in-transit" onclick="filterShipments('in-transit', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">In Transit (<?= $counts['in-transit'] ?>)</button>
-                                <button data-status-key="customs" onclick="filterShipments('customs', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Customs (<?= $counts['customs'] ?>)</button>
-                                <button data-status-key="delayed" onclick="filterShipments('delayed', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Delayed (<?= $counts['delayed'] ?>)</button>
-                                <button data-status-key="delivered" onclick="filterShipments('delivered', this)" class="filter-tab bg-white text-slate-600 hover:text-slate-900 px-4 py-2 rounded-xl transition-all">Delivered (<?= $counts['delivered'] ?>)</button>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button data-status-key="all" onclick="filterShipments('all', this)" class="filter-tab crm-pill is-active">All (<?= $counts['all'] ?>)</button>
+                                <button data-status-key="in-transit" onclick="filterShipments('in-transit', this)" class="filter-tab crm-pill">In Transit (<?= $counts['in-transit'] ?>)</button>
+                                <button data-status-key="customs" onclick="filterShipments('customs', this)" class="filter-tab crm-pill">Customs (<?= $counts['customs'] ?>)</button>
+                                <button data-status-key="delayed" onclick="filterShipments('delayed', this)" class="filter-tab crm-pill">Delayed (<?= $counts['delayed'] ?>)</button>
+                                <button data-status-key="delivered" onclick="filterShipments('delivered', this)" class="filter-tab crm-pill">Delivered (<?= $counts['delivered'] ?>)</button>
                             </div>
                         </div>
 
@@ -314,7 +293,7 @@ function carrierInitials($name) {
     </main>
 
 
-    <?php include_once '../../components/chat_widget.php'; ?>
+    <?php include_once __DIR__ . '/../../components/chat_widget.php'; ?>
 
     <!-- Scripts -->
     <script src="/assets/js/customer/customer_dashboard.js"></script>
@@ -359,5 +338,5 @@ function carrierInitials($name) {
     </script>
 
 <!-- FOOTER INCLUDE -->
-<?php include_once '../../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../../includes/footer.php'; ?>
 

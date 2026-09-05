@@ -26,7 +26,7 @@ $new_inquiry = (int)($stats_data['new_inquiry'] ?? 0);
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC]">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC]">
 
   <!-- CUSTOM ANALYTICS HEADER -->
   <?php 
@@ -72,18 +72,21 @@ $new_inquiry = (int)($stats_data['new_inquiry'] ?? 0);
       chart: { type: 'area', height: 350, toolbar: { show: false } },
       series: [{ name: 'New Leads', data: [10, 15, 8, 20, 12, 25, 30] }],
       xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
-      colors: ['#8b5cf6'],
+      colors: [window.CRM_COLORS.navy],
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth' }
     };
     new ApexCharts(document.querySelector("#leadTrendChart"), optionsTrend).render();
     
-    // Stage Distribution Chart
+    // Stage Distribution Chart - mirrors the --stage-* ramp in theme.css
+    // and the $pipeline array in dashboard.php / bi_analytics.php.
     var optionsStage = {
       chart: { type: 'donut', height: 350 },
       series: [44, 55, 13, 33, 22],
       labels: ['New', 'Qualifying', 'Quote', 'Negotiation', 'Won'],
-      colors: ['#a78bfa', '#fbbf24', '#c084fc', '#f59e0b', '#10b981']
+      colors: [window.CRM_COLORS.stage.new, window.CRM_COLORS.stage.qualifying,
+               window.CRM_COLORS.stage.quote, window.CRM_COLORS.stage.negotiation,
+               window.CRM_COLORS.stage.won]
     };
     new ApexCharts(document.querySelector("#stageDistributionChart"), optionsStage).render();
 </script>

@@ -20,7 +20,17 @@ $navSections = $sidebar['navSections'];
 <div id="sidebarOverlay" class="fixed inset-0 bg-navy-950/60 z-30 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
 <!-- SIDEBAR NAVIGATION CONTAINER -->
-<aside id="sidebar" class="group crm-sidebar w-20 hover:w-64 text-slate-300 min-h-screen flex flex-col justify-between p-4 shrink-0 z-40 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 fixed md:relative overflow-x-hidden">
+<!--
+  Desktop pinning: h-screen (NOT min-h-screen) caps the rail at one viewport so
+  it can slide within the taller body, and md:sticky md:top-0 holds it there
+  while <main> scrolls past. md:self-start stops flex `stretch` from re-growing
+  it, and md:overflow-y-auto lets the nav list scroll internally if it is taller
+  than the viewport. Every added utility is md:-scoped (Tailwind md = 768px),
+  which matches the off-canvas breakpoint in theme.css section 16 (MOBILE RAIL),
+  so the -translate-x-full / fixed drawer behaviour is untouched on mobile.
+  Do not reintroduce md:relative or min-h-screen here - either one breaks the pin.
+-->
+<aside id="sidebar" class="group crm-sidebar w-20 hover:w-64 text-slate-300 h-screen flex flex-col justify-between p-4 shrink-0 z-40 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 fixed md:sticky md:top-0 md:self-start overflow-x-hidden md:overflow-y-auto">
     <div class="space-y-6">
 
         <!-- Brand Logo & Dynamic Badge -->

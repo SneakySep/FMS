@@ -28,22 +28,25 @@ $negotiation = (int)($stats_data['negotiation'] ?? 0);
 $closed_won  = (int)($stats_data['closed_won'] ?? 0);
 
 // Compute Percentage para sa Pipeline Progress Bars
+// Stage colours mirror the --stage-* tokens in assets/css/theme.css (and the
+// priority.stage.* utilities in includes/tailwind_config.php). Keep the three
+// in step when the palette changes.
 $max_count = max(1, $total_leads); 
 $pipeline  = [
-    'new_inquiry' => ['label' => 'New Inquiry', 'color' => '#a78bfa', 'count' => $new_inquiry, 'percentage' => min(100, round(($new_inquiry / $max_count) * 100))],
-    'qualifying'  => ['label' => 'Qualifying',  'color' => '#fbbf24', 'count' => $qualifying,  'percentage' => min(100, round(($qualifying / $max_count) * 100))],
-    'quote_sent'  => ['label' => 'Quote Sent',  'color' => '#c084fc', 'count' => $quote_sent,  'percentage' => min(100, round(($quote_sent / $max_count) * 100))],
-    'negotiation' => ['label' => 'Negotiation', 'color' => '#f59e0b', 'count' => $negotiation, 'percentage' => min(100, round(($negotiation / $max_count) * 100))],
-    'won_mtd'     => ['label' => 'Won (MTD)',   'color' => '#10b981', 'count' => $closed_won,  'percentage' => min(100, round(($closed_won / $max_count) * 100))],
+    'new_inquiry' => ['label' => 'New Inquiry', 'color' => '#8d9dd0', 'count' => $new_inquiry, 'percentage' => min(100, round(($new_inquiry / $max_count) * 100))],
+    'qualifying'  => ['label' => 'Qualifying',  'color' => '#4e83c5', 'count' => $qualifying,  'percentage' => min(100, round(($qualifying / $max_count) * 100))],
+    'quote_sent'  => ['label' => 'Quote Sent',  'color' => '#2b3f7c', 'count' => $quote_sent,  'percentage' => min(100, round(($quote_sent / $max_count) * 100))],
+    'negotiation' => ['label' => 'Negotiation', 'color' => '#1d2e6a', 'count' => $negotiation, 'percentage' => min(100, round(($negotiation / $max_count) * 100))],
+    'won_mtd'     => ['label' => 'Won (MTD)',   'color' => '#047857', 'count' => $closed_won,  'percentage' => min(100, round(($closed_won / $max_count) * 100))],
 ];
 // Stage config for the multi-line pipeline chart (status => label + color).
 // Colors mirror the pipeline legend rendered below the chart.
 $chart_stages = [
-    'new_inquiry' => ['status' => 'new_inquiry', 'label' => 'New Inquiry', 'color' => '#a78bfa'],
-    'qualifying'  => ['status' => 'qualifying',  'label' => 'Qualifying',  'color' => '#fbbf24'],
-    'quote_sent'  => ['status' => 'quote_sent',  'label' => 'Quote Sent',  'color' => '#c084fc'],
-    'negotiation' => ['status' => 'negotiation', 'label' => 'Negotiation', 'color' => '#f59e0b'],
-    'won_mtd'     => ['status' => 'closed_won',  'label' => 'Won (MTD)',   'color' => '#10b981'],
+    'new_inquiry' => ['status' => 'new_inquiry', 'label' => 'New Inquiry', 'color' => '#8d9dd0'],
+    'qualifying'  => ['status' => 'qualifying',  'label' => 'Qualifying',  'color' => '#4e83c5'],
+    'quote_sent'  => ['status' => 'quote_sent',  'label' => 'Quote Sent',  'color' => '#2b3f7c'],
+    'negotiation' => ['status' => 'negotiation', 'label' => 'Negotiation', 'color' => '#1d2e6a'],
+    'won_mtd'     => ['status' => 'closed_won',  'label' => 'Won (MTD)',   'color' => '#047857'],
 ];
 // Expose stage config (ordered) to the pipeline chart script.
 $chart_stages_json = json_encode(array_values($chart_stages));
@@ -91,7 +94,7 @@ if (!is_array($contracts)) $contracts = [];
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
   <!-- TOP HEADER & NAVBAR -->
   <?php 

@@ -14,6 +14,9 @@
 <!-- Design tokens + component layer ("Navy & White"). Must load AFTER
      style.css so its html.dark rules win on equal specificity. -->
 <link rel="stylesheet" href="/assets/css/theme.css">
+<!-- Auth screen layer (login / OTP / logout). Loads after theme.css because
+     it consumes those tokens and adds the split-panel + legal-modal rules. -->
+<link rel="stylesheet" href="/assets/css/auth.css">
 
 <!-- Tailwind Config Customization -->
 <?php include_once __DIR__ . '/../includes/tailwind_config.php'; ?>

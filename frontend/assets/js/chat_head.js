@@ -1,4 +1,4 @@
-const BACKEND_HOST = new URL(window.APP_CONFIG.API_BASE_URL).host;
+const BACKEND_HOST = "127.0.0.1:8000";
 let chatHeadWs = null;
 let currentConversationId = null;
 let isChatOpen = false;

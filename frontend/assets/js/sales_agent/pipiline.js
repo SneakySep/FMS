@@ -52,6 +52,9 @@ function renderPipelineChart(dates, counts) {
     const chartContainer = document.getElementById('pipelineActivityChart');
     if (!chartContainer) return;
 
+    // Read colours from the theme tokens so the chart follows dark mode.
+    const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
+
     const options = {
         series: [{
             name: 'Inquiries',
@@ -65,7 +68,7 @@ function renderPipelineChart(dates, counts) {
         },
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 2 },
-        colors: ['#4F46E5'],
+        colors: [P.navy],
         fill: {
             type: 'gradient',
             gradient: {
@@ -80,15 +83,15 @@ function renderPipelineChart(dates, counts) {
             tickAmount: 6, 
             axisBorder: { show: false },
             axisTicks: { show: false },
-            labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+            labels: { style: { colors: P.muted, fontSize: '12px' } }
         },
         yaxis: {
             min: 0, 
             forceNiceScale: true, 
-            labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+            labels: { style: { colors: P.muted, fontSize: '12px' } }
         },
         grid: {
-            borderColor: '#F3F4F6',
+            borderColor: P.grid,
             strokeDashArray: 4
         }
     };

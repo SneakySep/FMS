@@ -105,9 +105,10 @@ $closed_won = (isset($closed_won)) ? (int) $closed_won : 0;
 
   // Stage config (label + color) injected from dashboard.php so the chart
   // lines match the pipeline legend rendered below the graph.
+  var P = (window.crmPalette || function () { return window.CRM_COLORS; })();
   var STAGES = (window.CHART_STAGES && window.CHART_STAGES.length)
     ? window.CHART_STAGES
-    : [{ status: "new_inquiry", label: "New Inquiry", color: "#a78bfa" }];
+    : [{ status: "new_inquiry", label: "New Inquiry", color: P.stage.new }];
   var stageColors = STAGES.map(function (s) { return s.color; });
   var stageByStatus = {};
   STAGES.forEach(function (s) { stageByStatus[s.status] = s; });
@@ -123,14 +124,14 @@ $closed_won = (isset($closed_won)) ? (int) $closed_won : 0;
     series: STAGES.map(function (s) { return { name: s.label, data: [] }; }),
     xaxis: {
       categories: [],
-      labels: { style: { colors: "#94a3b8", fontSize: "11px" }, rotate: -45, hideOverlappingLabels: true },
+      labels: { style: { colors: P.muted, fontSize: "12px" }, rotate: -45, hideOverlappingLabels: true },
       axisBorder: { show: false },
       axisTicks: { show: false }
     },
     yaxis: {
-      labels: { style: { colors: "#94a3b8", fontSize: "11px" }, formatter: function (val) { return Math.round(val); } }
+      labels: { style: { colors: P.muted, fontSize: "12px" }, formatter: function (val) { return Math.round(val); } }
     },
-    grid: { borderColor: "#e2e8f0", strokeDashArray: 4 },
+    grid: { borderColor: P.grid, strokeDashArray: 4 },
     stroke: { curve: "smooth", width: 3 },
     colors: stageColors,
     markers: { size: 0, hover: { size: 4 } },

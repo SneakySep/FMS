@@ -33,7 +33,7 @@ $created_today = 0; // Could be extended with creation date filtering
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
     <!-- TOP HEADER -->
   <?php include_once 'components/top_header.php'; ?>
@@ -286,7 +286,7 @@ $created_today = 0; // Could be extended with creation date filtering
 </main>
 
 <!-- CREATE CUSTOMER ACCOUNT MODAL -->
-<div id="accountModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+<div data-brand="priority" id="accountModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
     
         <!-- MODAL HEADER -->

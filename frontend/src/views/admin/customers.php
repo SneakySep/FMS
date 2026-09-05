@@ -22,7 +22,7 @@ $total_customers = count($customers_list);
 <?php include_once '../../includes/sidebar.php'; ?>
 
 <!-- MAIN CONTENT AREA -->
-<main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
   <!-- TOP HEADER -->
   <?php include_once 'components/top_header.php'; ?>
@@ -126,7 +126,7 @@ $total_customers = count($customers_list);
 </main>
 
 <!-- VIEW DETAILS MODAL -->
-<div id="viewDetailsModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+<div data-brand="priority" id="viewDetailsModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
   <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
     
     <!-- MODAL HEADER -->

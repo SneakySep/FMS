@@ -34,6 +34,7 @@ $monthly_series   = $shipments_data['monthly_series'] ?? array_fill(0, 12, 0);
 document.addEventListener("DOMContentLoaded", function () {
     const monthlySeries = <?= json_encode($monthly_series) ?>;
     const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const P = (window.crmPalette || function () { return window.CRM_COLORS; })();
 
     const options = {
         series: [{
@@ -46,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             toolbar: { show: false },
             sparkline: { enabled: false }
         },
-        colors: ['#3b82f6'],
+        colors: [P.navy],
         stroke: {
             curve: 'smooth',
             width: 2.5
@@ -62,15 +63,15 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         markers: {
             size: 3,
-            colors: ['#3b82f6'],
-            strokeColors: '#FFFFFF',
+            colors: [P.navy],
+            strokeColors: P.surface,
             strokeWidth: 1.5,
             hover: { size: 5 }
         },
         dataLabels: { enabled: false },
         grid: {
             show: true,
-            borderColor: '#f3f4f6',
+            borderColor: P.grid,
             strokeDashArray: 3,
             xaxis: { lines: { show: false } },
             yaxis: { lines: { show: true } }
@@ -81,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
             axisTicks: { show: false },
             labels: {
                 style: {
-                    colors: '#9ca3af',
-                    fontSize: '10px',
+                    colors: P.muted,
+                    fontSize: '12px',
                     fontWeight: 600
                 }
             }

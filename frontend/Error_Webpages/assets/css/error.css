@@ -1,0 +1,220 @@
+/* ==========================================================================
+   ERROR SCREEN LAYER  (frontend/Error_Webpages)
+   --------------------------------------------------------------------------
+   Loads AFTER style.css, theme.css and auth.css, and is meant to stay small:
+   every layout, colour and control on these pages already exists in those
+   three files. What is here is only what an error screen needs and the auth
+   screens never had - a larger status badge, the requested-address chip, and a
+   two-up action row.
+
+   No new colours: the three badge tones reuse the exact fills of the
+   .crm-badge-navy / -amber / -red family in theme.css, so a status reads the
+   same here as it does in a table cell on the dashboard.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. STATUS BADGE
+   auth.css ships .auth-badge at 3.5rem with a single --success tone. An error
+   page wants the icon to carry the weight of the message, so it is scaled up
+   and given the three tones the rest of the CRM already uses.
+   -------------------------------------------------------------------------- */
+.err-badge {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.err-badge--info {
+    color: var(--navy-700);
+    background: var(--navy-50);
+    border: 1px solid var(--navy-100);
+}
+
+.err-badge--warn {
+    color: #b45309;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.err-badge--danger {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border: 1px solid #fecaca;
+}
+
+html.dark .err-badge--info {
+    color: var(--navy-200);
+    background: rgba(141, 157, 208, .14);
+    border-color: rgba(157, 172, 208, .22);
+}
+
+html.dark .err-badge--warn {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, .12);
+    border-color: rgba(251, 191, 36, .28);
+}
+
+html.dark .err-badge--danger {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-color: rgba(248, 113, 113, .28);
+}
+
+/* --------------------------------------------------------------------------
+   2. REQUESTED ADDRESS
+   Shows the path the server could not serve, so the user can spot a typo.
+   Monospace and breakable: it is untrusted input, escaped and length-capped in
+   error_page.php, and must never push the panel wider than its column.
+   -------------------------------------------------------------------------- */
+.err-addr {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    width: 100%;
+    margin: 0;
+    padding: .625rem .75rem;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .75rem;
+    line-height: 1.5;
+    color: var(--navy-600);
+    background: var(--brand-softer);
+    border: 1px dashed var(--brand-line-2);
+    border-radius: var(--radius-ctl);
+}
+
+.err-addr i {
+    margin-top: .125rem;
+    flex-shrink: 0;
+    color: var(--brand);
+}
+
+.err-addr-txt {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+}
+
+html.dark .err-addr {
+    color: var(--navy-200);
+    background: rgba(141, 157, 208, .08);
+    border-color: rgba(157, 172, 208, .22);
+}
+
+/* --------------------------------------------------------------------------
+   3. ACTION ROW
+   auth.css sets .auth-btn to width:100%, which is right for a single stacked
+   form button but not for a pair. The row keeps them equal-width on desktop and
+   falls back to the stacked full-width behaviour on narrow screens.
+   -------------------------------------------------------------------------- */
+.err-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .75rem;
+    width: 100%;
+}
+
+@media (min-width: 400px) {
+    .err-actions { grid-template-columns: 1fr 1fr; }
+}
+
+/* A back button with no history behind it is a dead end; error.js hides it. */
+.err-actions [data-err-back][hidden] { display: none; }
+
+
+/* --------------------------------------------------------------------------
+   4. REFERENCE CODE
+   The one string on the page a user has to transcribe into an email, so it is
+   set in monospace with letter-spacing and cannot be mistaken for an O or 0.
+   -------------------------------------------------------------------------- */
+.err-ref {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--fg-heading);
+    background: var(--surface-muted);
+    border: 1px solid var(--line);
+    border-radius: .375rem;
+    padding: .125rem .375rem;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   5. PREVIEW HUB  (Error_Webpages/index.php)
+   Not part of a status page - just the six-card launcher, built from the same
+   tokens so it looks like it belongs to the portal.
+   -------------------------------------------------------------------------- */
+.err-hub {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) 1.25rem 4rem;
+}
+
+.err-hub-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    margin-top: 1.5rem;
+}
+
+.err-hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 1.25rem;
+    color: inherit;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow .16s ease, transform .12s ease, border-color .16s ease;
+}
+
+.err-hub-card:hover {
+    box-shadow: var(--shadow-lift);
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+}
+
+.err-hub-card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+.err-hub-code {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--fg-heading);
+    font-variant-numeric: tabular-nums;
+}
+
+.err-hub-name {
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.err-hub-desc {
+    font-size: .8125rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------------------
+   6. REDUCED MOTION
+   Mirrors auth.css section 13 so the lift on the hub cards is the only motion
+   these pages add, and it is the only thing switched off.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .err-hub-card { transition: none; }
+    .err-hub-card:hover { transform: none; }
+}

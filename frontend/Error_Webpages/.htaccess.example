@@ -1,0 +1,38 @@
+# Apache wiring for the custom error screens  (frontend/Error_Webpages)
+#
+# NOT ACTIVE AS-IS. This is a template. To enable it, copy this file to
+#   frontend/.htaccess
+# and rename it to .htaccess - NOT into this Error_Webpages folder.
+#
+# Why the location matters: Apache applies ErrorDocument to the directory the
+# file sits in *and everything below it*. Placed in Error_Webpages/, these rules
+# would only fire for URLs already inside Error_Webpages/, so a request for
+# /frontend/nope.php - the single most common 404 - would still show Apache's
+# stock page. At the frontend/ root they cover the whole portal.
+#
+# There is currently no .htaccess anywhere under htdocs, so this creates no
+# conflict. AllowOverride All is already set for E:/Xampp/Files/htdocs in
+# httpd.conf, so the file is honoured without a server restart.
+#
+# One more thing: ErrorDocument does not stop PHP. A script that dies with a
+# fatal error has already begun its response, so it can still land on a 200 with
+# a half-rendered page. See README.md, "Catching PHP failures", for the handler
+# that closes that gap.
+# ---------------------------------------------------------------------------
+
+# Never list directory contents anywhere under the portal.
+Options -Indexes
+
+# --- Custom status pages ---------------------------------------------------
+# Paths are relative to DOCUMENT_ROOT, which under this XAMPP install is
+# E:/Xampp/Files/htdocs - NOT the app folder. Hence the long prefix.
+#
+# If you test with `php -S 127.0.0.1:8099 -t frontend` instead of Apache, that
+# server ignores .htaccess entirely and puts DOCUMENT_ROOT at the app folder, so
+# drop the /CRM/customer_relationship/frontend prefix when building URLs by hand.
+ErrorDocument 400 /CRM/customer_relationship/frontend/Error_Webpages/400.php
+ErrorDocument 401 /CRM/customer_relationship/frontend/Error_Webpages/401.php
+ErrorDocument 403 /CRM/customer_relationship/frontend/Error_Webpages/403.php
+ErrorDocument 404 /CRM/customer_relationship/frontend/Error_Webpages/404.php
+ErrorDocument 500 /CRM/customer_relationship/frontend/Error_Webpages/500.php
+ErrorDocument 503 /CRM/customer_relationship/frontend/Error_Webpages/503.php

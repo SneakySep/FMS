@@ -1,0 +1,1065 @@
+/* ==========================================================================
+   AUTH SCREENS  —  New_dash/register.php
+   --------------------------------------------------------------------------
+   Self-contained copy of frontend/assets/css/auth.css. The upstream file
+   consumes its design tokens from assets/css/theme.css (which in turn reads
+   --accent-rgb from assets/css/style.css). This build is standalone, so the
+   tokens it needs are inlined in section 0 below with the SAME literal
+   values - the rendered result is identical, and New_dash/ can be served
+   without the rest of the frontend/ asset tree.
+
+   Direction: LIGHT SPLIT-PANEL.
+     - left  = navy brand panel  (--brand-grad, white type)
+     - right = white form card on the cool #F2F4F9 Priority surface
+   Below `lg` the brand panel collapses to a compact header and the form
+   becomes a single centred card.
+
+   DROPPED vs upstream: the OTP segment block - this screen has no code entry.
+   ADDED: section 0b (the UA reset Tailwind Preflight used to supply), the
+   two-up name row and the consent checkbox, all built from the same tokens.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. DESIGN TOKENS  (inlined from assets/css/theme.css + style.css)
+   -------------------------------------------------------------------------- */
+:root {
+    /* Navy scale - anchored on the Priority PH brand navy #1D2E6A */
+    --navy-950: #0a0f24;
+    --navy-900: #0f1734;
+    --navy-850: #131d43;
+    --navy-800: #182554;
+    --navy-700: #1d2e6a;
+    --navy-600: #2b3f7c;
+    --navy-500: #3d5494;
+    --navy-400: #5f74b5;
+    --navy-300: #8d9dd0;
+    --navy-200: #b9c4e3;
+    --navy-100: #dbe1f1;
+    --navy-50:  #eef1f9;
+
+    /* Priority PH brand extensions */
+    --brand-navy:   #1d2e6a;
+    --brand-button: #213854;
+    --teal-700:     #003a5f;
+    --teal-600:     #084163;
+    --sky-brand:    #4e83c5;
+    --brand-violet: #290f74;
+    --brand-grad:   linear-gradient(120deg, var(--brand-navy) 0%, var(--teal-600) 55%, var(--teal-700) 100%);
+
+    /* Light canvas - cool tint of the Priority #F0F0F0 surface */
+    --canvas:        #f2f4f9;
+    --surface:       #ffffff;
+    --surface-muted: #eef1f7;
+    --surface-hover: #e7ecf6;
+    --line:          #dfe3ee;
+    --line-strong:   #c9d0e2;
+
+    /* Text roles - Priority near-black + AA-safe muted grey */
+    --fg-heading: #1b1b1c;
+    --fg-body:    #3d4451;
+    --fg-muted:   #6e6e6e;
+
+    /* Brand + focus. Upstream these resolve through the accent picker in
+       style.css; the default theme IS the priority navy, so the literal
+       rgb triplets are inlined here. */
+    --accent-rgb:        29 46 106;
+    --accent-strong-rgb: 33 56 84;
+    --brand:        rgb(var(--accent-rgb));
+    --brand-strong: rgb(var(--accent-strong-rgb));
+    --ring:         rgb(var(--accent-rgb) / 0.28);
+
+    /* Elevation - shadows tinted with the brand navy, not neutral black */
+    --shadow-card: 0 1px 2px rgba(29, 46, 106, .05), 0 1px 3px rgba(29, 46, 106, .07);
+    --shadow-lift: 0 12px 32px -14px rgba(29, 46, 106, .24);
+    --shadow-navy: 0 8px 20px -10px rgba(29, 46, 106, .55);
+
+    /* Geometry */
+    --radius-card: 1rem;
+    --radius-ctl:  .625rem;
+    --radius-tile: .75rem;
+    --radius-pill: 999px;
+
+    /* Status colours (upstream aliases them over the pipeline-stage ramp) */
+    --danger:       #b91c1c;
+    --danger-soft:  #fef2f2;
+    --success:      #047857;
+    --success-soft: #ecfdf5;
+
+    /* Soft brand tints */
+    --brand-soft:   #eef1f9;
+    --brand-softer: #f6f8fc;
+    --brand-line:   #dbe1f1;
+    --brand-line-2: #c9d0e2;
+}
+
+
+/* --------------------------------------------------------------------------
+   0b. RESET  (replaces the Tailwind Preflight that login.php gets for free)
+   --------------------------------------------------------------------------
+   frontend/login.php loads https://cdn.tailwindcss.com through
+   src/components/head.php, and Tailwind's Preflight silently normalises the
+   UA stylesheet for the whole auth layout. This build is standalone and links
+   no Tailwind, so without the rules below the browser defaults win and the
+   page visibly falls apart:
+
+     - .auth-input is `width:100%` + 2.625rem left padding + a 1px border. In
+       content-box that overflows the card by ~44px and gets clipped by
+       .auth-shell{overflow:hidden}. Same story, smaller, for .auth-btn.
+     - <ul class="auth-features"> keeps the UA 40px padding-left and draws
+       bullet markers, so the value props no longer align with the logo.
+     - UA margins on <p>, <h1> and <h2> collapse against the authored
+       margin-top values, wrecking the vertical rhythm of both panels.
+     - UA `body{margin:8px}` pushes the whole shell off centre.
+
+   Scoped to the elements this page actually renders rather than a blanket
+   reset, so it stays auditable. Every class rule below re-declares whatever
+   it needs (border, background, padding, radius, font), and class selectors
+   outrank these element selectors regardless of source order - so the reset
+   cannot leak into the component styling. */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+    line-height: 1.5;
+}
+
+body {
+    margin: 0;
+    line-height: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+    margin: 0;
+}
+
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+input,
+button,
+textarea,
+select {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    border-radius: 0;
+    -webkit-appearance: none;
+            appearance: none;
+}
+
+img,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+button {
+    cursor: pointer;
+    text-align: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   1. SHELL
+   -------------------------------------------------------------------------- */
+.auth-body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--canvas);
+    color: var(--fg-body);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.auth-main {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2rem);
+}
+
+.auth-shell {
+    width: 100%;
+    max-width: 64rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-lift);
+    overflow: hidden;
+    animation: auth-rise .5s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@media (min-width: 1024px) {
+    .auth-shell { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+}
+
+/* --------------------------------------------------------------------------
+   2. BRAND PANEL  (left)
+   -------------------------------------------------------------------------- */
+.auth-brand {
+    position: relative;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2.5rem;
+    padding: 2.75rem 2.5rem;
+    background: var(--brand-grad);
+    color: #ffffff;
+    overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+    .auth-brand { display: flex; }
+}
+
+/* Faint blueprint grid - zero network cost, and it reads as "logistics"
+   without being a stock shot. */
+.auth-brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, .06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, .06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 30% 20%, #000 0%, transparent 75%);
+            mask-image: radial-gradient(ellipse 90% 70% at 30% 20%, #000 0%, transparent 75%);
+    pointer-events: none;
+}
+
+/* Soft light bloom for depth. */
+.auth-brand::after {
+    content: "";
+    position: absolute;
+    width: 26rem;
+    height: 26rem;
+    right: -9rem;
+    bottom: -9rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(78, 131, 197, .38) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.auth-brand > * { position: relative; z-index: 1; }
+
+.auth-brand-eyebrow {
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .62);
+}
+
+.auth-brand-eyebrow--spaced { margin-top: 2.75rem; }
+
+.auth-brand-title {
+    margin-top: .75rem;
+    font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -.02em;
+    color: #ffffff;
+}
+
+.auth-brand-sub {
+    margin-top: .75rem;
+    font-size: .875rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, .74);
+    max-width: 30rem;
+}
+
+/* Value props */
+.auth-features {
+    margin-top: 2rem;
+    display: grid;
+    gap: .875rem;
+}
+
+.auth-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: .875rem;
+}
+
+.auth-feature-ico {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: .625rem;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .18);
+    color: #ffffff;
+    font-size: .8125rem;
+}
+
+.auth-feature-txt strong {
+    display: block;
+    font-size: .8125rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.auth-feature-txt span {
+    display: block;
+    font-size: .75rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, .66);
+}
+
+/* Contact strip pinned to the panel foot */
+.auth-brand-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    font-size: .75rem;
+    color: rgba(255, 255, 255, .7);
+}
+
+.auth-brand-foot a {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    color: rgba(255, 255, 255, .82);
+    text-decoration: none;
+    transition: color .16s ease;
+}
+
+.auth-brand-foot a:hover { color: #ffffff; }
+.auth-brand-foot i { font-size: .6875rem; color: #b9c4e3; }
+
+/* --------------------------------------------------------------------------
+   3. LOGO MARK
+   --------------------------------------------------------------------------
+   image/logo-mark.png is the script "P" from logo.png with the opaque white
+   background knocked out to real alpha. It is authored in the brand violet
+   #290F74; on the navy panel we invert it to white with a filter so one
+   asset serves both sides. */
+.auth-logo {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+}
+
+.auth-logo-img {
+    width: 2.75rem;
+    height: 2.75rem;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.auth-logo-img--on-navy { filter: brightness(0) invert(1); }
+
+.auth-logo-name {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    line-height: 1.15;
+    color: var(--fg-heading);
+}
+
+.auth-logo-name em {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--navy-500);
+}
+
+.auth-logo-meta {
+    margin-top: .1875rem;
+    font-size: .625rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+}
+
+.auth-brand .auth-logo-name { color: #ffffff; }
+.auth-brand .auth-logo-name em { color: rgba(255, 255, 255, .72); }
+.auth-brand .auth-logo-meta { color: rgba(255, 255, 255, .55); }
+
+/* --------------------------------------------------------------------------
+   4. FORM PANEL  (right)
+   -------------------------------------------------------------------------- */
+.auth-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 4vw, 3rem);
+    background: var(--surface);
+}
+
+/* On mobile the brand panel is hidden, so a compact tinted header carries the
+   identity instead. */
+.auth-panel-head {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 0;
+}
+
+.auth-panel-head + * { margin-top: -.5rem; }
+
+@media (min-width: 1024px) {
+    .auth-panel-head { display: none; }
+}
+
+.auth-eyebrow {
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--brand);
+}
+
+.auth-title {
+    margin-top: .5rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.25;
+    color: var(--fg-heading);
+}
+
+.auth-sub {
+    margin-top: .5rem;
+    font-size: .875rem;
+    line-height: 1.6;
+    color: var(--fg-muted);
+}
+
+/* --------------------------------------------------------------------------
+   5. FIELDS
+   -------------------------------------------------------------------------- */
+.auth-form { display: grid; gap: 1.125rem; }
+
+.auth-field { display: grid; gap: .4375rem; }
+
+.auth-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--fg-heading);
+}
+
+.auth-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+.auth-input-wrap { position: relative; }
+
+.auth-input {
+    width: 100%;
+    height: 2.875rem;
+    padding: 0 .875rem 0 2.625rem;
+    font-size: 1rem;                 /* >=16px: stops iOS zoom-on-focus */
+    font-family: inherit;
+    color: var(--fg-heading);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-ctl);
+    transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.auth-input::placeholder { color: var(--navy-300); }
+.auth-input:hover { border-color: var(--navy-300); }
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+    /* Chrome paints the field with its own yellow and ignores the rules
+       above; this forces the token surface back without killing autofill. */
+    -webkit-text-fill-color: var(--fg-heading);
+    -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+    caret-color: var(--brand);
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+.auth-input-ico {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2.625rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8125rem;
+    color: var(--navy-300);
+    pointer-events: none;
+    transition: color .16s ease;
+}
+
+.auth-input:focus ~ .auth-input-ico { color: var(--brand); }
+
+/* Password reveal toggle */
+.auth-reveal {
+    position: absolute;
+    right: .25rem;
+    top: .25rem;
+    bottom: .25rem;
+    width: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: calc(var(--radius-ctl) - .1875rem);
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: .8125rem;
+    cursor: pointer;
+    transition: background-color .16s ease, color .16s ease;
+}
+
+.auth-reveal:hover { background: var(--surface-muted); color: var(--fg-heading); }
+.auth-reveal:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+
+/* The reveal toggle is absolutely positioned over the field's right edge
+   (right .25rem + width 2.5rem = 2.75rem of dead space), but .auth-input
+   only reserves 0.875rem of padding-right. Without this, a long password or
+   the "Re-enter your password" placeholder runs underneath the eye icon.
+   Scoped with :has() so plain fields such as email keep their tighter
+   padding. Browsers without :has() drop the rule and keep the old behaviour,
+   which is a cosmetic no-op rather than a break. */
+.auth-input-wrap:has(.auth-reveal) .auth-input {
+    padding-right: 3.25rem;
+}
+
+.auth-hint { font-size: .75rem; line-height: 1.6; color: var(--fg-muted); }
+.auth-hint--error { color: var(--danger); }
+
+.auth-link {
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+    transition: color .16s ease;
+}
+
+.auth-link:hover { color: var(--brand-strong); text-decoration: underline; }
+.auth-link:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: .25rem; }
+
+
+/* --------------------------------------------------------------------------
+   6. BUTTONS
+   -------------------------------------------------------------------------- */
+.auth-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    width: 100%;
+    height: 2.875rem;
+    padding: 0 1.25rem;
+    font-size: .9375rem;
+    font-weight: 600;
+    font-family: inherit;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-radius: var(--radius-ctl);
+    cursor: pointer;
+    transition: background-color .16s ease, box-shadow .16s ease,
+                transform .12s ease, opacity .16s ease;
+}
+
+.auth-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.auth-btn:active { transform: scale(.99); }
+.auth-btn:disabled { opacity: .6; cursor: progress; }
+
+.auth-btn--primary {
+    background: var(--brand-button);
+    color: #ffffff;
+    box-shadow: var(--shadow-navy);
+}
+
+.auth-btn--primary:hover { background: var(--navy-900); }
+
+.auth-btn--ghost {
+    background: transparent;
+    color: var(--fg-body);
+    border-color: var(--line-strong);
+    box-shadow: none;
+}
+
+.auth-btn--ghost:hover { background: var(--surface-muted); color: var(--fg-heading); }
+
+/* Idle label sits inline so the icon and text share a baseline with the
+   spinner that replaces it. */
+.auth-btn-idle {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.auth-btn-idle i { font-size: .8125rem; }
+
+/* Spinner swaps in for the idle label while the form is in flight. */
+.auth-btn-spin { display: none; }
+.auth-btn.is-busy .auth-btn-spin { display: inline-block; animation: auth-spin .7s linear infinite; }
+.auth-btn.is-busy .auth-btn-idle { display: none; }
+
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+
+/* --------------------------------------------------------------------------
+   7. ALERTS
+   -------------------------------------------------------------------------- */
+.auth-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+    padding: .75rem .875rem;
+    border-radius: var(--radius-ctl);
+    border: 1px solid;
+    font-size: .8125rem;
+    line-height: 1.55;
+}
+
+.auth-alert i { margin-top: .125rem; flex-shrink: 0; }
+
+.auth-alert--error {
+    background: var(--danger-soft);
+    border-color: rgba(198, 44, 44, .28);
+    color: var(--danger);
+}
+
+.auth-alert--success {
+    background: var(--success-soft);
+    border-color: rgba(16, 185, 129, .28);
+    color: #047857;
+}
+
+.auth-alert--info {
+    background: var(--brand-softer);
+    border-color: var(--brand-line);
+    color: var(--fg-body);
+}
+
+.auth-alert--info a { color: var(--brand); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   8. META ROW  (back link / helper text)
+   -------------------------------------------------------------------------- */
+.auth-meta {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: .8125rem;
+    color: var(--fg-muted);
+}
+
+.auth-meta strong { color: var(--fg-heading); font-weight: 600; }
+.auth-meta .tabular { font-variant-numeric: tabular-nums; }
+
+.auth-btn-link {
+    border: 0;
+    background: none;
+    padding: .25rem 0;
+    font: inherit;
+    font-weight: 600;
+    color: var(--brand);
+    cursor: pointer;
+    transition: color .16s ease;
+}
+
+.auth-btn-link:hover { color: var(--brand-strong); text-decoration: underline; }
+.auth-btn-link:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: .25rem; }
+.auth-btn-link:disabled { color: var(--fg-muted); cursor: not-allowed; text-decoration: none; }
+
+/* --------------------------------------------------------------------------
+   9. PAGE FOOTER
+   -------------------------------------------------------------------------- */
+.auth-foot {
+    padding: 1.25rem clamp(1rem, 4vw, 2rem) 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem 1.25rem;
+    font-size: .75rem;
+    color: var(--fg-muted);
+    text-align: center;
+}
+
+.auth-foot-links { display: flex; gap: 1.25rem; }
+
+.auth-foot button {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: color .16s ease;
+}
+
+.auth-foot button:hover { color: var(--brand); text-decoration: underline; }
+.auth-foot button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); border-radius: .25rem; }
+
+
+/* --------------------------------------------------------------------------
+   10. LEGAL MODALS
+   --------------------------------------------------------------------------
+   Rendered by components/legal_modals.php. The wrapper carries `inert`
+   so the dialogs are out of the tab order until auth.js opens one.
+
+   NOTE: upstream auth.css leaves .legal-sheet unclosed at this point, which
+   silently swallows the .auth-shell--narrow / .auth-panel--center /
+   .auth-badge / .auth-tips rules through CSS error recovery. Fixed here. */
+.legal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(10, 15, 36, .62);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity .22s ease;
+}
+
+.legal-overlay[hidden] { display: none; }
+.legal-overlay.is-open { opacity: 1; }
+
+.legal-sheet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 46rem;
+    max-height: 86vh;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-lift);
+    overflow: hidden;
+    transform: translateY(12px) scale(.985);
+    transition: transform .26s cubic-bezier(.16, 1, .3, 1);
+}
+
+.legal-overlay.is-open .legal-sheet { transform: none; }
+
+.legal-head {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--brand-grad);
+    color: #ffffff;
+}
+
+.legal-head-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: .625rem;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .2);
+    font-size: .875rem;
+}
+
+.legal-title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: #ffffff;
+}
+
+.legal-caption {
+    margin-top: .125rem;
+    font-size: .6875rem;
+    color: rgba(255, 255, 255, .7);
+}
+
+.legal-close {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 2.125rem;
+    height: 2.125rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: .5rem;
+    background: rgba(255, 255, 255, .08);
+    color: #ffffff;
+    font-size: .875rem;
+    cursor: pointer;
+    transition: background-color .16s ease;
+}
+
+.legal-close:hover { background: rgba(255, 255, 255, .2); }
+.legal-close:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(255, 255, 255, .45); }
+
+.legal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: var(--surface);
+}
+
+.legal-p { font-size: .8125rem; line-height: 1.7; color: var(--fg-body); margin-bottom: .75rem; }
+.legal-p strong { color: var(--fg-heading); font-weight: 600; }
+.legal-sub { font-size: .8125rem; line-height: 1.7; color: var(--fg-body); padding-left: 1.25rem; margin-bottom: .5rem; }
+.legal-sub strong { color: var(--fg-heading); font-weight: 600; }
+
+p[data-legal="head"] {
+    font-size: .8125rem;
+    font-weight: 700;
+    color: var(--fg-heading);
+    margin: 1.375rem 0 .5rem;
+}
+
+p[data-legal="lead"] {
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin: 0 0 .75rem;
+}
+
+.legal-foot {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--line);
+    background: var(--surface-muted);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.legal-btn { width: auto; height: 2.375rem; font-size: .8125rem; padding: 0 1.25rem; }
+
+/* --------------------------------------------------------------------------
+   11. MOBILE TOP BAR
+   -------------------------------------------------------------------------- */
+.auth-topbar {
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+}
+
+@media (min-width: 1024px) {
+    .auth-topbar { display: none; }
+}
+
+.auth-topbar-inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: .75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.auth-topbar-tag {
+    font-size: .625rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-pill);
+    padding: .3125rem .625rem;
+    white-space: nowrap;
+}
+
+
+/* --------------------------------------------------------------------------
+   12. REGISTER: TWO-UP NAME ROW
+   --------------------------------------------------------------------------
+   First / last name sit side by side from `sm` up so the form stays roughly
+   the same height as the login panel. Collapses to a single column below. */
+.auth-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.125rem;
+}
+
+@media (min-width: 640px) {
+    .auth-grid-2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   13. REGISTER: PASSWORD STRENGTH METER
+   --------------------------------------------------------------------------
+   Four segments; register.js sets data-score="0..4" on the wrapper. Colours
+   walk the same navy -> green ramp the dashboards use for progress. */
+.auth-strength {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.auth-strength-bars {
+    display: flex;
+    flex: 1 1 auto;
+    gap: .25rem;
+}
+
+.auth-strength-bar {
+    height: .25rem;
+    flex: 1 1 0;
+    border-radius: var(--radius-pill);
+    background: var(--line);
+    transition: background-color .2s ease;
+}
+
+.auth-strength-label {
+    flex-shrink: 0;
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+[data-score="1"] .auth-strength-bar:nth-child(-n+1),
+[data-score="2"] .auth-strength-bar:nth-child(-n+2) { background: var(--danger); }
+
+[data-score="3"] .auth-strength-bar:nth-child(-n+3) { background: var(--navy-500); }
+[data-score="3"] .auth-strength-label { color: var(--navy-500); }
+
+[data-score="4"] .auth-strength-bar { background: var(--success); }
+[data-score="4"] .auth-strength-label { color: var(--success); }
+
+[data-score="1"] .auth-strength-label { color: var(--danger); }
+[data-score="2"] .auth-strength-label { color: var(--danger); }
+
+/* --------------------------------------------------------------------------
+   14. REGISTER: CONSENT CHECKBOX
+   --------------------------------------------------------------------------
+   Native input kept (so the form validates without JS) but restyled to the
+   token language; the check is FontAwesome-free, drawn with a mask so it
+   inherits --surface against the brand fill. */
+.auth-check {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+}
+
+.auth-check-input {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: .125rem;
+    border: 1px solid var(--line-strong);
+    border-radius: .3125rem;
+    background: var(--surface);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: background-color .16s ease, border-color .16s ease;
+}
+
+.auth-check-input:hover { border-color: var(--navy-300); }
+
+.auth-check-input:checked {
+    background-color: var(--brand-button);
+    border-color: var(--brand-button);
+}
+
+.auth-check-input:checked::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / .8125rem .8125rem no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / .8125rem .8125rem no-repeat;
+}
+
+.auth-check-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+.auth-check-label {
+    font-size: .8125rem;
+    line-height: 1.6;
+    color: var(--fg-body);
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   15. ENTRANCE MOTION
+   -------------------------------------------------------------------------- */
+@keyframes auth-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   16. REDUCED MOTION
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .auth-shell,
+    .auth-btn.is-busy .auth-btn-spin { animation: none; }
+
+    .auth-shell,
+    .legal-overlay,
+    .legal-sheet,
+    .auth-btn,
+    .auth-input,
+    .auth-strength-bar { transition: none; }
+
+    .auth-btn:active { transform: none; }
+}
+

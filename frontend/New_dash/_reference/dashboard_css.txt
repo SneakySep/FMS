@@ -1,0 +1,258 @@
+/* ==========================================================================
+   DELIVERY DASHBOARD  —  New_dash/dashboard.php
+   --------------------------------------------------------------------------
+   Only the rules assets/css/theme.css has no equivalent for. Everything that
+   already exists in the shared component layer (.crm-card, .crm-kpi,
+   .crm-table, .crm-badge-*, .crm-pill, .crm-modal, ...) is used straight from
+   theme.css, so this file stays small and the two can never drift.
+
+   Colours come from the theme.css custom properties only - no new hexes - so
+   html.dark retints every rule below for free.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. MAP  —  matches the muted tile treatment the other portals use
+   -------------------------------------------------------------------------- */
+.dlv-map {
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+.dlv-map .leaflet-tile-pane {
+    filter: grayscale(100%) brightness(105%) contrast(90%);
+}
+html.dark .dlv-map .leaflet-tile-pane {
+    filter: grayscale(100%) brightness(70%) contrast(95%) invert(1);
+}
+.dlv-map .leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+}
+
+/* Pulse ring under the live courier marker (divIcon, so it can be animated). */
+.dlv-courier-pin {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: var(--brand);
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(8, 14, 30, .35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 9px;
+}
+.dlv-courier-pin::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / .5);
+    animation: dlvPulse 1.8s infinite;
+}
+@keyframes dlvPulse {
+    0%   { box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / .55); }
+    70%  { box-shadow: 0 0 0 16px rgb(var(--accent-rgb) / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / 0); }
+}
+
+/* --------------------------------------------------------------------------
+   2. MILESTONE TIMELINE  —  same dot/connector geometry as tracking.php,
+      rebuilt on tokens so dark mode works.
+   -------------------------------------------------------------------------- */
+.dlv-ms-item { position: relative; }
+.dlv-ms-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    flex: 0 0 auto;
+    background: var(--line-strong);
+    box-shadow: 0 0 0 4px var(--surface);
+}
+.dlv-ms-dot.is-done   { background: var(--stage-won, #047857); }
+.dlv-ms-dot.is-active { background: var(--brand); animation: dlvBlink 1.6s ease-in-out infinite; }
+.dlv-ms-line {
+    position: absolute;
+    left: 6.5px;
+    top: 22px;
+    bottom: -10px;
+    width: 2px;
+    background: var(--line);
+}
+.dlv-ms-line.is-done { background: var(--stage-won, #047857); }
+@keyframes dlvBlink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .45; }
+}
+
+/* --------------------------------------------------------------------------
+   3. STARS  —  read-only display + the interactive picker in the modal
+   -------------------------------------------------------------------------- */
+.dlv-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: .125rem;
+    font-size: .75rem;
+    line-height: 1;
+}
+.dlv-stars .fa-star { color: var(--line-strong); }
+.dlv-stars .fa-star.is-on { color: #f59e0b; }
+
+.dlv-star-btn {
+    background: transparent;
+    border: 0;
+    padding: .125rem;
+    cursor: pointer;
+    color: var(--line-strong);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: color .14s ease, transform .12s ease;
+}
+.dlv-star-btn:hover { transform: scale(1.12); }
+.dlv-star-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+    border-radius: .375rem;
+}
+.dlv-star-btn.is-on { color: #f59e0b; }
+
+/* --------------------------------------------------------------------------
+   4. VEHICLE CHIP  —  the fleet strip
+   -------------------------------------------------------------------------- */
+.dlv-vehicle {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem;
+    border-radius: var(--radius-tile);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    transition: border-color .16s ease, background-color .16s ease, transform .16s ease;
+}
+.dlv-vehicle:hover {
+    border-color: var(--navy-300);
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+}
+.dlv-vehicle-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-tile);
+    background: var(--navy-50);
+    border: 1px solid var(--navy-100);
+    color: var(--navy-700);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+html.dark .dlv-vehicle-ico {
+    background: rgba(148, 163, 184, .10);
+    border-color: rgba(148, 163, 184, .18);
+    color: var(--on-navy-200);
+}
+
+/* --------------------------------------------------------------------------
+   5. TABLE ROWS  —  filter + insert feedback
+   -------------------------------------------------------------------------- */
+.dlv-row-enter { animation: dlvRowIn .32s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes dlvRowIn {
+    from { opacity: 0; transform: translateY(-6px); background: var(--brand-soft); }
+    to   { opacity: 1; transform: none; }
+}
+.dlv-row-hidden { display: none; }
+
+/* --------------------------------------------------------------------------
+   6. MISC
+   -------------------------------------------------------------------------- */
+/* Thin rail used by the rating distribution bars. */
+.dlv-bar {
+    height: .375rem;
+    border-radius: 9999px;
+    background: var(--surface-muted);
+    overflow: hidden;
+}
+.dlv-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    transition: width .5s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Toast used by the booking form's local-only confirmation. */
+.dlv-toast {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 70;
+    max-width: 22rem;
+    padding: .875rem 1rem;
+    border-radius: var(--radius-tile);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-lift);
+    animation: dlvToastIn .26s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes dlvToastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   7. BOOKING FORM  —  vehicle radio cards + inline validation copy
+   -------------------------------------------------------------------------- */
+/* Radio card: the input itself is visually hidden (.sr-only) and the label
+   carries the state, so keyboard focus lands on the input and :has() paints
+   the ring on the card. */
+.dlv-vehicle-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: .125rem;
+    padding: .75rem .5rem;
+    border-radius: var(--radius-tile);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--fg-body);
+    cursor: pointer;
+    transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.dlv-vehicle-opt:hover {
+    border-color: var(--navy-300);
+    background: var(--surface-hover);
+    transform: translateY(-1px);
+}
+.dlv-vehicle-opt:has(input:checked) {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+    color: var(--fg-heading);
+    box-shadow: 0 0 0 3px var(--ring);
+}
+.dlv-vehicle-opt:has(input:checked) i { color: var(--brand); }
+.dlv-vehicle-opt:has(input:focus-visible) {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Field error text: hidden until the input carries .is-shown. */
+.dlv-field-error {
+    display: none;
+    margin-top: .3125rem;
+    font-size: .6875rem;
+    font-weight: 700;
+    color: var(--danger);
+}
+.dlv-field-error.is-shown { display: block; }
+
+/* Invalid input ring, applied by js/dashboard.js alongside .is-shown. */
+.dlv-input-invalid {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, .18) !important;
+}
+

@@ -1,56 +1,56 @@
 <?php
 /* ==========================================================================
-   SIDEBAR  —  New_dash/dashboard.php
-   --------------------------------------------------------------------------
-   Static copy of frontend/src/includes/sidebar.php. The markup and every
-   .crm-* class are identical, so the rail renders exactly like the customer /
-   sales-agent / admin portals and inherits theme.css (including the
-   hover-expand behaviour and the section-16 mobile drawer).
+    SIDEBAR  —  every New_dash page
+    --------------------------------------------------------------------------
+    Static copy of frontend/src/includes/sidebar.php. The markup and every
+    .crm-* class are identical, so the rail renders exactly like the customer /
+    sales-agent / admin portals and inherits theme.css (including the
+    hover-expand behaviour and the section-16 mobile drawer).
 
-   Deliberately NOT connected to the backend API: src/services/SidebarService
-   is not used, so there is no session read and no make_api_request() call for
-   the nav badges. The navigation tree and the profile block below are plain
-   PHP arrays literal to this demo portal.
+    Deliberately NOT connected to the backend API: src/services/SidebarService
+    is not used, so there is no session read and no make_api_request() call for
+    the nav badges. The navigation tree below comes from
+    classes/ModuleRegistry.php rather than a literal in this file - that is what
+    lets each sidebar row be its own page: the registry holds the label, icon
+    and real .php url (plus the live "Active Deliveries" badge count from
+    DemoData), and this file keeps only the presentation. Should the registry be
+    unavailable (this file included without the module bootstrap) the fallback
+    literal below renders, so the rail can never come out empty.
 
-   Variables a view may set BEFORE including this file:
-     $activePage   string  Key of the highlighted nav item ('dashboard').
-     $portalLabel  string  Badge under the brand name.
-     $displayName  string  Name in the bottom profile card.
-     $initials     string  Two-letter avatar.
-     $dispatchId   string  Shown as "Dispatch #..." in the profile meta line.
-     $sideMetric   array   ['label'=>, 'value'=>] mini bar (defaults to the
-                           same-day SLA figure the customer rail shows).
-   -------------------------------------------------------------------------- */
+    Variables a view may set BEFORE including this file:
+      $activePage   string  Key of the highlighted nav item ('dashboard').
+      $portalLabel  string  Badge under the brand name.
+      $displayName  string  Name in the bottom profile card.
+      $initials     string  Two-letter avatar.
+      $dispatchId   string  Shown as "Dispatch #..." in the profile meta line.
+      $sideMetric   array   ['label'=>, 'value'=>] mini bar (defaults to the
+                            same-day SLA figure the customer rail shows).
+    -------------------------------------------------------------------------- */
+
+use App\NewDash\DemoData;
+use App\NewDash\ModuleRegistry;
 
 $activePage  = $activePage  ?? 'dashboard';
 $portalLabel = $portalLabel ?? 'DELIVERY OPS';
-$displayName = $displayName ?? 'D. Cruz';
-$initials    = $initials    ?? 'DC';
-$dispatchId  = $dispatchId  ?? 'CV-07';
+$displayName = $displayName ?? DemoData::DISPLAY_NAME;
+$initials    = $initials    ?? DemoData::INITIALS;
+$dispatchId  = $dispatchId  ?? DemoData::DISPATCH_ID;
 $sideMetric  = $sideMetric  ?? ['label' => 'Same-day SLA', 'value' => '98%'];
 
 /* Same shape SidebarService::buildNavigation() returns:
    SECTION TITLE => [ key => ['label','icon','url','badge'?] ] */
-$navSections = [
-    'OVERVIEW' => [
-        'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-border-all', 'url' => 'dashboard.php'],
-    ],
-    'COURIER' => [
-        'book'       => ['label' => 'Book Delivery', 'icon' => 'fa-bolt', 'url' => 'dashboard.php#book-delivery'],
-        'deliveries' => ['label' => 'Active Deliveries', 'icon' => 'fa-list-check', 'url' => 'dashboard.php#active-deliveries', 'badge' => '6'],
-    ],
-    'FLEET' => [
-        'motorcycles' => ['label' => 'Motorcycles', 'icon' => 'fa-motorcycle', 'url' => 'dashboard.php#fleet'],
-        'vans'        => ['label' => 'Vans', 'icon' => 'fa-truck', 'url' => 'dashboard.php#fleet'],
-    ],
-    'TRACKING' => [
-        'live' => ['label' => 'Live Map', 'icon' => 'fa-location-crosshairs', 'url' => 'dashboard.php#live-tracking'],
-    ],
-    'FEEDBACK' => [
-        'ratings'  => ['label' => 'Ratings & Reviews', 'icon' => 'fa-star', 'url' => 'dashboard.php#feedback'],
-        'settings' => ['label' => 'Settings', 'icon' => 'fa-gear', 'url' => 'dashboard.php'],
-    ],
-];
+if (class_exists(ModuleRegistry::class)) {
+    $navSections = ModuleRegistry::navSections();
+} else {
+    $navSections = [
+        'OVERVIEW' => [
+            'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-border-all', 'url' => 'dashboard.php'],
+        ],
+        'FEEDBACK' => [
+            'settings' => ['label' => 'Settings', 'icon' => 'fa-gear', 'url' => 'settings.php'],
+        ],
+    ];
+}
 ?>
 <!-- MOBILE OVERLAY BACKDROP -->
 

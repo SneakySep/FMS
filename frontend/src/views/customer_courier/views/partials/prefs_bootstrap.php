@@ -1,6 +1,6 @@
 <?php
 /* ==========================================================================
-    SAVED-PREFERENCE BOOTSTRAP  (shared by every New_dash page via PageLayout)
+    SAVED-PREFERENCE BOOTSTRAP  (shared by every customer_courier page via PageLayout)
     --------------------------------------------------------------------------
     Same synchronous pre-paint script src/includes/header.php runs, reading the
     shared 'crm_customer_prefs' record so the dark scheme and accent picked in

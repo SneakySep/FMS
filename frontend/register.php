@@ -1,16 +1,31 @@
 <?php
 /* ==========================================================================
-   REGISTER  —  New_dash
+   REGISTER  —  public customer signup
    --------------------------------------------------------------------------
-   Visual clone of frontend/login.php. Intentionally NOT connected to the
-   backend API: there is no session_start(), no CSRF helper and no
-   make_api_request() call anywhere in this file. Submitting the form runs
-   local validation only and re-renders the page.
+   PUBLIC PAGE. It must stay reachable by anonymous visitors, so it
+   deliberately does NOT call require_customer_portal() and must never be
+   added to a guard sweep over src/views/. Login, OTP and logout are the
+   only other pages in this group (see src/helpers/portal_access.php).
+
+   Still NOT connected to the backend API: there is no session_start(), no
+   CSRF helper and no make_api_request() call anywhere in this file.
+   Submitting the form runs local validation only and re-renders the page.
+   Two backend gaps block going live, and both need a decision first:
+     1. signup() in backend-api/app/routes/auth/auth.py writes to the
+        *primary* Supabase project, while login() only falls back to the
+        secondary "Customer Portal" project - so a self-registered account
+        cannot authenticate as a customer today.
+     2. UserRegister (backend-api/app/schemas/auth.py) has no segment field,
+         so there is no way to say business vs individual at signup.
+   --------------------------------------------------------------------------
+   Assets are page-relative (assets/..., src/components/...) exactly like
+   login.php, which keeps the page working under both ways this project is
+   served. Root-relative URLs would 404 under XAMPP - see the note in
+   portal_access.php.
 
    Field names match the FastAPI schema that will eventually back this form
-   (backend-api/app/schemas/auth.py -> UserRegister: email, password,
-   first_name, last_name), so wiring it up later is a single POST call plus
-   the redirect. See the "BACKEND WIRING" note above the submit handler.
+   (UserRegister: email, password, first_name, last_name), so wiring it up
+   later is a single POST call plus the redirect. See "BACKEND WIRING" below.
    ========================================================================== */
 
 $error   = "";
@@ -91,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                'last_name'  => $old['last_name'],
            ], false);
 
-           if ($response['status_code'] === 201) { ... header('Location: ../login.php'); }
+           if ($response['status_code'] === 201) { ... header('Location: login.php'); }
            else { $error = $response['error'] ?? $response['data']['detail'] ?? '...'; }
 
        That also requires src/helpers/api_helper.php, and - because a signup
@@ -123,17 +138,14 @@ function e(string $value): string
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create account &middot; Priority Handling Logistics</title>
-
-    <!-- Google Fonts & FontAwesome - same pair src/components/head.php loads,
-         inlined here so New_dash/ stays independent of frontend/src. -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Self-contained auth layer: design tokens + split-panel rules. -->
-    <link rel="stylesheet" href="css/auth.css">
+    <?php
+    /* head.php loads charset, viewport, the Tailwind CDN, fonts, FontAwesome
+       and style.css -> theme.css -> auth.css in that order. $page_title is
+       declared first so the shared header emits the right <title> instead of
+       its agent-portal default. */
+    $page_title = 'Create account &middot; Priority Handling Logistics';
+    include_once 'src/components/head.php';
+    ?>
 </head>
 <body class="auth-body">
 
@@ -141,8 +153,8 @@ function e(string $value): string
          is hidden. Hidden from lg upward. -->
     <div class="auth-topbar">
         <div class="auth-topbar-inner">
-            <a class="auth-logo" href="../login.php" aria-label="Priority Handling Logistics - home">
-                <img class="auth-logo-img" src="image/logo-mark.png" alt="" width="44" height="44">
+            <a class="auth-logo" href="login.php" aria-label="Priority Handling Logistics - home">
+                <img class="auth-logo-img" src="assets/image/logo-mark.png" alt="" width="44" height="44">
                 <span>
                     <span class="auth-logo-name">Priority <em>Handling</em></span>
                     <span class="auth-logo-meta">Logistics Inc.</span>
@@ -158,9 +170,9 @@ function e(string $value): string
             <!-- ==================== BRAND PANEL ==================== -->
             <aside class="auth-brand">
                 <div>
-                    <a class="auth-logo" href="../login.php" aria-label="Priority Handling Logistics - home">
+                    <a class="auth-logo" href="login.php" aria-label="Priority Handling Logistics - home">
                         <img class="auth-logo-img auth-logo-img--on-navy"
-                             src="image/logo-mark.png" alt="" width="44" height="44">
+                             src="assets/image/logo-mark.png" alt="" width="44" height="44">
                         <span>
                             <span class="auth-logo-name">Priority <em>Handling</em></span>
                             <span class="auth-logo-meta">Logistics Inc. &middot; Since 2005</span>
@@ -212,7 +224,7 @@ function e(string $value): string
             <!-- ==================== FORM PANEL ==================== -->
             <section class="auth-panel">
                 <div class="auth-panel-head">
-                    <img class="auth-logo-img" src="image/logo-mark.png" alt="" width="44" height="44">
+                    <img class="auth-logo-img" src="assets/image/logo-mark.png" alt="" width="44" height="44">
                     <div>
                         <p class="auth-logo-name">Priority <em>Handling</em></p>
                         <p class="auth-logo-meta">Agent &amp; Customer Portal</p>
@@ -403,7 +415,7 @@ function e(string $value): string
 
                     <p class="auth-hint">
                         Already registered?
-                        <a class="auth-link" href="../login.php">Sign in instead</a>
+                        <a class="auth-link" href="login.php">Sign in instead</a>
                         or contact
                         <a class="auth-link" href="mailto:cs@priority-ph.com">cs@priority-ph.com</a>.
                     </p>
@@ -420,9 +432,9 @@ function e(string $value): string
         </span>
     </footer>
 
-    <?php include_once __DIR__ . '/components/legal_modals.php'; ?>
+    <?php include_once 'src/components/legal_modals.php'; ?>
 
-    <script src="js/auth.js" defer></script>
+    <script src="assets/js/auth.js" defer></script>
 </body>
 </html>
 

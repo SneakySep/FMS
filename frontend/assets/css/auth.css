@@ -1,8 +1,8 @@
 /* ==========================================================================
-   AUTH SCREENS  —  login.php · otp_verification.php · logout.php
+   AUTH SCREENS  —  login.php · register.php · otp_verification.php · logout.php
    --------------------------------------------------------------------------
    The public-facing entry point of the portal. Built entirely on the design
-   tokens in assets/css/theme.css ("Priority Navy") so these three pages can
+   tokens in assets/css/theme.css ("Priority Navy") so these pages can
    never drift from the dashboards they hand off to.
 
    Direction: LIGHT SPLIT-PANEL.
@@ -387,6 +387,7 @@
 .auth-reveal:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
 
 .auth-hint { font-size: .75rem; line-height: 1.6; color: var(--fg-muted); }
+.auth-hint--error { color: var(--danger); }
 
 .auth-link {
     font-weight: 600;
@@ -874,7 +875,124 @@ p[data-legal="lead"] {
 
 
 /* --------------------------------------------------------------------------
-   12. ENTRANCE MOTION
+   12. REGISTER: TWO-UP NAME ROW
+   --------------------------------------------------------------------------
+   First / last name sit side by side from `sm` up so the form stays roughly
+   the same height as the login panel. Collapses to a single column below. */
+.auth-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.125rem;
+}
+
+@media (min-width: 640px) {
+    .auth-grid-2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* --------------------------------------------------------------------------
+   13. REGISTER: PASSWORD STRENGTH METER
+   --------------------------------------------------------------------------
+   Four segments; assets/js/auth.js sets data-score="0..4" on the wrapper.
+   Colours walk the same navy -> green ramp the dashboards use for progress. */
+.auth-strength {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.auth-strength-bars {
+    display: flex;
+    flex: 1 1 auto;
+    gap: .25rem;
+}
+
+.auth-strength-bar {
+    height: .25rem;
+    flex: 1 1 0;
+    border-radius: var(--radius-pill);
+    background: var(--line);
+    transition: background-color .2s ease;
+}
+
+.auth-strength-label {
+    flex-shrink: 0;
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+[data-score="1"] .auth-strength-bar:nth-child(-n+1),
+[data-score="2"] .auth-strength-bar:nth-child(-n+2) { background: var(--danger); }
+
+[data-score="3"] .auth-strength-bar:nth-child(-n+3) { background: var(--navy-500); }
+[data-score="3"] .auth-strength-label { color: var(--navy-500); }
+
+[data-score="4"] .auth-strength-bar { background: var(--success); }
+[data-score="4"] .auth-strength-label { color: var(--success); }
+
+[data-score="1"] .auth-strength-label { color: var(--danger); }
+[data-score="2"] .auth-strength-label { color: var(--danger); }
+
+/* --------------------------------------------------------------------------
+   14. REGISTER: CONSENT CHECKBOX
+   --------------------------------------------------------------------------
+   Native input kept (so the form validates without JS) but restyled to the
+   token language; the check is FontAwesome-free, drawn with a mask so it
+   inherits --surface against the brand fill. */
+.auth-check {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+}
+
+.auth-check-input {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-top: .125rem;
+    border: 1px solid var(--line-strong);
+    border-radius: .3125rem;
+    background: var(--surface);
+    cursor: pointer;
+    -webkit-appearance: none;
+            appearance: none;
+    transition: background-color .16s ease, border-color .16s ease;
+}
+
+.auth-check-input:hover { border-color: var(--navy-300); }
+
+.auth-check-input:checked {
+    background-color: var(--brand-button);
+    border-color: var(--brand-button);
+}
+
+.auth-check-input:checked::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / .8125rem .8125rem no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / .8125rem .8125rem no-repeat;
+}
+
+.auth-check-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+.auth-check-label {
+    font-size: .8125rem;
+    line-height: 1.6;
+    color: var(--fg-body);
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   15. ENTRANCE MOTION
    -------------------------------------------------------------------------- */
 @keyframes auth-rise {
     from { opacity: 0; transform: translateY(14px); }
@@ -884,7 +1002,7 @@ p[data-legal="lead"] {
 .auth-shell { animation: auth-rise .5s cubic-bezier(.16, 1, .3, 1) both; }
 
 /* --------------------------------------------------------------------------
-   13. REDUCED MOTION
+   16. REDUCED MOTION
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
     .auth-shell,
@@ -896,7 +1014,8 @@ p[data-legal="lead"] {
     .legal-sheet,
     .auth-btn,
     .auth-input,
-    .auth-otp-box { transition: none; }
+    .auth-otp-box,
+    .auth-strength-bar { transition: none; }
 
     .auth-btn:active { transform: none; }
 }

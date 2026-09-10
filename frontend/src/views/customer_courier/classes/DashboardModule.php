@@ -10,10 +10,15 @@ namespace App\NewDash;
     which template renders it, and which CSS + JS assets it needs, and PageLayout
     assembles the rest of the chrome around it.
 
-    That is the whole contract, which is why adding a module is a 3-file job:
+    That is the whole contract, which is why adding a module is a 4-file job:
       1. a class here in classes/modules/    (data it needs + the assets it owns)
       2. a template in views/                (markup, 1:1 with what it replaced)
-      3. one entry in ModuleRegistry::all()  (nav label, icon, url, badge)
+      3. one entry in PortalRegistry::individual()  (nav label, icon, url)
+      4. one line in ModuleRegistry::classes()      (nav key => this class)
+
+    Nav labels live in PortalRegistry because the B2B portal keeps its rail in
+    the same table now; ModuleRegistry::classes() stays separate because a B2B
+    page is a plain script with no module class to register.
 
     The module never echoes anything itself and never touches $_GET directly;
     prepare() turns request params + DemoData into plain $vars for the template,

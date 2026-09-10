@@ -5,6 +5,13 @@ namespace App\Services;
 // 1. IMPORT API HELPER
 require_once __DIR__ . '/../helpers/api_helper.php';
 
+/* Navigation tree for the customer role now comes from PortalRegistry, which
+   holds one table per customer segment (B2B / courier). The admin and sales
+   rails are still built in buildNavigation() below - those roles have a single
+   surface each, so there is nothing to unify about them. */
+require_once __DIR__ . '/PortalRegistry.php';
+require_once __DIR__ . '/../helpers/portal_access.php';
+
 class SidebarService
 {
     private array $session;
@@ -39,7 +46,6 @@ class SidebarService
             'navSections' => $navigation['sections']
         ];
     }
-
     /**
      * Private Method: Pag-fetch ng Data sa API
      */
@@ -201,34 +207,19 @@ class SidebarService
             ];
         }
 
+        /* Customer role: the segment decides which of the two customer rails to
+           show. PortalRegistry is now the single nav table for both portals, so
+           adding a page is a one-file change and the courier rail can no longer
+           drift from the B2B one. resolve_customer_segment() is documented in
+           src/helpers/portal_access.php, including why "unknown" is business.
+
+           Admin and sales_agent keep the literals above: each of those roles has
+           exactly one surface, so there is nothing for a registry to unify. */
+        $segment = resolve_customer_segment();
+
         return [
-            'portalLabel' => 'CUSTOMER PORTAL',
-            'sections' => [
-                'OVERVIEW' => [
-                    'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-border-all', 'url' => 'dashboard.php'],
-                ],
-                'FREIGHT' => [
-                    // SUBMENU: Freight Management Grouping
-                    'freight_group' => [
-                        'label' => 'Shipment Hub',
-                        'icon' => 'fa-box-archive',
-                        'submenu' => [
-                            'shipments'      => ['label' => 'Shipments', 'url' => 'shipments.php'],
-                            'tracking'       => ['label' => 'Live Tracking', 'url' => 'tracking.php'],
-                            'sla-monitoring' => ['label' => 'SLA Monitoring', 'url' => 'sla-monitoring.php'],
-                        ]
-                    ]
-                ],
-                'RECORDS' => [
-                    'documents' => ['label' => 'Documents', 'icon' => 'fa-file-lines', 'url' => 'documents.php'],
-                    'invoices'  => ['label' => 'Invoices & Billing', 'icon' => 'fa-file-invoice-dollar', 'url' => 'invoices.php'],
-                    'analytics' => ['label' => 'BI Analytics', 'icon' => 'fa-chart-column', 'url' => 'analytics.php'],
-                ],
-                'SUPPORT' => [
-                    'tickets'  => ['label' => 'Support Tickets', 'icon' => 'fa-comments', 'url' => 'tickets.php', 'badge' => '2', 'badgeColor' => 'bg-amber-500/20 text-amber-400'],
-                    'settings' => ['label' => 'Settings', 'icon' => 'fa-gear', 'url' => 'settings.php'],
-                ],
-            ]
+            'portalLabel' => PortalRegistry::portalLabel($segment),
+            'sections'    => PortalRegistry::sectionsFor($segment),
         ];
     }
 }

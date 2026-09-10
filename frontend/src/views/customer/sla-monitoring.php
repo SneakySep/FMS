@@ -1,6 +1,12 @@
 <?php
 $page_title = "SLA Monitoring · Priority Handling Logistics";
 $activePage = 'sla-monitoring';
+require_once __DIR__ . '/../../helpers/portal_access.php';
+// Segment guard: B2B portal only. Sends anonymous users to login,
+// staff to their own dashboard, and courier (individual) customers to their
+// own portal. See src/helpers/portal_access.php.
+require_customer_portal(CUSTOMER_SEGMENT_BUSINESS);
+
 require_once __DIR__ . '/../../includes/header.php';
 include_once __DIR__ . '/../../includes/sidebar.php';
 require_once __DIR__ . '/../../helpers/api_helper.php';

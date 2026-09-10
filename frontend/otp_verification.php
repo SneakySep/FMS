@@ -3,6 +3,9 @@ session_start();
 require_once 'src/helpers/api_helper.php';
 require_once 'src/helpers/csrf.php';
 require_once 'src/helpers/auth_flow.php';
+/* Needed for jwt_customer_segment() / resolve_customer_segment() so the landing
+   page matches the portal the guard will enforce. */
+require_once 'src/helpers/portal_access.php';
 
 /* --------------------------------------------------------------------------
    The OTP challenge lives in `temp_email`. It must expire: without a TTL an
@@ -74,6 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ? strtolower($data["role"])
                         : (role_from_jwt($token) ?? 'customer');
 
+                    /* Segment resolution, weakest to strongest. The profile row
+                       is the most authoritative source (it is the same record the
+                       role is read from), so it is applied last in the chain
+                       below; the login payload and then the JWT claim only fill in
+                       when the profile had nothing to say. Storing the normalised
+                       value keeps stray spellings out of the session. */
+                    $segment = normalize_customer_segment(
+                        $data['customer_type'] ?? $data['portal_type'] ?? null
+                    ) ?? jwt_customer_segment($token);
+
                     // 2. Fetch Profile sa Supabase gamit ang Header
                     $userId = $_SESSION["user_id"];
 
@@ -98,14 +111,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             if (!empty($profile['role'])) {
                                 $_SESSION['role'] = strtolower($profile['role']);
                             }
+
+                            /* The profile row outranks the login payload, so it
+                               overwrites $segment when it carries one. Absent ->
+                               leave whatever the earlier chain found. */
+                            $profileSegment = normalize_customer_segment(
+                                $profile['customer_type']
+                                    ?? $profile['portal_type']
+                                    ?? $profile['segment']
+                                    ?? null
+                            );
+                            if ($profileSegment !== null) {
+                                $segment = $profileSegment;
+                            }
                         }
+                    }
+
+                    /* Single write, and it is always cleared first: a previous
+                       sign-in on this session id may have stored a different
+                       segment, and leaving it behind would silently route the
+                       account to the wrong portal. */
+                    unset($_SESSION['customer_type']);
+                    if ($segment !== null) {
+                        $_SESSION['customer_type'] = $segment;
                     }
 
                     // 3. Linisin ang temporary session email
                     unset($_SESSION["temp_email"], $_SESSION["temp_email_sent"], $_SESSION["otp_attempts"]);
 
-                    // 4. Dynamic Redirect
-                    $target = dashboard_for_role($_SESSION["role"]);
+                    // 4. Dynamic Redirect - segment decides which customer portal
+                    $target = dashboard_for_role($_SESSION["role"], resolve_customer_segment());
                     if ($target === null) {
                         $error = "Your account isn't authorised for this portal. Please contact support.";
                     } else {

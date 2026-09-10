@@ -3,6 +3,11 @@ session_start();
 require_once 'src/helpers/api_helper.php';
 require_once 'src/helpers/csrf.php';
 require_once 'src/helpers/auth_flow.php';
+/* Portal guard helpers: normalize_customer_segment() / resolve_customer_segment()
+   for the segment, and dashboard_for_role() for the landing page. This file only
+   *reads* the segment to route correctly; require_customer_portal() guards the
+   views themselves. */
+require_once 'src/helpers/portal_access.php';
 
 $error      = "";
 $logged_out = isset($_GET['logged_out']);
@@ -55,9 +60,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ? strtolower($response['data']['role'])
                     : (role_from_jwt($token) ?? 'customer');
 
+                /* Customer segment - *which* of the two customer portals this
+                   account belongs to (business = B2B, individual = courier).
+                   Independent of role: role says you may see a customer portal,
+                   the segment says which one. See the BACKEND DECISION note in
+                   src/helpers/portal_access.php - the login endpoint does not
+                   emit this yet, so it is only stored when present and the
+                   resolver's default takes over otherwise. Storing the
+                   normalised value keeps stray spellings out of the session. */
+                $segment = normalize_customer_segment(
+                    $response['data']['customer_type']
+                        ?? $response['data']['portal_type']
+                        ?? null
+                );
+                if ($segment !== null) {
+                    $_SESSION["customer_type"] = $segment;
+                } else {
+                    unset($_SESSION["customer_type"]);
+                }
+
                 unset($_SESSION["temp_email"], $_SESSION["temp_email_sent"]);
 
-                $target = dashboard_for_role($_SESSION["role"]);
+                /* resolve_customer_segment() rather than $segment: it is the one
+                   place that knows the fallback order (session -> JWT claim ->
+                   business), and duplicating that here is how the two portals
+                   would drift. */
+                $target = dashboard_for_role($_SESSION["role"], resolve_customer_segment());
                 if ($target === null) {
                     $error = "Your account isn't authorised for this portal. Please contact support.";
                 } else {
@@ -240,6 +268,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </button>
 
                     <p class="auth-hint">
+                        Need an account?
+                        <a class="auth-link" href="register.php">Create one</a>.<br>
                         Trouble signing in? Contact
                         <a class="auth-link" href="mailto:cs@priority-ph.com">cs@priority-ph.com</a>.
                     </p>

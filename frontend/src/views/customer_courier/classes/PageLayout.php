@@ -3,7 +3,7 @@
 namespace App\NewDash;
 
 /* ==========================================================================
-    PAGE LAYOUT  —  the single chrome every New_dash page is poured into
+    PAGE LAYOUT  —  the single chrome every customer_courier page is poured into
     --------------------------------------------------------------------------
     Everything dashboard.php used to own outside its sections lives here once:
     the <head> asset stack, the saved-preference bootstrap, the sidebar, the
@@ -67,12 +67,20 @@ class PageLayout
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../assets/image/logo.png">
+    <link rel="icon" type="image/png" href="../../../assets/image/logo.png">
 
     <!-- Shared design layer: base styles, then the token/component layer.
-         theme.css must load AFTER style.css so its html.dark rules win. -->
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/theme.css">
+         theme.css must load AFTER style.css so its html.dark rules win.
+
+         ASSET PATHS: these URLs are relative to the *page* URL, not to this
+         file, and every page lives one level below this folder's parent, i.e.
+         three levels under frontend/. Hence ../../../assets/. Root-relative
+         /assets/ is NOT used on purpose: DOCUMENT_ROOT for this XAMPP install
+         is E:/Xampp/Files/htdocs while the app sits in
+         /CRM/customer_relationship/frontend, so /assets/... 404s under Apache
+         and only works under `php -S -t frontend`. -->
+    <link rel="stylesheet" href="../../../assets/css/style.css">
+    <link rel="stylesheet" href="../../../assets/css/theme.css">
 
     <!-- Delivery-only additions: the dashboard's own rules first, then any
          extra stylesheet the module declared through cssFiles(). dashboard.css
@@ -118,8 +126,10 @@ class PageLayout
 
 <!-- LEGAL MODALS are intentionally not included: components/legal_modals.php
      renders #legal-privacy / #legal-terms, which only open through the
-     data-legal-open triggers wired in js/auth.js, and nothing on these screens
-     links to them. The file stays in place for register.php.
+     data-legal-open triggers wired in assets/js/auth.js, and nothing on these
+     screens links to them. The public signup page (frontend/register.php, a
+     sibling of login.php) is the page that uses them, and it includes
+     src/components/legal_modals.php - not a copy in this folder.
 
      SHARED BEHAVIOUR: assets/js/dashboard.js owns the sidebar toggle (it
      defines toggleSidebar, used by the topbar's mobile button) and the
@@ -129,8 +139,8 @@ class PageLayout
      NOT loaded: these demos have no session, #logoutModal is not rendered, and
      footer.js's privacy/terms helpers target #privacyModal/#termsModal, not
      legal_modals.php. NOTE: there is no assets/js/main.js in this project. -->
-<script src="../assets/js/dashboard.js" defer></script>
-<script src="../assets/js/customer/notification_bell.js" defer></script>
+<script src="../../../assets/js/dashboard.js" defer></script>
+<script src="../../../assets/js/customer/notification_bell.js" defer></script>
 
 <?php if ($module->needsRatingSeed()): ?>
 <!-- SEED

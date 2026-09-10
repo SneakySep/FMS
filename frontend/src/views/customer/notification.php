@@ -1,6 +1,12 @@
 <?php
 $page_title = "Notification · Priority Handling Logistics";
 
+require_once __DIR__ . '/../../helpers/portal_access.php';
+// Segment guard: B2B portal only. Sends anonymous users to login,
+// staff to their own dashboard, and courier (individual) customers to their
+// own portal. See src/helpers/portal_access.php.
+require_customer_portal(CUSTOMER_SEGMENT_BUSINESS);
+
 include_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../helpers/api_helper.php';
 include_once __DIR__ . '/../../includes/sidebar.php';

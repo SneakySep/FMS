@@ -19,6 +19,12 @@ $extraHead = '
     @keyframes fadeIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
   </style>
 ';
+require_once __DIR__ . '/../../helpers/portal_access.php';
+// Segment guard: B2B portal only. Sends anonymous users to login,
+// staff to their own dashboard, and courier (individual) customers to their
+// own portal. See src/helpers/portal_access.php.
+require_customer_portal(CUSTOMER_SEGMENT_BUSINESS);
+
 require_once __DIR__ . '/../../includes/header.php';
 include_once __DIR__ . '/../../includes/sidebar.php';
 

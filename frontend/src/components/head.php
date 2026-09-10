@@ -1,6 +1,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Priority Handling Logistics - Sales Agent Portal</title>
+<!-- $page_title is set by the including page before this runs; the default
+     stays the agent portal so existing callers are unchanged. -->
+<title><?= isset($page_title) ? $page_title : 'Priority Handling Logistics - Sales Agent Portal' ?></title>
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>

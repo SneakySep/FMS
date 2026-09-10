@@ -16,11 +16,64 @@ if (!defined('OTP_CHALLENGE_TTL')) {
     define('OTP_CHALLENGE_TTL', 600); // 10 minutes
 }
 
+/* Customer portal segments. Two axes are kept deliberately separate:
+     role           authorisation    - customer | sales_agent | administrator
+     customer_type  product surface  - business  | individual
+   Do not overload `role` with the segment: that would make one customer a
+   different *permission* level than another customer, when the only difference
+   is which UI they are shown.
+
+   These live here, alongside dashboard_for_role(), because the segment values
+   are defined once and the constants must exist before that switch runs.
+   src/helpers/portal_access.php builds the guard on top of them.
+
+   The stored values are `business` / `individual`, NOT `b2b` / `b2c`: they read
+   better in the UI ("Business account" vs "Personal account"), and b2b/b2c
+   collide with the literal project and folder names used across this repo. */
+if (!defined('CUSTOMER_SEGMENT_BUSINESS')) {
+    define('CUSTOMER_SEGMENT_BUSINESS',   'business');
+    define('CUSTOMER_SEGMENT_INDIVIDUAL', 'individual');
+}
+
+/**
+ * Normalise any spelling of the segment into one of the two canonical values.
+ * Returns null for anything unrecognised so callers can apply their own default
+ * instead of silently landing on the wrong portal.
+ */
+function normalize_customer_segment(mixed $value): ?string
+{
+    switch (strtolower(trim((string) $value))) {
+        case 'business':
+        case 'corporate':
+        case 'enterprise':
+        case 'b2b':
+            return CUSTOMER_SEGMENT_BUSINESS;
+        case 'individual':
+        case 'personal':
+        case 'courier':
+        case 'retail':
+        case 'b2c':
+            return CUSTOMER_SEGMENT_INDIVIDUAL;
+        default:
+            return null;
+    }
+}
+
 /**
  * Resolve the landing dashboard for a role. Returns null for a role that has
  * no view, so callers can show an error instead of bouncing to a 404.
+ *
+ * $customerType only matters to the `customer` role: two different customer
+ * portals exist (see src/helpers/portal_access.php). It is optional so every
+ * existing single-argument call keeps working unchanged, and a customer whose
+ * segment the backend has not been told yet lands on the B2B dashboard, which
+ * is the live real-data surface. Pass null / '' / 'unknown' to mean "not known".
+ *
+ * Paths are relative to frontend/, so a caller sitting anywhere else must
+ * resolve them against its own depth - portal_base_prefix() in portal_access.php
+ * does exactly that for the guarded views.
  */
-function dashboard_for_role($role): ?string
+function dashboard_for_role($role, $customerType = null): ?string
 {
     switch (strtolower((string) $role)) {
         case 'admin':
@@ -30,6 +83,9 @@ function dashboard_for_role($role): ?string
         case 'sales_agent':
             return 'src/views/sales_agent/dashboard.php';
         case 'customer':
+            if (normalize_customer_segment($customerType) === CUSTOMER_SEGMENT_INDIVIDUAL) {
+                return 'src/views/customer_courier/dashboard.php';
+            }
             return 'src/views/customer/dashboard.php';
         default:
             return null;

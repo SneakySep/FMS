@@ -1,7 +1,8 @@
 /* ==========================================================================
-   AUTH  —  behaviour for login.php / otp_verification.php / logout.php
+   AUTH  —  behaviour for login.php / register.php / otp_verification.php / logout.php
    Progressive enhancement only: every feature below has a working no-JS
    fallback (plain form post, single OTP field still submits server-side).
+   The register-only block (§6) no-ops on the other three pages.
    ========================================================================== */
 (function () {
     'use strict';
@@ -311,6 +312,67 @@
             }
         }, 1000);
     });
+
+    /* ----------------------------------------------------------------------
+       6. REGISTER: PASSWORD STRENGTH + CONFIRM MATCH
+       ----------------------------------------------------------------------
+       Only register.php has these fields, so the block no-ops everywhere
+       else. Mirrors the server-side rules so the two can never disagree
+       about what counts as acceptable: >= 8 chars, and a mix of letter
+       classes. The meter is advisory only - it never blocks a submit that
+       native validation and the backend accept. */
+    var regPassword = document.getElementById('password');
+    var regConfirm  = document.getElementById('password_confirm');
+    var meter       = document.querySelector('[data-strength-meter]');
+    var meterLabel  = meter ? meter.querySelector('.auth-strength-label') : null;
+
+    var STRENGTH_LABELS = ['Too short', 'Weak', 'Fair', 'Good', 'Strong'];
+
+    function strengthScore(value) {
+        if (value.length < 8) return 0;
+        var s = 1;
+        if (/[a-z]/.test(value) && /[A-Z]/.test(value)) s += 1;
+        if (/\d/.test(value)) s += 1;
+        if (/[^A-Za-z0-9]/.test(value)) s += 1;
+        return Math.min(s, 4);
+    }
+
+    function renderStrength() {
+        if (!meter || !regPassword) return;
+        var s = strengthScore(regPassword.value);
+        meter.setAttribute('data-score', String(s));
+        if (meterLabel) meterLabel.textContent = STRENGTH_LABELS[s];
+    }
+
+    /* Confirm-field state is reported through aria-invalid + the same
+       .auth-hint--error treatment the server-rendered errors use. */
+    function renderMatch() {
+        if (!regPassword || !regConfirm) return;
+        var hint = document.getElementById('confirm-help');
+        var filled = regConfirm.value !== '';
+        var mismatch = filled && regConfirm.value !== regPassword.value;
+
+        regConfirm.setAttribute('aria-invalid', mismatch ? 'true' : 'false');
+        if (hint) {
+            hint.textContent = mismatch
+                ? 'The two passwords do not match yet.'
+                : 'Re-enter your password to confirm it.';
+            hint.classList.toggle('auth-hint--error', mismatch);
+        }
+    }
+
+    if (regPassword) {
+        regPassword.addEventListener('input', function () {
+            renderStrength();
+            renderMatch();
+        });
+        renderStrength();
+    }
+
+    if (regConfirm) {
+        regConfirm.addEventListener('input', renderMatch);
+        regConfirm.addEventListener('blur', renderMatch);
+    }
 
 })();
 

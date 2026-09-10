@@ -71,7 +71,7 @@ if (class_exists(ModuleRegistry::class)) {
         <!-- Brand Logo & Badge -->
         <div class="flex items-center gap-3 px-1.5 py-2">
             <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-navy flex items-center justify-center bg-white/5 border border-white/10 shrink-0">
-                <img src="../assets/image/logo.png" alt="Company Logo" class="w-full h-full object-contain p-1">
+                <img src="../../../assets/image/logo.png" alt="Company Logo" class="w-full h-full object-contain p-1">
             </div>
             <div class="leading-none crm-reveal whitespace-nowrap overflow-hidden">
                 <h1 class="crm-brand-name">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>

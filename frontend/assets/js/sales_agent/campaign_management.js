@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.set("is_permanent", permToggle.checked ? "true" : "false");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/v1/campaigns/create", {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/campaigns/create`, {
                 method: "POST",
                 body: formData
             });
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const countBadge = document.getElementById("campaignCountBadge");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/v1/campaigns/active-posts");
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/campaigns/active-posts`);
             const campaigns = await response.json();
 
             if (!campaigns || campaigns.length === 0) {

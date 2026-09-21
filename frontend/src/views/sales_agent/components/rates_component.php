@@ -1,0 +1,120 @@
+<!-- Rate Search Container -->
+<div class="p-6 max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">Rate Card Search & Calculator</h1>
+            <p class="text-sm text-slate-500">Mabilisang paghahanap at pag-compute ng freight rates para sa mga customer.</p>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <!-- Mode -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Freight Mode</label>
+                <select id="filter-mode" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">All Modes</option>
+                    <option value="AIR">✈️ Air Freight</option>
+                    <option value="SEA">🚢 Sea Freight</option>
+                    <option value="LAND">🚚 Land Freight</option>
+                </select>
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Coverage</label>
+                <select id="filter-type" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">All Coverage</option>
+                    <option value="Local">Local (Philippines)</option>
+                    <option value="International">International</option>
+                </select>
+            </div>
+
+            <!-- Delivery Option -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Service Option</label>
+                <select id="filter-delivery-option" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">All Options</option>
+                    <option value="Door-to-Door">Door-to-Door</option>
+                    <option value="Port-to-Port">Port-to-Port</option>
+                </select>
+            </div>
+
+            <!-- Transit Time -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Transit Speed</label>
+                <select id="filter-transit-time" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">All Speed</option>
+                    <option value="Same Day">⚡ Same Day</option>
+                </select>
+            </div>
+
+            <!-- Search Button -->
+            <div class="flex items-end gap-2">
+                <button id="btn-search-rates" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Search Rates
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Cards Grid -->
+    <div id="rates-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- JS dynamically populates items here -->
+    </div>
+</div>
+
+<!-- Computation Modal -->
+<div id="rate-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-5">
+        <div class="flex justify-between items-start border-b border-slate-100 pb-3">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" id="modal-route">Compute Final Quote</h3>
+                <p class="text-xs text-slate-500" id="modal-carrier-info">-</p>
+            </div>
+            <button id="btn-close-modal" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+        </div>
+
+        <form id="form-calculate-quote" class="space-y-4">
+            <input type="hidden" id="modal-rate-id" />
+
+            <div class="grid grid-cols-2 gap-3" id="cargo-input-group">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Weight (KG)</label>
+                    <input type="number" step="0.1" id="modal-input-weight" value="1" min="0" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Volume (CBM)</label>
+                    <input type="number" step="0.1" id="modal-input-cbm" value="0" min="0" class="w-full text-sm rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition-colors">
+                Calculate Breakdown
+            </button>
+        </form>
+
+        <!-- Calculation Breakdown Output -->
+        <div id="quote-breakdown-result" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quotation Breakdown</h4>
+            
+            <div class="space-y-1.5 text-xs text-slate-600">
+                <div class="flex justify-between"><span>Base Freight:</span><span id="res-base" class="font-medium text-slate-900">₱0.00</span></div>
+                <div class="flex justify-between"><span>Pickup Trucking:</span><span id="res-pickup" class="font-medium text-slate-900">₱0.00</span></div>
+                <div class="flex justify-between"><span>Delivery Trucking:</span><span id="res-delivery" class="font-medium text-slate-900">₱0.00</span></div>
+                <div class="flex justify-between"><span>Documentation Fee:</span><span id="res-docs" class="font-medium text-slate-900">₱0.00</span></div>
+                <div class="flex justify-between"><span>Handling Fee:</span><span id="res-handling" class="font-medium text-slate-900">₱0.00</span></div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-2.5 flex justify-between items-center text-sm font-bold text-slate-900">
+                <span>Total Quotation Rate:</span>
+                <span id="res-total" class="text-emerald-600 text-base">₱0.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../../assets/js/sales_agent/rates.js"></script>

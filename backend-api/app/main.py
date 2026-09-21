@@ -7,9 +7,12 @@ from app.routes.sales_agent.sales_agents import router as sales_agent
 from app.routes.sales_agent.shipment_booking import router as shipment_booking_router
 from app.routes.sales_agent.campaign_router import router as campaign_router
 from app.routes.admin.admin import router as admin_router
+from app.routes.admin.descriptive import router as admin_descriptive_router
 from app.routes.customers.customers import router as customer_router
 from app.routes.chat.chat import router as chat_router
 from app.routes.analytics import router as analytic_router
+from app.routes.admin.analytics import router as admin_analytics_router
+from app.routes.sales_agent.rates import router as sales_rates_router
 from app.service.inactivity_checker import check_5hr_agent_inactivity
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -49,7 +52,9 @@ app.include_router(analytic_router)
 app.include_router(sales_agent)
 app.include_router(shipment_booking_router)
 app.include_router(campaign_router)
-
+app.include_router(admin_analytics_router)
+app.include_router(admin_descriptive_router)
+app.include_router(sales_rates_router)
 
 # 3. Simple Root Route 
 @app.get("/")

@@ -116,7 +116,7 @@ class SidebarService
                 'portalLabel' => 'ADMIN PORTAL',
                 'sections' => [
                     'OVERVIEW' => [
-                        'dashboard' => ['label' => 'Control Center', 'icon' => 'fa-chart-pie', 'url' => 'dashboard.php'],
+                        'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-chart-pie', 'url' => 'dashboard.php'],
                     ],
                     'MANAGEMENT' => [
                         'tickets' => [
@@ -133,6 +133,28 @@ class SidebarService
                             'submenu' => [
                                 'customers' => ['label' => 'Customer Accounts', 'url' => 'customers.php'],
                                 'agents'    => ['label' => 'Sales Agents', 'url' => 'agents.php'],
+                            ]
+                        ]
+                    ],
+                    'Reports' => [
+                        // SUBMENU: BI Analytics
+                        'bi_analytics' => [
+                            'label' => 'BI Analytics',
+                            'icon'  => 'fa-chart-line',
+                            'submenu' => [
+                                'descriptive' => ['label' => 'Descriptive Analytics', 'url' => 'descriptive_analytics.php'],
+                                'diagnostic'  => ['label' => 'Diagnostic Analytics',  'url' => 'diagnostic_analytics.php'],
+                                'predictive'  => ['label' => 'Predictive Analytics',  'url' => 'predictive_analytics.php'],
+                                'prescriptive' => ['label' => 'Prescriptive Analytics', 'url' => 'prescriptive_analytics.php'],
+                            ]
+                        ],
+                        // SUBMENU: Sales Reports
+                        'sales_reports' => [
+                            'label' => 'Sales Reports',
+                            'icon'  => 'fa-file-invoice-dollar',
+                            'submenu' => [
+                                'sales_summary' => ['label' => 'Sales Summary', 'url' => 'sales_summary.php'],
+                                'payments'      => ['label' => 'Payment History', 'url' => 'payments.php'],
                             ]
                         ]
                     ],
@@ -176,7 +198,7 @@ class SidebarService
                             'label' => 'Deals & Offers',
                             'icon' => 'fa-briefcase',
                             'submenu' => [
-                                'rate_search' => ['label' => 'Rate Search', 'icon' => 'fa-calculator', 'url' => 'rates.php'],
+                                'rate_search' => ['label' => 'Rate Search', 'icon' => 'fa-calculator', 'url' => 'rates_search.php'],
                                 'invoices' => ['label' => 'Invoices & Billing', 'icon' => 'fa-file-invoice-dollar', 'url' => 'invoices.php'],
                             ]
                         ]

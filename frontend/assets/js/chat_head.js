@@ -1,4 +1,4 @@
-const BACKEND_HOST = "127.0.0.1:8000";
+// const BACKEND_HOST = "127.0.0.1:8000";
 let chatHeadWs = null;
 let currentConversationId = null;
 let isChatOpen = false;
@@ -71,7 +71,7 @@ async function loadAgentConversations() {
     if (!inboxList) return; // Exit kung wala sa layout
 
     try {
-        const res = await fetch(`http://${BACKEND_HOST}/agent/v1/chat/conversations`);
+        const res = await fetch(`${window.APP_CONFIG.API_BASE_URL}/agent/v1/chat/conversations`);
         if (res.ok) {
             const conversations = await res.json();
             
@@ -141,7 +141,7 @@ async function loadChatHeadHistory(convId) {
     if (!msgBox) return;
 
     try {
-        const res = await fetch(`http://${BACKEND_HOST}/agent/v1/chat/messages/${convId}`);
+        const res = await fetch(`${window.APP_CONFIG.API_BASE_URL}/agent/v1/chat/messages/${convId}`);
         if (res.ok) {
             const messages = await res.json();
             msgBox.innerHTML = '';
@@ -166,7 +166,7 @@ async function loadChatHeadHistory(convId) {
 function connectChatHeadWs(convId) {
     if (chatHeadWs) chatHeadWs.close();
     
-    chatHeadWs = new WebSocket(`ws://${BACKEND_HOST}/customer/v1/chat/ws/chat/${convId}`);
+    chatHeadWs = new WebSocket(`ws://${window.APP_CONFIG.API_BASE_URL}/customer/v1/chat/ws/chat/${convId}`);
 
     chatHeadWs.onmessage = function(event) {
         const data = JSON.parse(event.data);

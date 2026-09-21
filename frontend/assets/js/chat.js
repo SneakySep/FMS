@@ -1,4 +1,4 @@
-const BACKEND_HOST = "127.0.0.1:8000";
+// const BACKEND_HOST = "127.0.0.1:8000";
 let activeWs = null;
 let activeConversationId = null;
 let allConversations = [];
@@ -53,8 +53,8 @@ async function loadConversations() {
 
   try {
     let endpoint = (USER_ROLE === 'sales_agent' || USER_ROLE === 'admin') 
-      ? `http://${BACKEND_HOST}/agent/v1/chat/conversations`
-      : `http://${BACKEND_HOST}/customer/v1/chat/conversations/${LOGGED_USER_ID}`;
+      ? `${window.APP_CONFIG.API_BASE_URL}/agent/v1/chat/conversations`
+      : `${window.APP_CONFIG.API_BASE_URL}/customer/v1/chat/conversations/${LOGGED_USER_ID}`;
 
     const res = await fetch(endpoint);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -190,7 +190,7 @@ async function openChat(conversationId, displayName) {
 
   // Load Past Messages
   try {
-    const res = await fetch(`http://${BACKEND_HOST}/agent/v1/chat/messages/${conversationId}`);
+    const res = await fetch(`${window.APP_CONFIG.API_BASE_URL}/agent/v1/chat/messages/${conversationId}`);
     if (res.ok) {
       const messages = await res.json();
       messages.forEach(msg => {
@@ -203,7 +203,7 @@ async function openChat(conversationId, displayName) {
 
   // WebSocket Connection
   if (activeWs) activeWs.close();
-  activeWs = new WebSocket(`ws://${BACKEND_HOST}/customer/v1/chat/ws/chat/${conversationId}`);
+  activeWs = new WebSocket(`ws://${window.APP_CONFIG.API_BASE_URL}/customer/v1/chat/ws/chat/${conversationId}`);
 
   activeWs.onmessage = function(event) {
     const data = JSON.parse(event.data);

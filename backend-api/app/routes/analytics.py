@@ -36,9 +36,7 @@ async def get_sales_dashboard_analytics():
 
 @router.get("/sales-dashboard")
 async def get_sales_dashboard_analytics():
-    """
-    Endpoint para sa Pipeline Area Chart, Stage Counts, at Top Customers.
-    """
+
     try:
         result = get_pipeline_dashboard(supabase_secondary)
 

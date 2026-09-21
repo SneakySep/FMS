@@ -1,4 +1,4 @@
-const FASTAPI_BASE_URL = "http://127.0.0.1:8000";
+// const FASTAPI_BASE_URL = "http://127.0.0.1:8000";
 
 document.addEventListener('DOMContentLoaded', () => {
   const statusSelect = document.getElementById('modalStatusSelect');
@@ -224,7 +224,7 @@ async function handleStatusUpdate(e) {
   };
 
   try {
-    const response = await fetch(`${FASTAPI_BASE_URL}/api/v1/leads/${leadId}/status`, {
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/leads/${leadId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

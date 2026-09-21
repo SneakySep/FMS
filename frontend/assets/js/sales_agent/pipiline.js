@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchPipelineDashboard() {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/analytics/sales-dashboard');
+        const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/analytics/sales-dashboard`);
         const json = await response.json();
 
         if (json.status !== 'success' || !json.data) {

@@ -2,15 +2,21 @@ import uuid
 from datetime import datetime
 import dateutil.parser
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, Path, status
+from fastapi import APIRouter, HTTPException, Query, Path, status, BackgroundTasks
 from app.supabase_config.supabase import supabase_secondary
 from app.schemas.lead import (
     LeadResponseSchema, 
     PaginatedLeadResponseSchema, 
     LeadStatsResponseSchema, 
     StatusUpdateSchema,
-    LeadCreateSchema
+    LeadCreateSchema,
+    SendQuotationSchema
 )
+from app.middleware.quotation import send_quotation_email
+
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 router = APIRouter(
     prefix="/api/v1/leads",
@@ -98,6 +104,10 @@ async def update_lead_status(
 
         if payload.pickup_datetime:
             update_data["pickup_datetime"] = payload.pickup_datetime.isoformat()
+
+        if payload.notes is not None:
+            update_data["notes"] = payload.notes
+
 
         # I-update ang assigned agent info sa inquiry kung may pumasok mula sa payload
         if payload.agent_id:
@@ -267,5 +277,86 @@ async def create_new_leads(payload: LeadCreateSchema):
             "data": res.data[0]
         }
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def generate_quotation_pdf(lead_info: dict, quote_data: SendQuotationSchema) -> bytes:
+    """Gumagawa ng in-memory PDF file gamit ang ReportLab"""
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    p.setFont("Helvetica-Bold", 18)
+    p.drawString(50, 750, "SWIFTFREIGHT LOGISTICS")
+    
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(50, 720, "OFFICIAL FREIGHT QUOTATION")
+    
+    p.setFont("Helvetica", 10)
+    p.drawString(50, 690, f"Customer: {lead_info.get('company_name') or lead_info.get('contact_person')}")
+    p.drawString(50, 675, f"Email: {quote_data.customer_email}")
+    p.drawString(50, 660, f"Route: {lead_info.get('origin')} -> {lead_info.get('destination')}")
+    p.drawString(50, 645, f"Service: {lead_info.get('service_type')}")
+    
+    final_amount = quote_data.base_amount - (quote_data.discount_amount or 0.0)
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, 610, f"Total Amount: PHP {final_amount:,.2f}")
+    
+    if quote_data.remarks:
+        p.setFont("Helvetica-Oblique", 9)
+        p.drawString(50, 580, f"Remarks: {quote_data.remarks}")
+        
+    p.showPage()
+    p.save()
+    
+    pdf_out = buffer.getvalue()
+    buffer.close()
+    return pdf_out
+
+
+@router.post("/{lead_id}/send-quotation")
+async def send_lead_quotation(
+    lead_id: str,
+    payload: SendQuotationSchema,
+    background_tasks: BackgroundTasks
+):
+    try:
+        # 1. Kunin ang Inquiry record sa Supabase
+        res = supabase_secondary.table("inquiries").select("*").eq("id", lead_id).execute()
+        if not res.data:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        
+        lead_info = res.data[0]
+        company_name = lead_info.get("company_name") or lead_info.get("contact_person") or "Customer"
+        final_amount = payload.base_amount - (payload.discount_amount or 0.0)
+
+        # 2. I-generate ang PDF
+        pdf_bytes = generate_quotation_pdf(lead_info, payload)
+
+        # 3. I-send ang email gamit ang helper
+        email_sent = send_quotation_email(
+            to_email=payload.customer_email,
+            company_name=company_name,
+            pdf_bytes=pdf_bytes,
+            filename=f"Quotation_{company_name.replace(' ', '_')}.pdf"
+        )
+
+        if not email_sent:
+            raise HTTPException(status_code=500, detail="Failed to send quotation email. Check SMTP settings.")
+
+        # 4. Pag matagumpay ang email, i-update ang status sa Supabase papuntang 'quote_sent'
+        supabase_secondary.table("inquiries").update({
+            "status": "quote_sent",
+            "estimated_amount": final_amount,
+            "notes": payload.remarks or lead_info.get("notes")
+        }).eq("id", lead_id).execute()
+
+        return {
+            "status": "success",
+            "message": f"Quotation successfully emailed to {payload.customer_email} and status updated to quote_sent."
+        }
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

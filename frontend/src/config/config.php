@@ -31,8 +31,8 @@ function load_frontend_env($path) {
     }
 }
 
-// 1. I-load ang .env mula sa root folder
-load_frontend_env(dirname(__DIR__) . '/.env');
+// 1. I-load ang .env mula sa frontend root folder
+load_frontend_env(dirname(__DIR__, 2) . '/.env');
 
 /**
  * Helper function para madaling makakuha ng env values na may default fallback
@@ -46,7 +46,15 @@ function env($key, $default = null) {
 }
 
 // 2. Constants Configuration
-define('API_BASE_URL', env('API_BASE_URL', 'http://127.0.0.1:8000'));
+// Para sa PHP cURL requests 
+define('INTERNAL_API_URL', env('INTERNAL_API_URL', 'http://crm_backend:8000'));
+
+// Para sa Client-side JS fetch 
+define('PUBLIC_API_URL', env('PUBLIC_API_URL', 'http://localhost:8000'));
+
+// Keep backward compatibility 
+define('API_BASE_URL', INTERNAL_API_URL);
+
 define('APP_NAME', env('APP_NAME', 'Customer Relationship'));
 define('SUPABASE_URL', env('SUPABASE_URL', ''));
 define('SUPABASE_ANON_KEY', env('SUPABASE_ANON_KEY', ''));

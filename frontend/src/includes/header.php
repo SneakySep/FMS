@@ -142,6 +142,7 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
 
 <script>
     window.APP_CONFIG = {
-        API_BASE_URL: <?=  json_encode(API_BASE_URL) ?>
+        
+        API_BASE_URL: <?= json_encode(PUBLIC_API_URL) ?>
     };
 </script>

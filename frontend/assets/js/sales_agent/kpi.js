@@ -1,8 +1,8 @@
 
-const API_URL = window.APP_CONFIG.API_BASE_URL;
+// const API_URL = window.APP_CONFIG.API_BASE_URL;
 
 document.addEventListener("DOMContentLoaded", function() {
-    fetch(`${API_URL}/api/v1/analytics/dashboard`)
+    fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/analytics/dashboard`)
         .then(response => response.json())
         .then(res => {
             if (res.status === 'success') {
@@ -90,8 +90,8 @@ function renderForecastChart(forecast) {
         },
         plotOptions: {
             bar: {
-                // ✅ NILIMITAHAN ANG LAPAD NG BAR
-                columnWidth: '24px', // Ginawang fixed pixel width para hindi mag-stretch nang sobrang taba
+                
+                columnWidth: '24px', 
                 borderRadius: 6,
                 borderRadiusApplication: 'top'
             }
@@ -214,7 +214,7 @@ const itemsPerPage = 2;
 async function fetchPriorityFollowups() {
   const container = document.getElementById('priority-list');
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/sales/priority-followups'); 
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/sales/priority-followups`); 
     const result = await response.json();
 
     priorityFollowupsData = result.data || [];

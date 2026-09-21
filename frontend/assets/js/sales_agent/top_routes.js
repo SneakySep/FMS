@@ -44,7 +44,7 @@ async function fetchLeadsAndRoutes() {
   const routesContainer = document.getElementById('top-routes-container');
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/sales/leads-and-routes');
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/sales/leads-and-routes`);
     if (!response.ok) throw new Error("HTTP error " + response.status);
     const res = await response.json();
 
@@ -141,7 +141,7 @@ async function fetchTopCustomers() {
   if (!container) return;
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/sales/top-customers');
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/sales/top-customers`);
     if (!response.ok) throw new Error("HTTP error " + response.status);
     const data = await response.json();
 

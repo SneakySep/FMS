@@ -23,6 +23,8 @@ class StatusUpdateSchema(BaseModel):
     pickup_address: Optional[str] = None
     pickup_datetime: Optional[datetime] = None
 
+    notes: Optional[str] = None
+
     # Dagdag: Sales agent info
     agent_id: Optional[str] = None
     agent_name: Optional[str] = None
@@ -54,6 +56,7 @@ class LeadResponseSchema(BaseModel):
 
     pickup_address: Optional[str] = None
     pickup_datetime: Optional[datetime] = None
+    notes: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -84,3 +87,12 @@ class LeadCreateSchema(BaseModel):
     # Default Value
     platform_used: Optional[str] = "Manual Entry"
     status: Optional[str] = "new_inquiry"
+
+
+class SendQuotationSchema(BaseModel):
+    lead_id: str
+    customer_email: EmailStr
+    base_amount: float
+    discount_amount: Optional[float] = 0.0
+    valid_until: Optional[datetime] = None
+    remarks: Optional[str] = None

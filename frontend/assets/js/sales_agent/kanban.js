@@ -23,7 +23,7 @@ async function updateLeadStatus(leadId, newStatus) {
     // Kunin ang agent_id mula sa body attribute 
     const agentId = document.body.getAttribute('data-agent-id') || null;
 
-    const response = await fetch(`${FASTAPI_BASE_URL}/api/v1/leads/${leadId}/status`, {
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/leads/${leadId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

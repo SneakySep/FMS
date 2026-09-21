@@ -211,11 +211,14 @@ function getLeadStatusBadge($status) {
 
 </main>
 
+<?php include_once 'components/send_quote_modal.php'; ?>
 <?php include_once 'components/view_lead_modal.php'; ?>
 <?php include_once 'components/lead_modal.php'; ?>
 
+
 <!-- JAVASCRIPT FOR MODAL -->
 <script src="../../../assets/js/sales_agent/myleads.js"></script>
+<script src="../../../assets/js/sales_agent/quote_modal.js"></script>
 
 <?php include_once 'components/alert.php'; ?>
 

@@ -13,7 +13,7 @@ def send_otp_email(to_email: str, otp_code: str):
     # 1. set up ang email Header
 
     msg = MIMEMultipart()
-    msg['From'] = f"Priority Handling Logistics Inc. <{sender_email}>"
+    msg['From'] = f"Priority <{sender_email}>"
     msg['To'] = to_email
     msg['Subject'] = f"{otp_code} is your Priority Handling Logistics Inc. Verification Code"
 
@@ -28,7 +28,7 @@ def send_otp_email(to_email: str, otp_code: str):
             <!--  LOGO HERE -->
                 <div style="text-align: center; margin-bottom: 20px;">
                     <img src="{logo_url}" alt="Dragon" style="max-width: 120px; height: auto; display: block; margin: 0 auto;" />
-                </div
+                </div>
                 
                 <!-- Title / Header -->
                 <h2 style="font-size: 22px; font-weight: 600; color: #111111; text-align: center; margin-bottom: 30px; margin-top: 0;">

@@ -4,7 +4,7 @@ require_once dirname(__DIR__) . '/config/config.php';
 /**
  * Helper function para sa lahat ng FastAPI Requests (GET, POST, PUT, DELETE)
  *
- * @param string $endpoint Halimbawa: '/api/auth/login'
+ * @param string $endpoint Halimbawa: '/api/v1/auth/login' o 'api/v1/auth/login'
  * @param string $method HTTP Method (GET, POST, PUT, DELETE)
  * @param array|null $data Payload data
  * @param bool $is_form_data True kung x-www-form-urlencoded, False kung JSON
@@ -15,6 +15,11 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     // Siguraduhing active ang session para mabasa ang Bearer Token
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
+    }
+
+    // Siguraduhing may slash (/) sa simula ng endpoint
+    if (strpos($endpoint, '/') !== 0) {
+        $endpoint = '/' . $endpoint;
     }
 
     $url = API_BASE_URL . $endpoint;

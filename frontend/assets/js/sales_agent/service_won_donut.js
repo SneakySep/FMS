@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     async function fetchServiceWonDistribution() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/analytics/service-won-distribution');
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/analytics/service-won-distribution`);
             const data = await response.json();
 
             if (data.status === 'success') {
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 height: 210,
                 fontFamily: 'Inter, sans-serif'
             },
-            // Monochromatic Blue Palette katulad ng sa reference UI
+            
             colors: ['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE'],
             stroke: {
                 show: true,

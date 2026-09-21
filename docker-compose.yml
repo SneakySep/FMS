@@ -1,0 +1,23 @@
+
+services:
+  # Service para sa FastAPI Backend
+  backend:
+    build: ./backend-api
+    container_name: crm_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend-api:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Service para sa PHP Frontend
+  frontend:
+    build: ./frontend
+    container_name: crm_frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/var/www/html
+    depends_on:
+      - backend

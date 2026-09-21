@@ -10,7 +10,6 @@ router = APIRouter(
     tags=["Admin Management"]
 )
 
-# HELPER: Para sa Tier computation ng Customers table
 def calculate_tier(bookings_count: int) -> str:
     if bookings_count >= 20:
         return "PLATINUM"
@@ -48,7 +47,6 @@ async def create_customer_from_ticket(
     try:
         new_user_id = None
 
-        # --- DAGDAG: Check muna sa public.users kung registered na ---
         existing_user = (
             supabase_secondary.table("users")
             .select("id")
@@ -57,10 +55,10 @@ async def create_customer_from_ticket(
         )
 
         if existing_user.data:
-            # Gamitin ang umiiral na user ID kung gawan uli ng panibagong ticket ang customer
+           
             new_user_id = existing_user.data[0]["id"]
         else:
-            # 1. Create Auth account sa Secondary supabase (Orihinal mong code)
+           
             try:
                 auth_res = supabase_secondary.auth.admin.create_user({
                     "email": payload.email,
@@ -80,7 +78,7 @@ async def create_customer_from_ticket(
             except Exception as auth_err:
                 raise HTTPException(status_code=400, detail=str(auth_err))
 
-            # 2. Mag-insert sa public.users table (Secondary DB) (Orihinal mong code)
+            
             user_data = {
                 "id": new_user_id,
                 "email": payload.email,
@@ -93,7 +91,7 @@ async def create_customer_from_ticket(
 
             supabase_secondary.table("users").insert(user_data).execute()
 
-        # --- DAGDAG: Insert o Update sa public.customers Table ---
+
         existing_cust = (
             supabase_secondary.table("customers")
             .select("*")
@@ -104,7 +102,7 @@ async def create_customer_from_ticket(
         full_contact_name = f"{payload.first_name} {payload.last_name}".strip()
 
         if existing_cust.data:
-            # Kapag nagawan uli ng panibagong ticket, increment total_bookings at compute new tier
+           
             c_rec = existing_cust.data[0]
             new_bookings = (c_rec.get("total_bookings") or 0) + 1
             new_tier = calculate_tier(new_bookings)
@@ -117,7 +115,7 @@ async def create_customer_from_ticket(
                 "tier": new_tier
             }).eq("id", c_rec["id"]).execute()
         else:
-            # Kapag kauna-unahang beses gawan ng account
+            
             new_cust_data = {
                 "company_name": payload.company_name,
                 "contact_person": full_contact_name,
@@ -129,13 +127,13 @@ async def create_customer_from_ticket(
             }
             supabase_secondary.table("customers").insert(new_cust_data).execute()
 
-        # 3. I-update ang ticket: I-set ang customer_id AT baguhin ang ticket_status -> 'created' (Orihinal mong code)
+
         supabase_secondary.table("tickets").update({
             "customer_id": new_user_id,
             "ticket_status": "created"
         }).eq("id", payload.ticket_id).execute()
 
-        # 4. Background task para sa welcome email (Orihinal mong code)
+       
         background_tasks.add_task(
             send_customer_welcome_email,
             to_email=payload.email,
@@ -160,7 +158,6 @@ async def create_customer_from_ticket(
 @router.get("/customer-accounts", response_model=dict)
 async def get_customer_accounts():
     try:
-        # Kukunin ang lahat ng rows sa public.users table (Orihinal mong code)
         res = supabase_secondary.table("users").select("*").execute()
         return {
             "status": "success", 

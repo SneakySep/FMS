@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     async function fetchWeightClassAnalytics() {
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/v1/analytics/weight-class-win-loss');
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/analytics/weight-class-win-loss`);
             const data = await response.json();
 
             if (data.status === 'success') {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 toolbar: { show: false },
                 fontFamily: 'Inter, sans-serif'
             },
-            // Air Freight: Sky Blue (#38BDF8), Sea Freight: Dark Blue (#1D4ED8), Land Transport: Light Blue (#93C5FD)
+           
             colors: ['#38BDF8', '#1D4ED8', '#93C5FD'],
             plotOptions: {
                 bar: {

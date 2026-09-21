@@ -15,10 +15,6 @@ $pending_tickets = array_filter($all_tickets, function($ticket) {
 
 $ticket_count = count($pending_tickets);
 
-// 2. Fetch Active Customers count 
-$customers_res    = make_api_request('/api/v1/admin/customers', 'GET');
-$customers_list   = $customers_res['data'] ?? [];
-$active_customers = count($customers_list);
 ?>
 
 <!-- SIDEBAR INCLUDE -->
@@ -28,10 +24,11 @@ $active_customers = count($customers_list);
 <main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
   <!-- TOP HEADER -->
-  <?php include_once 'components/top_header.php'; ?>
+  <?php include_once '../../components/top_header.php'; ?>
 
-  <!-- ROW 1: TOP 2 KPI METRICS -->
   <?php include_once 'components/kpi_cards.php'; ?>
+
+  <?php include_once 'components/kanban_board.php'; ?>
 
   <!-- ROW 2: MAIN DASHBOARD GRID -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -39,6 +36,8 @@ $active_customers = count($customers_list);
   </div>
 
 </main>
+
+
 
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>

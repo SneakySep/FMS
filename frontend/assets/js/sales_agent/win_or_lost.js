@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     async function fetchWinLossAnalytics() {
         try {
-            // Palitan ang URL kung pangkalahatang API route ng FastAPI gamit mo
-            const response = await fetch('http://127.0.0.1:8000/api/v1/analytics/win-loss-service');
+            
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/analytics/win-loss-service`);
             const data = await response.json();
 
             if (data.status === 'success') {

@@ -228,6 +228,15 @@ function getLeadStatusBadge($status) {
                       class="group px-3.5 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm shadow-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/30 inline-flex items-center gap-1.5">
                       <i class="fa-solid fa-eye text-[11px] transition group-hover:scale-110"></i> View & Manage
                     </button>
+
+                    <!-- SEND PDF QUOTATION -->
+                    <button
+                      type="button"
+                      title="Send PDF Quotation"
+                      onclick="openQuoteModal(<?= htmlspecialchars(json_encode($lead, JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>)"
+                      class="group px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-xs transition-all active:scale-95 shadow-sm shadow-emerald-500/30 hover:shadow-md hover:shadow-emerald-500/30 inline-flex items-center gap-1.5">
+                      <i class="fa-solid fa-file-pdf text-[11px] transition group-hover:scale-110"></i> PDF Quotation
+                    </button>
                   </div>
                 </td>
 
@@ -259,6 +268,7 @@ function getLeadStatusBadge($status) {
 
 <?php include_once 'components/view_lead_modal.php'; ?>
 <?php include_once 'components/lead_modal.php'; ?>
+<?php include_once 'components/quote_modal.php'; ?>
 
 <!-- JAVASCRIPT FOR MODAL -->
 <script src="../../../assets/js/sales_agent/myleads.js"></script>

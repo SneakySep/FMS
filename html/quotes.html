@@ -1,0 +1,1057 @@
+<!--
+  quotes.html — STATIC, BACKEND-FREE copy of:
+  frontend/src/views/sales_agent/quotes.php
+
+  What this means:
+  - No PHP, no sessions, no make_api_request() calls.
+  - Quote stats use the page's own demo fallback values (120/45/60/15).
+  - The "Recent Quotes" table shows 5 hardcoded demo rows.
+  - Chat widgets are visual shells only (no fetch / WebSocket); the message
+    area shows a "static preview" notice.
+  - All static assets (CSS / JS / logo) are referenced relatively from
+    ../frontend/assets/ — they are plain files, not a backend.
+  - Skipped (unused on this page): Leaflet, Chart.js, ApexCharts, logout.js
+    (it redirects to /logout.php).
+-->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes Dashboard - PRIORITY HANDLING</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        /* Full copy of src/includes/tailwind_config.php (design tokens) */
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: 'rgb(var(--accent-rgb) / <alpha-value>)',
+                            darkblue: 'rgb(var(--accent-strong-rgb) / <alpha-value>)',
+                            navy: '#182554',
+                            sidebar: '#0f1734',
+                            lightbg: '#f2f4f9',
+                        },
+                        priority: {
+                            navy: '#1d2e6a',
+                            button: '#213854',
+                            teal: '#084163',
+                            'teal-deep': '#003a5f',
+                            sky: '#4e83c5',
+                            surface: '#f0f0f0',
+                            ink: '#1b1b1c',
+                            stage: {
+                                new:         '#8d9dd0',
+                                qualifying:  '#4e83c5',
+                                quote:       '#2b3f7c',
+                                negotiation: '#1d2e6a',
+                                won:         '#047857',
+                                'won-soft':  '#ecfdf5',
+                                lost:        '#b91c1c',
+                                'lost-soft': '#fef2f2',
+                            },
+                            chart: {
+                                1: '#1d2e6a',
+                                2: '#084163',
+                                3: '#4e83c5',
+                                4: '#8d9dd0',
+                                5: '#b9c4e3',
+                                6: '#dbe1f1',
+                            },
+                            soft: '#eef1f9',
+                            'softer': '#f6f8fc',
+                            line: '#dbe1f1',
+                            'line-strong': '#c9d0e2',
+                        },
+                        navy: {
+                            50:  '#eef1f9',
+                            100: '#dbe1f1',
+                            200: '#b9c4e3',
+                            300: '#8d9dd0',
+                            400: '#5f74b5',
+                            500: '#3d5494',
+                            600: '#2b3f7c',
+                            700: '#1d2e6a',
+                            800: '#182554',
+                            850: '#131d43',
+                            900: '#0f1734',
+                            950: '#0a0f24',
+                        },
+                        canvas: '#f2f4f9',
+                        surface: {
+                            DEFAULT: '#ffffff',
+                            muted: '#eef1f7',
+                            hover: '#e7ecf6',
+                        },
+                        line: '#dfe3ee',
+                        'line-strong': '#c9d0e2',
+                        neutral: {
+                            'primary-soft': '#eef1f7',
+                            'primary-medium': '#ffffff',
+                            'secondary-medium': '#eef1f9',
+                            'tertiary-medium': '#dbe1f1',
+                        },
+                        'default': '#dbe1f1',
+                        'default-medium': '#b9c4e3',
+                        'body': '#3d4451',
+                        'heading': '#1b1b1c',
+                        'muted': '#6e6e6e',
+                    },
+                    borderRadius: {
+                        base: '0.5rem',
+                        tile: '0.75rem',
+                        card: '1rem',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                        'card': '0 1px 2px rgba(8,14,30,.04), 0 1px 3px rgba(8,14,30,.06)',
+                        'lift': '0 12px 32px -14px rgba(8,14,30,.20)',
+                        'navy': '0 8px 20px -10px rgba(8,14,30,.55)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicon (relative: this file lives in customer_relationship/html/) -->
+    <link rel="icon" type="image/png" href="../frontend/assets/image/logo.png">
+
+    <!-- Custom CSS Styles (static assets; theme.css last so its html.dark
+         rules win on equal specificity) -->
+    <link rel="stylesheet" href="../frontend/assets/css/style.css">
+    <link rel="stylesheet" href="../frontend/assets/css/view_leads_modal.css">
+    <link rel="stylesheet" href="../frontend/assets/css/theme.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- SAVED-PREFERENCE BOOTSTRAP (from header.php; pure client, keeps the
+         saved theme/accent/density applied before first paint) -->
+    <script>
+    (function () {
+        try {
+            var raw = window.localStorage.getItem('crm_customer_prefs');
+            var prefs = raw ? JSON.parse(raw) : {};
+
+            if (prefs.dark_mode === true) {
+                document.documentElement.classList.add('dark');
+            }
+
+            var accent = (typeof prefs.accent_color === 'string') ? prefs.accent_color : '';
+            if (accent) {
+                document.documentElement.setAttribute('data-accent', accent);
+            }
+
+            if (prefs.density === 'compact') {
+                document.documentElement.setAttribute('data-density', 'compact');
+            }
+        } catch (e) {
+            /* Corrupt / unavailable localStorage: fall back to defaults silently */
+        }
+    })();
+    </script>
+
+    <!-- DESIGN TOKEN BRIDGE (from header.php; pure client) -->
+    <script>
+    window.crmPalette = function () {
+        var cs = getComputedStyle(document.documentElement);
+        var v = function (name, fallback) {
+            var val = cs.getPropertyValue(name).trim();
+            return val || fallback;
+        };
+        return {
+            chart: [
+                v('--chart-1', '#1d2e6a'), v('--chart-2', '#084163'),
+                v('--chart-3', '#4e83c5'), v('--chart-4', '#8d9dd0'),
+                v('--chart-5', '#b9c4e3'), v('--chart-6', '#dbe1f1')
+            ],
+            stage: {
+                new:         v('--stage-new', '#8d9dd0'),
+                qualifying:  v('--stage-qualifying', '#4e83c5'),
+                quote:       v('--stage-quote', '#2b3f7c'),
+                negotiation: v('--stage-negotiation', '#1d2e6a'),
+                won:         v('--stage-won', '#047857'),
+                wonSoft:     v('--stage-won-soft', '#ecfdf5'),
+                lost:        v('--stage-lost', '#b91c1c'),
+                lostSoft:    v('--stage-lost-soft', '#fef2f2')
+            },
+            navy:    v('--navy-700', '#1d2e6a'),
+            navy600: v('--navy-600', '#2b3f7c'),
+            navy300: v('--navy-300', '#8d9dd0'),
+            navy100: v('--navy-100', '#dbe1f1'),
+            sky:     v('--sky-brand', '#4e83c5'),
+            ink:     v('--fg-heading', '#1b1b1c'),
+            muted:   v('--fg-muted', '#6e6e6e'),
+            grid:    v('--line', '#dfe3ee'),
+            surface: v('--surface', '#ffffff'),
+            canvas:  v('--canvas', '#f2f4f9')
+        };
+    };
+    window.CRM_COLORS = window.crmPalette();
+
+    window.crmSetDarkMode = function (on) {
+        document.documentElement.classList.toggle('dark', on);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', on ? '#080d1f' : '#f2f4f9');
+        try {
+            var raw = window.localStorage.getItem('crm_customer_prefs');
+            var prefs = raw ? JSON.parse(raw) : {};
+            prefs.dark_mode = !!on;
+            window.localStorage.setItem('crm_customer_prefs', JSON.stringify(prefs));
+        } catch (e) {
+            /* Storage unavailable: the toggle still applies for this page. */
+        }
+        document.dispatchEvent(new CustomEvent('crm:theme-change', {
+            detail: { dark: !!on }
+        }));
+    };
+    </script>
+</head>
+<body
+    class="crm-body bg-canvas text-navy-600 font-sans antialiased min-h-screen flex"
+    data-agent-id="SA-014"
+    data-agent-name="M. Reyes"
+    data-agent-email=""
+>
+
+<!-- ====================================================================
+     FLOATING CHAT HEAD (Agent/Admin inbox) — from header.php.
+     STATIC SHELL: toggles locally, no fetch/WebSocket (no backend).
+     ==================================================================== -->
+<div id="chat-head-button" onclick="toggleChatWindow()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-transform hover:scale-105">
+    <i class="fa-solid fa-comments text-xl"></i>
+    <!-- Unread Badge -->
+    <span id="chat-head-badge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+</div>
+
+<!-- FLOATING CHAT WINDOW -->
+<div id="chat-head-window" class="hidden fixed bottom-24 right-6 z-50 w-[680px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex overflow-hidden font-sans">
+
+    <!-- LEFT SIDE: Customer Inbox List -->
+    <div class="w-1/3 border-r border-slate-200 bg-slate-50/50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+            <span class="font-bold text-slate-800 text-sm">Customer Inbox</span>
+            <button onclick="loadAgentConversations()" class="text-blue-600 hover:text-blue-700 text-xs font-semibold">Refresh</button>
+        </div>
+        <div id="customer-inbox-list" class="flex-1 overflow-y-auto divide-y divide-slate-100">
+            <div class="p-4 text-xs text-slate-400 text-center">Static preview — backend not connected</div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: Active Chat Area -->
+    <div class="w-2/3 flex flex-col bg-white">
+        <!-- Header -->
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+            <div id="chat-header-title" class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-800">Choose Customer</span>
+            </div>
+            <button onclick="toggleChatWindow()" class="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-head-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-white">
+            <div class="flex items-center justify-center h-full text-slate-400 text-xs">
+                Static preview — chat requires the backend.
+            </div>
+        </div>
+
+        <!-- Input Box -->
+        <form onsubmit="sendChatHeadMessage(event)" class="p-3 bg-white border-t border-slate-100 flex items-center gap-2">
+            <input
+                type="text"
+                id="chat-head-input"
+                placeholder="I-type ang mensahe..."
+                class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors"
+            />
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-colors">
+                Send
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- MOBILE OVERLAY BACKDROP -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-navy-950/60 z-30 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+<!-- SIDEBAR NAVIGATION CONTAINER
+     (static render of SidebarService sales_agent tree; active page = quotes) -->
+<aside id="sidebar" class="group crm-sidebar w-20 hover:w-64 text-slate-300 h-screen flex flex-col justify-between p-4 shrink-0 z-40 transition-all duration-300 ease-in-out -translate-x-full md:translate-x-0 fixed md:sticky md:top-0 md:self-start overflow-x-hidden md:overflow-y-auto">
+    <div class="space-y-6">
+
+        <!-- Brand Logo & Dynamic Badge -->
+        <div class="flex items-center gap-3 px-1.5 py-2">
+            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-navy flex items-center justify-center bg-white/5 border border-white/10 shrink-0">
+                <img src="../frontend/assets/image/logo.png" alt="Company Logo" class="w-full h-full object-contain p-1">
+            </div>
+            <div class="leading-none crm-reveal whitespace-nowrap overflow-hidden">
+                <h1 class="crm-brand-name">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>
+                <span class="crm-brand-badge">SALES AGENT PORTAL</span>
+            </div>
+        </div>
+
+        <!-- Navigation Links (static) -->
+        <nav class="space-y-5 text-xs font-medium">
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">OVERVIEW</span>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/src/views/sales_agent/dashboard.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-chart-pie"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Dashboard</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">PIPELINE</span>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/src/views/sales_agent/my_leads.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-users-line"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">My Leads</span>
+                            </span>
+                            <span class="crm-nav-badge crm-reveal">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/src/views/sales_agent/kanban.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-columns"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Sales Board</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">ACCOUNTS &amp; CLIENTS</span>
+                <ul class="space-y-1">
+                    <li>
+                        <!-- DROPDOWN ITEM -->
+                        <button type="button" onclick="toggleSubmenu('sub-accounts_group', 'arrow-accounts_group')" class="crm-nav-item group/btn">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-users-gear"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Account &amp; Clients</span>
+                            </span>
+                            <i id="arrow-accounts_group" class="fa-solid fa-chevron-down text-[10px] crm-reveal opacity-60 transition-transform duration-200"></i>
+                        </button>
+
+                        <!-- SUBMENU LIST -->
+                        <ul id="sub-accounts_group" class="hidden pl-4 pr-1 pt-1 pb-1 space-y-0.5 crm-reveal">
+                            <li>
+                                <a href="/src/views/sales_agent/customer.php" class="crm-sub-item">
+                                    <i class="fa-solid fa-users crm-sub-ico"></i>
+                                    <span class="truncate">Customers</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="book_shipment.php" class="crm-sub-item">
+                                    <i class="fa-solid fa-box-archive crm-sub-ico"></i>
+                                    <span class="truncate">Book Shipment</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="shipment.php" class="crm-sub-item">
+                                    <i class="fa-solid fa-truck-field crm-sub-ico"></i>
+                                    <span class="truncate">Shipment Tracking</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">DEALS</span>
+                <ul class="space-y-1">
+                    <li>
+                        <!-- DROPDOWN ITEM -->
+                        <button type="button" onclick="toggleSubmenu('sub-deals_group', 'arrow-deals_group')" class="crm-nav-item group/btn">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-briefcase"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Deals &amp; Quotes</span>
+                            </span>
+                            <i id="arrow-deals_group" class="fa-solid fa-chevron-down text-[10px] crm-reveal opacity-60 transition-transform duration-200"></i>
+                        </button>
+
+                        <!-- SUBMENU LIST (contains the ACTIVE page: quotes) -->
+                        <ul id="sub-deals_group" class="hidden pl-4 pr-1 pt-1 pb-1 space-y-0.5 crm-reveal">
+                            <li>
+                                <a href="rates.php" class="crm-sub-item">
+                                    <i class="fa-solid fa-calculator crm-sub-ico"></i>
+                                    <span class="truncate">Rate Search</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="quotes.php" class="crm-sub-item is-active">
+                                    <i class="fa-solid fa-file-invoice-dollar crm-sub-ico"></i>
+                                    <span class="truncate">Quotes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">REPORT</span>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="/src/views/sales_agent/bi_analytics.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-chart-line"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Analytics &amp; Reports</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/src/views/sales_agent/post_event.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-calendar-check"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Post-Sales &amp; Events</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <span class="crm-nav-group crm-reveal whitespace-nowrap overflow-hidden">ROOMS</span>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="../chat/chat.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-comments"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Direct Chat</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.php" class="crm-nav-item">
+                            <span class="flex items-center gap-2.5 min-w-0 shrink-0">
+                                <span class="crm-nav-ico"><i class="fa-solid fa-gear"></i></span>
+                                <span class="crm-reveal whitespace-nowrap overflow-hidden">Settings</span>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Sidebar Bottom Footer (sales_agent: no SLA widget) -->
+    <div class="crm-side-foot space-y-3 pt-4">
+        <!-- Profile Card & Logout Button -->
+        <div class="crm-side-card">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Static initials (SidebarService fallback) -->
+                <div class="crm-avatar-navy">
+                    UA
+                </div>
+
+                <!-- Static name (SidebarService fallback) -->
+                <div class="leading-tight min-w-0 flex-1 crm-reveal whitespace-nowrap overflow-hidden">
+                    <h4 class="crm-side-name">
+                        Sales Agent
+                    </h4>
+                    <span class="crm-side-meta">
+                        Sales Agent • SA-014
+                    </span>
+                </div>
+            </div>
+
+            <!-- Logout Button (client-only modal; no backend redirect) -->
+            <a href="logout.php" id="logoutBtn" title="Logout" class="crm-logout-btn crm-reveal">
+                <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<script>
+    /* Sidebar dropdown toggle (from includes/sidebar.php) */
+    function toggleSubmenu(id, arrowId) {
+        const submenu = document.getElementById(id);
+        const arrow = document.getElementById(arrowId);
+        submenu.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+    }
+</script>
+
+<!-- MAIN CONTENT AREA -->
+<main data-brand="priority" class="flex-1 overflow-y-auto bg-[#F8FAFC]">
+
+    <!-- Dashboard Header (rendered from components/dashboard_header.php) -->
+    <header class="crm-topbar flex-wrap rounded-b-2xl border-x border-line mb-6">
+        <div class="flex items-center gap-3 min-w-0">
+            <button onclick="toggleSidebar()" class="md:hidden crm-icon-btn !h-9 !w-9 shrink-0">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+            <div class="min-w-0">
+                <h2 class="crm-topbar-title !text-xl">Quotes Management</h2>
+                <p class="crm-topbar-sub">Manage, track, and send customer quotes efficiently.</p>
+            </div>
+        </div>
+
+        <!-- Global Search -->
+        <div class="flex-1 max-w-md mx-auto order-3 sm:order-none w-full sm:w-auto">
+            <div class="crm-search">
+                <i class="fa-solid fa-magnifying-glass crm-search-ico"></i>
+                <input type="text" placeholder="Search leads, customers, quotes..." class="crm-input !pl-9 !py-2 !text-xs">
+            </div>
+        </div>
+
+        <div class="crm-topbar-group">
+            <button class="crm-icon-btn relative border border-line bg-surface">
+                <i class="fa-solid fa-bell text-xs"></i>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-navy-850"></span>
+            </button>
+
+            <button id="newQuoteBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"><i class="fa-solid fa-plus text-xs"></i> New Quote</button>
+        </div>
+    </header>
+
+    <div class="p-6 lg:p-8">
+    <!-- ROW 1: QUICK KPI STATS (static demo values — PHP demo fallback) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="p-3 rounded-lg bg-blue-50 text-blue-600">
+                <i class="fa-solid fa-file-invoice text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">total</p>
+                <h3 class="text-2xl font-bold text-slate-900">120</h3>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="p-3 rounded-lg bg-amber-50 text-amber-600">
+                <i class="fa-solid fa-clock text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">pending</p>
+                <h3 class="text-2xl font-bold text-slate-900">45</h3>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600">
+                <i class="fa-solid fa-check-circle text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">approved</p>
+                <h3 class="text-2xl font-bold text-slate-900">60</h3>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
+            <div class="p-3 rounded-lg bg-rose-50 text-rose-600">
+                <i class="fa-solid fa-times-circle text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">rejected</p>
+                <h3 class="text-2xl font-bold text-slate-900">15</h3>
+            </div>
+        </div>
+    </div>
+    <!-- ROW 2: QUOTES TABLE / LIST (5 hardcoded demo rows — no API) -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-slate-900">Recent Quotes</h2>
+            <div class="text-sm text-slate-500">Showing last 5 quotes</div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                        <th class="px-6 py-4">Quote ID</th>
+                        <th class="px-6 py-4">Customer</th>
+                        <th class="px-6 py-4">Amount</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900">#QT-1042</td>
+                        <td class="px-6 py-4 text-slate-700">Meridian Trading Corp.</td>
+                        <td class="px-6 py-4 text-slate-900 font-semibold">$12,450.00</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">PENDING</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">09/22/2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900">#QT-1041</td>
+                        <td class="px-6 py-4 text-slate-700">Blue Horizon Logistics</td>
+                        <td class="px-6 py-4 text-slate-900 font-semibold">$8,320.00</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">APPROVED</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">09/21/2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900">#QT-1040</td>
+                        <td class="px-6 py-4 text-slate-700">Cebu Steelworks Inc.</td>
+                        <td class="px-6 py-4 text-slate-900 font-semibold">$24,780.50</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">DRAFT</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">09/20/2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900">#QT-1039</td>
+                        <td class="px-6 py-4 text-slate-700">Aurora Foods &amp; Beverages</td>
+                        <td class="px-6 py-4 text-slate-900 font-semibold">$5,940.00</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-rose-100 text-rose-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">REJECTED</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">09/19/2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-slate-900">#QT-1038</td>
+                        <td class="px-6 py-4 text-slate-700">NovaTech Solutions</td>
+                        <td class="px-6 py-4 text-slate-900 font-semibold">$15,200.00</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">APPROVED</span>
+                        </td>
+                        <td class="px-6 py-4 text-slate-500">09/18/2026</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-eye"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fa-solid fa-edit"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-4 border-t border-slate-200 bg-slate-50 text-center">
+            <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">View All Quotes</a>
+        </div>
+    </div>
+
+    </div><!-- /p-6 lg:p-8 -->
+    <!-- ====================================================================
+         FLOATING CHAT WIDGET (sales_agent) — from components/chat_widget.php.
+         STATIC SHELL: toggles locally, no fetch/WebSocket (no backend).
+         ==================================================================== -->
+    <!-- FLOATING CHAT BUTTON -->
+    <div class="fixed bottom-5 right-5 z-50">
+        <button id="toggleChatBtn" class="relative bg-navy-900 hover:bg-navy-950 dark:bg-slate-200 dark:hover:bg-white dark:text-navy-950 text-white w-12 h-12 rounded-2xl shadow-lg shadow-navy transition-all duration-200 flex items-center justify-center hover:-translate-y-0.5 active:scale-95">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+
+            <!-- COUNTER BADGE PARA SA SALES AGENT -->
+            <span id="unreadBadge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white dark:ring-navy-900 animate-bounce">
+                0
+            </span>
+        </button>
+    </div>
+
+    <!-- CHAT MAIN WINDOW -->
+    <div id="chatModal" class="hidden fixed bottom-20 right-5 z-50 w-[95vw] md:w-[750px] h-[550px] crm-card !rounded-2xl !shadow-lift flex overflow-hidden">
+
+        <!-- SIDEBAR INBOX (SALES AGENT ONLY) -->
+        <div class="w-1/3 bg-surface-muted border-r border-line flex flex-col">
+            <div class="p-3 border-b border-line flex justify-between items-center">
+                <h2 class="font-bold text-navy-900 dark:text-slate-100 text-sm">Customer Inbox</h2>
+                <button onclick="loadCustomerList()" class="text-xs text-brand-blue hover:underline">Refresh</button>
+            </div>
+            <!-- LIST NG MGA CUSTOMER NA NAG-CHAT -->
+            <div id="customerList" class="flex-1 overflow-y-auto divide-y divide-slate-100">
+                <div class="p-4 text-xs text-navy-400 dark:text-slate-400 text-center">Static preview — backend not connected</div>
+            </div>
+        </div>
+
+        <!-- CHAT BOX WINDOW (COMMON) -->
+        <div class="flex-1 flex flex-col bg-canvas">
+
+            <!-- Header -->
+            <div class="p-3 bg-surface border-b border-line flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></div>
+                    <h3 id="chatHeaderTitle" class="font-semibold text-navy-900 dark:text-slate-100 text-sm">
+                        Choose Customer
+                    </h3>
+                </div>
+
+                <div class="flex gap-2">
+                    <!-- BUTTON PARA IBALIK AGAD KAY AI -->
+                    <button id="handoverBtn" onclick="handoverToAI()" class="hidden text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold transition">
+                        Hand Back to AI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="messagesContainer" class="crm-scroll flex-1 p-4 overflow-y-auto space-y-3 text-sm">
+                <div class="text-center">
+                    <span class="text-[10px] text-navy-400 dark:text-slate-500 italic">Static preview — chat requires the backend</span>
+                </div>
+            </div>
+
+            <!-- Input Area (submit disabled: no backend) -->
+            <form id="widgetChatForm" class="p-3 bg-surface border-t border-line flex gap-2" onsubmit="return false;">
+                <input
+                    type="text"
+                    id="widgetMessageInput"
+                    placeholder="Type your message..."
+                    class="crm-input !text-sm flex-1"
+                    required
+                >
+                <button type="submit" class="crm-btn crm-btn-primary !text-sm">
+                    Send
+                </button>
+            </form>
+
+        </div>
+    </div>
+    <!-- ====================================================================
+         FREIGHT QUOTE MODAL (Fillable) — from components/quote_modal.php.
+         100% client-side: works without a backend.
+         ==================================================================== -->
+    <div id="quoteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
+            <form id="quoteForm" onsubmit="event.preventDefault();">
+                <!-- Close Button & Title -->
+                <div class="sticky top-0 bg-white p-6 border-b border-slate-100 flex justify-between items-center z-10">
+                    <h2 class="text-xl font-bold text-slate-900">New Freight Quote</h2>
+                    <button type="button" onclick="closeQuoteModal()" class="text-slate-400 hover:text-red-600 transition-colors p-2 hover:bg-red-50 rounded-lg">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+
+
+                <div class="p-8 space-y-8">
+                    <!-- Header: Company Info -->
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-2">
+                            <h1 class="text-2xl font-bold text-slate-900">Priority Handling</h1>
+                            <p class="text-sm text-slate-600">1618-B Copernico St., Makati City</p>
+                        </div>
+                        <div class="w-32 h-20 flex items-center justify-center">
+                            <img src="../frontend/assets/image/logo.png" alt="Logo" class="max-h-full max-w-full object-contain">
+                        </div>
+                    </div>
+
+                    <!-- Bill To -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Bill To</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Customer Name</label>
+                                <input type="text" name="customer_name" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Enter customer name" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Customer Address</label>
+                                <input type="text" name="customer_address" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Enter customer address">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-sm" id="quoteTable">
+                            <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-center w-20">QTY</th>
+                                    <th class="px-6 py-4">Description</th>
+                                    <th class="px-6 py-4 text-right">Unit Price</th>
+                                    <th class="px-6 py-4 text-right">Amount</th>
+                                    <th class="px-6 py-4 w-16"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100" id="quoteTableBody">
+                                <tr>
+                                    <td class="px-6 py-4"><input type="number" name="qty[]" class="w-16 bg-white border border-slate-200 rounded-lg px-2 py-1 text-center text-sm focus:ring-2 focus:ring-blue-500" value="1" onchange="calculateTotal()"></td>
+                                    <td class="px-6 py-4"><input type="text" name="desc[]" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Enter item description"></td>
+                                    <td class="px-6 py-4"><input type="number" name="price[]" class="w-24 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-right text-sm focus:ring-2 focus:ring-blue-500" value="0.00" onchange="calculateTotal()"></td>
+                                    <td class="px-6 py-4 text-right font-semibold text-slate-900">$0.00</td>
+                                    <td class="px-6 py-4 text-center"><button type="button" class="text-red-500 hover:text-red-700 transition-colors" onclick="removeRow(this)"><i class="fa-solid fa-trash"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="flex flex-col items-end">
+                            <button type="button" class="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="addRow()">
+                                <i class="fa-solid fa-plus"></i> Add Row
+                            </button>
+                            <div class="w-full p-6 bg-slate-50 border-t border-slate-200 text-right text-sm">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium text-slate-600">Subtotal:</span>
+                                    <span id="subtotalDisplay" class="font-semibold text-slate-900">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium text-slate-600">VAT (12%):</span>
+                                    <span id="vatDisplay" class="font-semibold text-slate-900">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-slate-200 text-lg">
+                                    <span class="font-bold text-slate-900">Total Amount:</span>
+                                    <span id="totalDisplay" class="font-bold text-blue-600">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end items-center gap-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="closeQuoteModal()" class="px-6 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm shadow-lg shadow-blue-600/30">
+                            Save & Send Quote
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<!-- ====================================================================
+     LOGOUT MODAL CONTAINER — from src/includes/footer.php (verbatim
+     markup). Client-only behavior: the confirm animation runs, but in
+     this static copy it does NOT redirect to /logout.php.
+     ==================================================================== -->
+<div id="logoutModal" class="crm-overlay z-50 opacity-0 pointer-events-none transition-opacity duration-200">
+
+  <div class="crm-card w-full max-w-sm !rounded-2xl !shadow-lift p-6 text-center transform scale-95 transition-all duration-200" id="logoutModalContainer">
+
+  <!-- STATE 1: CONFIRMATION VIEW -->
+  <div id="logoutConfirmState">
+    <!-- Warning Icon -->
+    <div class="w-12 h-12 rounded-full bg-red-50 border border-red-200 text-red-600 dark:bg-red-500/10 dark:border-red-500/25 dark:text-red-400 flex items-center justify-center mx-auto mb-4">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25" />
+      </svg>
+    </div>
+
+    <h3 class="text-base font-bold text-navy-900 dark:text-slate-100 mb-1">Confirm Logout</h3>
+    <p class="text-xs text-navy-400 dark:text-slate-400 mb-6 leading-relaxed">Are you sure you want to sign out of your account?</p>
+
+    <div class="grid grid-cols-2 gap-3">
+      <button id="cancelLogoutBtn" type="button"
+              class="crm-btn crm-btn-ghost !h-10 !text-xs">
+        Cancel
+      </button>
+      <button id="confirmLogoutBtn" type="button"
+              class="crm-btn crm-btn-danger !h-10 !text-xs shadow-lg shadow-red-600/20">
+        Yes, Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- STATE 2: LOADING VIEW -->
+  <div id="logoutLoadingState" class="hidden py-4">
+    <!-- Spinner -->
+    <div class="relative w-10 h-10 mx-auto mb-4">
+      <div class="w-10 h-10 rounded-full border-2 border-navy-200 dark:border-slate-700"></div>
+      <div class="w-10 h-10 rounded-full border-2 border-navy-800 dark:border-slate-200 border-t-transparent animate-spin absolute top-0 left-0"></div>
+    </div>
+
+    <h4 class="text-xs font-semibold text-navy-900 dark:text-slate-100 tracking-wide" id="logoutStatusText">Logging out...</h4>
+    <p class="text-[10px] text-navy-400 dark:text-slate-400 mt-1">Clearing secure session variables</p>
+  </div>
+
+  </div>
+</div>
+
+<!-- ====================================================================
+     SCRIPTS
+     ==================================================================== -->
+
+<!-- Sidebar toggle (client-only, from includes/sidebar.php) -->
+<script src="../frontend/assets/js/dashboard.js"></script>
+
+<script>
+/* ========================================================================
+   QUOTE MODAL (from quotes.php + quote_modal.php — 100% client-side)
+   ======================================================================== */
+function closeQuoteModal() {
+    const modal = document.getElementById('quoteModal');
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    const container = modal.querySelector('.transform');
+    container.style.transform = 'scale(0.95)';
+}
+
+// Add Row functionality
+function addRow() {
+    const tbody = document.getElementById('quoteTableBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="px-6 py-4"><input type="number" name="qty[]" class="w-16 bg-white border border-slate-200 rounded-lg px-2 py-1 text-center text-sm focus:ring-2 focus:ring-blue-500" value="1" onchange="calculateTotal()"></td>
+        <td class="px-6 py-4"><input type="text" name="desc[]" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500" placeholder="Enter item description"></td>
+        <td class="px-6 py-4"><input type="number" name="price[]" class="w-24 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-right text-sm focus:ring-2 focus:ring-blue-500" value="0.00" onchange="calculateTotal()"></td>
+        <td class="px-6 py-4 text-right font-semibold text-slate-900">$0.00</td>
+        <td class="px-6 py-4 text-center"><button type="button" class="text-red-500 hover:text-red-700 transition-colors" onclick="removeRow(this)"><i class="fa-solid fa-trash"></i></button></td>
+    `;
+    tbody.appendChild(row);
+}
+
+// Remove Row functionality
+function removeRow(btn) {
+    const tbody = document.getElementById('quoteTableBody');
+    if (tbody.rows.length > 1) {
+        btn.closest('tr').remove();
+        calculateTotal();
+    } else {
+        alert("You can't remove the last row.");
+    }
+}
+
+// Calculate Total functionality
+function calculateTotal() {
+    const rows = document.querySelectorAll('#quoteTableBody tr');
+    let subtotal = 0;
+    rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('input[name="qty[]"]').value) || 0;
+        const price = parseFloat(row.querySelector('input[name="price[]"]').value) || 0;
+        const amount = qty * price;
+        row.children[3].innerText = '$' + amount.toFixed(2);
+        subtotal += amount;
+    });
+    const vat = subtotal * 0.12;
+    const total = subtotal + vat;
+    document.getElementById('subtotalDisplay').innerText = '$' + subtotal.toFixed(2);
+    document.getElementById('vatDisplay').innerText = '$' + vat.toFixed(2);
+    document.getElementById('totalDisplay').innerText = '$' + total.toFixed(2);
+}
+
+// Open Quote Modal from "New Quote" button
+document.getElementById('newQuoteBtn').addEventListener('click', () => {
+    const modal = document.getElementById('quoteModal');
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+    const container = modal.querySelector('.transform');
+    container.style.transform = 'scale(1)';
+});
+
+/* ========================================================================
+   CHAT SHELL STUBS (static preview — no fetch / WebSocket)
+   ======================================================================== */
+
+// --- Floating chat head (header.php) ---
+function toggleChatWindow() {
+    document.getElementById('chat-head-window').classList.toggle('hidden');
+}
+function loadAgentConversations() {
+    /* Static preview: no backend to load conversations from. */
+}
+function sendChatHeadMessage(e) {
+    e.preventDefault();
+    const box = document.getElementById('chat-head-messages');
+    const first = box.querySelector('div');
+    if (first && /static preview/i.test(first.textContent)) box.innerHTML = '';
+    const note = document.createElement('div');
+    note.className = 'text-center';
+    note.innerHTML = '<span class="text-[10px] text-slate-400 italic">Static preview — chat requires the backend.</span>';
+    box.appendChild(note);
+    const input = document.getElementById('chat-head-input');
+    if (input) input.value = '';
+    box.scrollTop = box.scrollHeight;
+}
+
+// --- Floating chat widget (chat_widget.php) ---
+document.getElementById('toggleChatBtn').addEventListener('click', () => {
+    document.getElementById('chatModal').classList.toggle('hidden');
+});
+function loadCustomerList() {
+    /* Static preview: no backend to load the customer inbox from. */
+}
+function handoverToAI() {
+    /* Static preview: no backend to hand over to. */
+}
+lucide.createIcons();
+/* ========================================================================
+   LOGOUT MODAL (from logout.js — same flow, client-only:
+   in this static copy the confirm does NOT redirect to /logout.php)
+   ======================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutModal = document.getElementById('logoutModal');
+  const logoutModalContainer = document.getElementById('logoutModalContainer');
+  const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+  const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+  const confirmState = document.getElementById('logoutConfirmState');
+  const loadingState = document.getElementById('logoutLoadingState');
+  const statusText = document.getElementById('logoutStatusText');
+
+  // Open Logout Modal
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault(); // static page: never navigate to logout.php
+      logoutModal?.classList.remove('opacity-0', 'pointer-events-none');
+      logoutModalContainer?.classList.remove('scale-95');
+      logoutModalContainer?.classList.add('scale-100');
+    });
+  }
+
+  // Close Modal Function
+  function closeModal() {
+    logoutModalContainer?.classList.remove('scale-100');
+    logoutModalContainer?.classList.add('scale-95');
+    logoutModal?.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  if (cancelLogoutBtn) {
+    cancelLogoutBtn.addEventListener('click', closeModal);
+  }
+
+  // Click outside modal background to close
+  logoutModal?.addEventListener('click', (e) => {
+    if (e.target === logoutModal) closeModal();
+  });
+
+  // Confirm Logout Action — same animation as logout.js,
+  // but ends with a "static preview" notice instead of the redirect
+  if (confirmLogoutBtn) {
+    confirmLogoutBtn.addEventListener('click', () => {
+      confirmState?.classList.add('hidden');
+      loadingState?.classList.remove('hidden');
+
+      setTimeout(() => {
+        if (statusText) statusText.innerText = "Securing session cleanup...";
+      }, 500);
+
+      setTimeout(() => {
+        if (statusText) statusText.innerText = "Static preview — no backend to log out from.";
+      }, 1000);
+
+      setTimeout(() => {
+        // original: window.location.href = '/logout.php';
+        closeModal();
+        confirmState?.classList.remove('hidden');
+        loadingState?.classList.add('hidden');
+        if (statusText) statusText.innerText = "Logging out...";
+      }, 1400);
+    });
+  }
+});
+</script>
+</body>
+</html>

@@ -28,8 +28,8 @@ function make_api_request($endpoint, $method = 'GET', $data = null, $is_form_dat
     // Base cURL Options
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15); // 15 seconds timeout
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 45); // 15 seconds timeout
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
 
     $headers = [];
     

@@ -2,7 +2,7 @@
 // 1. I-import at tawagin ang Service
 require_once __DIR__ . '/../services/SidebarService.php';
 
-use App\Services\SidebarService;
+use App\services\SidebarService;
 
 $sidebarService = new SidebarService();
 $sidebar = $sidebarService->getSidebarData();

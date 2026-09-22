@@ -14,5 +14,5 @@ COPY . .
 # 5. Expose port 8000 para sa FastAPI
 EXPOSE 8000
 
-# 6. Command para patakbuhin ang FastAPI gamit ang Uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# 6. Command para patakbuhin ang FastAPI gamit ang Uvicorn sa production
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

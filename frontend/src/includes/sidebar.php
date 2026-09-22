@@ -1,6 +1,6 @@
 <?php
 // 1. I-import at tawagin ang Service
-require_once __DIR__ . '/../Services/SidebarService.php';
+require_once __DIR__ . '/../services/SidebarService.php';
 
 use App\Services\SidebarService;
 

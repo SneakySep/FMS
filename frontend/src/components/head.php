@@ -2,6 +2,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Priority Handling Logistics - Sales Agent Portal</title>
 
+<!-- Browser Tab Favicon (New Logo) -->
+<link rel="icon" type="image/png" href="assets/image/New%20logo.png">
+
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -11,6 +14,7 @@
 
 <!-- Custom CSS Styles -->
 <link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="assets/css/auth.css">
 
 <!-- Tailwind Config Customization -->
 <script>

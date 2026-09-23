@@ -139,6 +139,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php include 'src/components/footer.php'; ?>
 
-    <script src="assets/js/footer.js"></script>
 </body>
 </html>

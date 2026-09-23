@@ -35,7 +35,7 @@ def start_scheduler():
 # 2. CORS Middleware 
 app.add_middleware(
     CORSMiddleware,
-   allow_origins=["https://core3.priority-handling.com"],  # Sa production, palitan  ito ng mismong URL ng PHP frontend 
+   allow_origins=["*"],  # Sa production, palitan  ito ng mismong URL ng PHP frontend 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -236,9 +236,21 @@
                 </div>
               </div>
 
-              <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-md shadow-indigo-500/30 transition hover:from-violet-700 hover:to-indigo-700 hover:-translate-y-0.5 active:scale-[0.98]">
-                <i class="fa-solid fa-floppy-disk"></i> Save Status Update
-              </button>
+              <div class="flex gap-3">
+                <!-- SEND PDF QUOTATION BUTTON -->
+                <button
+                  type="button"
+                  title="Send PDF Quotation"
+                  class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 py-3 text-xs font-bold text-white shadow-md shadow-emerald-500/30 transition hover:shadow-lg hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-[0.98]"
+                  onclick="handlePdfQuoteClick(event, _currentLead)">
+                  <i class="fa-solid fa-file-pdf"></i> Send PDF Quotation
+                </button>
+
+                <!-- SAVE STATUS UPDATE BUTTON -->
+                <button type="submit" class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-md shadow-indigo-500/30 transition hover:from-violet-700 hover:to-indigo-700 hover:-translate-y-0.5 active:scale-[0.98]">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Status Update
+                </button>
+              </div>
             </div>
           </div>
 

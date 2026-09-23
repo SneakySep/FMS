@@ -1,4 +1,7 @@
-const API_URL = window.APP_CONFIG.API_BASE_URL;
+﻿const API_URL = window.APP_CONFIG.API_BASE_URL;
+
+// Global reference to the currently opened lead for modal operations
+var _currentLead = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const statusSelect = document.getElementById('modalStatusSelect');
@@ -9,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Live update sa Value Chip 
   const priceInput = document.getElementById('modalPriceInput');
   if (priceInput) {
     priceInput.addEventListener('input', function () {
@@ -96,8 +98,6 @@ function restrictStatusDropdown(currentStatus) {
 
   Array.from(select.options).forEach(option => {
     const optionIdx = stageOrder(option.value);
-
-    // Idi-disable ang mga nakalipas na status 
     if (optionIdx < currentIdx && normalizeStatus(option.value) !== 'closed_lost') {
       option.disabled = true;
       if (!option.innerText.includes('(Locked)')) {
@@ -112,72 +112,63 @@ function restrictStatusDropdown(currentStatus) {
 
 function openViewModal(lead) {
   console.log("OPENING MODAL WITH DATA:", lead);
-
-  // 1. Lead ID at Header Info
+  _currentLead = lead;
   document.getElementById('modalLeadId').value = lead.id || lead.lead_id || '';
   const company = lead.company_name || lead.company || 'N/A';
   document.getElementById('modalCompany').innerText = company;
-  document.getElementById('modalCode').innerText = lead.inquiry_code || lead.code || ('INQ-' + String(lead.id || '').substring(0, 8));
-
-  // 2. Compute Dynamic Avatar Initials 
-  const avatarElem = document.getElementById('modalAvatar');
-  if (avatarElem) {
-    avatarElem.innerText = generateInitials(company);
+  document.getElementById('modalCode').innerText = lead.inquiry_code || lead.code || 'INQ-' + (lead.id || '');
+  const avatarEl = document.getElementById('modalAvatar');
+  if (avatarEl) {
+    avatarEl.innerText = generateInitials(company);
   }
-
-  // 3. Contact Info
-  const contact = lead.contact_person || lead.contact || 'N/A';
+  const origin = lead.origin || 'N/A';
+  const destination = lead.destination || 'N/A';
+  const route = origin + ' → ' + destination;
+  document.getElementById('modalRoute').innerText = route;
+  document.getElementById('modalService').innerText = lead.service_type || 'General Freight';
+  document.getElementById('modalCargo').value = lead.cargo_details || lead.initial_inquiry_text || '';
   const email = lead.email || 'N/A';
   const phone = lead.phone_number || lead.phone || 'N/A';
-
-  document.getElementById('modalContact').innerText = contact;
-  document.getElementById('modalEmail').innerText = email;
-  document.getElementById('modalPhone').innerText = phone;
-  document.getElementById('modalPlatform').innerText = (lead.platform_used === 'Google Forms') ? 'Gmail' : (lead.platform_used || 'N/A');
-  document.getElementById('modalService').innerText = lead.service_type || lead.service || 'N/A';
-  document.getElementById('modalRoute').innerText = (lead.origin || 'N/A') + ' ➔ ' + (lead.destination || 'N/A');
-
-  // 4. Action Buttons 
-  const emailBtn = document.getElementById('contactModalEmailBtn');
-  const emailText = document.getElementById('contactModalEmailText');
-  if (emailBtn && emailText) {
-    emailText.innerText = email;
-    emailBtn.href = (email !== 'N/A') ? `mailto:${email}` : '#';
+  const contactEmail = document.getElementById('modalEmail');
+  const contactEmailBtn = document.getElementById('contactModalEmailBtn');
+  const contactEmailText = document.getElementById('contactModalEmailText');
+  if (contactEmail) {
+    contactEmail.innerText = email;
+    contactEmailBtn.href = (email !== 'N/A') ? 'mailto:' + email : '#';
   }
-
-  const phoneBtn = document.getElementById('contactModalPhoneBtn');
-  const phoneText = document.getElementById('contactModalPhoneText');
-  if (phoneBtn && phoneText) {
-    phoneText.innerText = phone;
-    phoneBtn.href = (phone !== 'N/A') ? `tel:${phone}` : '#';
+  if (contactEmailText) {
+    contactEmailText.innerText = email;
+    contactEmailBtn.href = (email !== 'N/A') ? 'mailto:' + email : '#';
   }
-
-  // 5. Cargo Details
+  const contactPhone = document.getElementById('modalPhone');
+  const contactPhoneBtn = document.getElementById('contactModalPhoneBtn');
+  const contactPhoneText = document.getElementById('contactModalPhoneText');
+  if (contactPhone) {
+    contactPhone.innerText = phone;
+    contactPhoneBtn.href = (phone !== 'N/A') ? 'tel:' + phone : '#';
+  }
+  if (contactPhoneText) {
+    contactPhoneText.innerText = phone;
+    contactPhoneBtn.href = (phone !== 'N/A') ? 'tel:' + phone : '#';
+  }
   const cargoElem = document.getElementById('modalCargo');
   if (cargoElem) {
     cargoElem.value = lead.cargo_details || lead.initial_inquiry_text || '';
   }
-
-  // 6. Price Auto-Fill 
   const rawPrice = parseFloat(lead.estimated_amount ?? lead.estimated_price ?? lead.agreed_price ?? 0);
   const priceInput = document.getElementById('modalPriceInput');
   if (priceInput) {
     priceInput.value = rawPrice > 0 ? rawPrice : '';
   }
   updateValueChip(rawPrice);
-
-  // 7. Status & Stepper Alignment
   const currentStatus = normalizeStatus(lead.status);
   const statusSelect = document.getElementById('modalStatusSelect');
   if (statusSelect) {
     statusSelect.value = currentStatus;
   }
-
   restrictStatusDropdown(currentStatus);
   togglePickupFields(currentStatus);
   syncStepper();
-
-  // 8. Display Modal
   const modal = document.getElementById('viewModal');
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -194,11 +185,9 @@ async function handleStatusUpdate(e) {
   const leadId = document.getElementById('modalLeadId').value;
   const newStatus = document.getElementById('modalStatusSelect').value;
   const priceVal = document.getElementById('modalPriceInput').value;
-
   const cargoDetails = document.getElementById('modalCargo')?.value.trim();
   const pickupAddress = document.getElementById('modalPickupAddress')?.value.trim();
   const pickupDateTime = document.getElementById('modalPickupDateTime')?.value;
-
   if (newStatus === 'closed_won') {
     if (!pickupAddress || !pickupDateTime) {
       if (typeof SwiftAlert !== 'undefined') {
@@ -213,7 +202,6 @@ async function handleStatusUpdate(e) {
       return;
     }
   }
-
   const payload = {
     status: newStatus,
     estimated_amount: priceVal ? parseFloat(priceVal) : 0,
@@ -222,23 +210,53 @@ async function handleStatusUpdate(e) {
     pickup_address: pickupAddress || null,
     pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null
   };
-
   try {
-    const response = await fetch(`${API_URL}/api/v1/leads/${leadId}/status`, {
+    const response = await fetch(API_URL + '/api/v1/leads/' + leadId + '/status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
     if (response.ok) {
       closeViewModal();
       location.reload();
     } else {
       const errData = await response.json();
-      alert(`Update Failed: ${errData.detail || 'Could not update lead record.'}`);
+      alert('Update Failed: ' + (errData.detail || 'Could not update lead record.'));
     }
   } catch (err) {
     console.error(err);
     alert('Cannot connect to FastAPI server. Make sure Uvicorn is running!');
+  }
+}
+
+function openLeadModal() {
+  console.log('openLeadModal called');
+  try {
+    var modal = document.getElementById('leadModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      console.log('Lead modal opened');
+    } else {
+      console.warn('Lead modal element not found');
+      alert('Error: Lead modal not found');
+    }
+  } catch (err) {
+    console.error('Error in openLeadModal:', err);
+    alert('Error: ' + err.message);
+  }
+}
+
+function handlePdfQuoteClick(event, lead) {
+  event.preventDefault();
+  event.stopPropagation();
+  console.log('handlePdfQuoteClick called with lead:', lead);
+  try {
+    var leadData = lead || _currentLead || {};
+    console.log('Lead data to pass to openQuoteModal:', leadData);
+    openQuoteModal(leadData);
+  } catch (err) {
+    console.error('Error in handlePdfQuoteClick:', err);
+    alert('Error: ' + err.message);
   }
 }

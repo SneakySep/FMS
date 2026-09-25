@@ -70,7 +70,8 @@ $navSections = $sidebar['navSections'];
                                     </button>
 
                                     <!-- SUBMENU LIST -->
-                                    <ul id="sub-<?= $key ?>" class="hidden pl-4 pr-1 pt-1 pb-1 space-y-0.5 crm-reveal">
+                                    <?php $isChildActive = in_array($activePage, array_keys($item['submenu'])); ?>
+                                    <ul id="sub-<?= $key ?>" class="<?= $isChildActive ? '' : 'hidden ' ?>pl-4 pr-1 pt-1 pb-1 space-y-0.5 crm-reveal">
                                         <?php foreach ($item['submenu'] as $subKey => $subItem):
                                             $isSubActive = ($activePage === $subKey);
                                         ?>

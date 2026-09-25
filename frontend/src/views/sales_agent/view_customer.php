@@ -19,6 +19,11 @@ $contact_person = $customer_data['contact_person'] ?? $customer_data['name'] ?? 
 $company_name   = $customer_data['company_name'] ?? $customer_data['company'] ?? 'N/A';
 $email          = $customer_data['email'] ?? 'N/A';
 $phone_number   = $customer_data['phone_number'] ?? $customer_data['phone'] ?? 'N/A';
+// Address fields (used to pre-fill the booking shipment modal consignor block)
+$customer_address = $customer_data['address'] ?? $customer_data['billing_address'] ?? $customer_data['street_address'] ?? '';
+$customer_city    = $customer_data['city'] ?? $customer_data['town'] ?? '';
+$customer_country = $customer_data['country'] ?? 'Philippines';
+$customer_zip     = $customer_data['zip_code'] ?? $customer_data['zipcode'] ?? $customer_data['zip'] ?? $customer_data['postal_code'] ?? '';
 $total_bookings = (int)($customer_data['total_bookings'] ?? $customer_data['bookings'] ?? 0);
 $tier           = strtoupper($customer_data['tier'] ?? 'BRONZE');
 $avatar_url     = $customer_data['avatar_url'] ?? $customer_data['profile_picture'] ?? null;
@@ -52,13 +57,12 @@ function getCustomerTierBadge($tier) {
 }
 
 // ----------------------------------------------------------------------
-// BOOKING DATASET
+// BOOKING DATASET (JSON mock — swap for live fetch when endpoint exists)
 // TODO: Palitan ito ng live fetch kapag may endpoint na:
 //   $res = make_api_request("/api/v1/customers/".urlencode($customer_id)."/bookings", 'GET');
 //   $bookings = $res['data']['data'] ?? $res['data'] ?? [];
-// Sa ngayon, gumagamit tayo ng sample dataset para sa dashboard visuals.
 // ----------------------------------------------------------------------
-$bookings = [
+$bookings_fallback = [
     ['ref' => 'BK-94820', 'service' => 'Freight Transport', 'date' => 'Aug 20, 2026', 'amount' => 15400.00, 'status' => 'Completed', 'origin' => 'Manila', 'destination' => 'Cebu'],
     ['ref' => 'BK-93102', 'service' => 'Cargo Logistics',   'date' => 'Jul 14, 2026', 'amount' => 8200.00,  'status' => 'Completed', 'origin' => 'Pasig', 'destination' => 'Davao'],
     ['ref' => 'BK-92511', 'service' => 'Cold Chain',         'date' => 'Jun 30, 2026', 'amount' => 11250.00, 'status' => 'Completed', 'origin' => 'Quezon', 'destination' => 'Iloilo'],
@@ -67,6 +71,14 @@ $bookings = [
     ['ref' => 'BK-89910', 'service' => 'Cargo Logistics',   'date' => 'Apr 27, 2026', 'amount' => 7300.00,  'status' => 'Cancelled', 'origin' => 'Cavite','destination' => 'Pampanga'],
     ['ref' => 'BK-88431', 'service' => 'Freight Transport', 'date' => 'Mar 15, 2026', 'amount' => 12500.00, 'status' => 'Completed', 'origin' => 'Manila', 'destination' => 'Cagayan'],
 ];
+$bookings = $bookings_fallback;
+$bookings_json_path = __DIR__ . '/../../data/sales_agent/view_customer_bookings.json';
+if (is_readable($bookings_json_path)) {
+    $decoded = json_decode(@file_get_contents($bookings_json_path), true);
+    if (is_array($decoded) && !empty($decoded)) {
+        $bookings = $decoded;
+    }
+}
 
 // ---- Derive KPIs from the booking dataset (keeps numbers consistent) ----
 $status_counts = ['Completed' => 0, 'In Transit' => 0, 'Pending' => 0, 'Cancelled' => 0];
@@ -267,7 +279,7 @@ $donut_labels = ['Completed', 'In Transit', 'Pending', 'Cancelled'];
             </thead>
             <tbody class="divide-y divide-slate-100 text-sm">
             <?php if (!empty($bookings)): ?>
-              <?php foreach ($bookings as $bk): ?>
+              <?php foreach ($bookings as $i => $bk): ?>
                 <tr class="hover:bg-slate-50/80 transition">
                   <td class="py-4 px-4 font-bold text-purple-600"><?= htmlspecialchars($bk['ref']) ?></td>
                   <td class="py-4 px-4 text-slate-600"><?= htmlspecialchars($bk['service']) ?></td>
@@ -277,10 +289,15 @@ $donut_labels = ['Completed', 'In Transit', 'Pending', 'Cancelled'];
                   <td class="py-4 px-4">
                     <span class="px-2.5 py-1 rounded-full text-xs font-semibold <?= getStatusPill($bk['status']) ?>"><?= htmlspecialchars($bk['status']) ?></span>
                   </td>
-                  <td class="py-4 px-4 align-middle text-right">
-                    <a href="#" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg inline-flex items-center justify-center transition" title="View Details">
+                  <td class="py-4 px-4 align-middle text-right relative">
+                    <button type="button" onclick="toggleBookingRowMenu(event, 'bookingRowMenu<?= (int)$i ?>')" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg inline-flex items-center justify-center transition" title="Actions">
                       <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </a>
+                    </button>
+                    <div id="bookingRowMenu<?= (int)$i ?>" class="hidden absolute right-4 top-12 z-30 w-56 rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden text-left">
+                      <button type="button" onclick="openAgentBookingModal(event, <?= (int)$i ?>)" class="w-full flex items-center gap-2.5 px-4 py-3 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition">
+                        <i class="fa-solid fa-truck-fast text-purple-600"></i>Book Shipment
+                      </button>
+                    </div>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -363,8 +380,135 @@ $donut_labels = ['Completed', 'In Transit', 'Pending', 'Cancelled'];
 
 </main>
 
+<!-- BOOKING SHIPMENT MODAL (same modal as customer dashboard; consignor pre-filled below) -->
+<?php
+// booking_modal.php also uses $customer_id from the session — preserve the viewed
+// customer id so the prefill data below stays correct.
+$__view_customer_id = $customer_id;
+$booking_customer_id_preset = $customer_id;
+include_once '../../components/booking_modal.php';
+$customer_id = $__view_customer_id;
+?>
+
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>
+
+<!-- BOOKING SHIPMENT MODAL JS (same behaviour as customer dashboard) -->
+<script src="/assets/js/customer/customer_dashboard.js"></script>
+<script>
+// Viewed customer snapshot for consignor pre-fill (editable, except hidden id).
+// Full JSON mock rows (same data as the Booking History table) so the clicked
+// row can pre-fill the whole consignment note.
+window.AGENT_BOOKING_ROWS = <?= json_encode(array_values($bookings), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+window.AGENT_BOOKING_CUSTOMER = <?= json_encode([
+  'id'           => $customer_id,
+  'company_name' => $company_name,
+  'contact_person' => $contact_person,
+  'phone'        => ($phone_number !== 'N/A' ? $phone_number : ''),
+  'address'      => $customer_address,
+  'city'         => $customer_city,
+  'country'      => $customer_country,
+  'zip'          => $customer_zip,
+], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+
+function toggleBookingRowMenu(event, menuId) {
+  if (event) event.stopPropagation();
+  var menu = document.getElementById(menuId);
+  if (!menu) return;
+  var isHidden = menu.classList.contains('hidden');
+  document.querySelectorAll('[id^="bookingRowMenu"]').forEach(function (m) {
+    if (m.id !== menuId) m.classList.add('hidden');
+  });
+  menu.classList.toggle('hidden', !isHidden);
+}
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('[id^="bookingRowMenu"]') && !e.target.closest('[onclick^="toggleBookingRowMenu"]')) {
+    document.querySelectorAll('[id^="bookingRowMenu"]').forEach(function (m) { m.classList.add('hidden'); });
+  }
+});
+
+function setBookingField(id, value) {
+  var el = document.getElementById(id);
+  if (!el || value === undefined || value === null || value === '') return;
+  el.value = value;
+}
+
+function setSenderName(value) {
+  var sender = document.getElementById('senderName');
+  if (!sender || !value) return;
+  var exists = Array.prototype.some.call(sender.options, function (o) { return o.value === value; });
+  if (!exists) {
+    var opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    sender.appendChild(opt);
+  }
+  sender.value = value;
+}
+
+function setCheckboxGroup(nameAttr, values) {
+  if (!values) return;
+  var list = Array.isArray(values) ? values : [values];
+  document.querySelectorAll('input[name="' + nameAttr + '"]').forEach(function (el) {
+    el.checked = list.indexOf(el.value) > -1;
+  });
+}
+
+function openAgentBookingModal(event, rowIndex) {
+  if (event) { event.preventDefault(); event.stopPropagation(); }
+  document.querySelectorAll('[id^="bookingRowMenu"]').forEach(function (m) { m.classList.add('hidden'); });
+
+  var c = window.AGENT_BOOKING_CUSTOMER || {};
+  var rows = window.AGENT_BOOKING_ROWS || [];
+  var row = (typeof rowIndex === 'number' && rows[rowIndex]) ? rows[rowIndex] : {};
+  var consignor = row.consignor || {};
+  var consignee = row.consignee || {};
+  var cargo = row.cargo || {};
+
+  // Hidden id always comes from the viewed customer, never from mock rows.
+  setBookingField('bookingCustomerId', c.id || '');
+
+  // Consignor: mock row first, viewed customer as fallback. Editable.
+  setSenderName(consignor.name || c.company_name || '');
+  setBookingField('senderTel', consignor.tel || c.phone || '');
+  setBookingField('senderAddress', consignor.address || c.address || '');
+  setBookingField('senderCity', consignor.city || c.city || '');
+  setBookingField('senderCountry', consignor.country || c.country || 'Philippines');
+  setBookingField('senderZip', consignor.zip || c.zip || '');
+
+  // Consignee + cargo: full mock pre-fill from the clicked row's JSON.
+  setBookingField('consigneeAttention', consignee.attention || '');
+  setBookingField('consigneeCompany', consignee.company || '');
+  setBookingField('consigneeAddress', consignee.address || '');
+  setBookingField('consigneeCity', consignee.city || '');
+  setBookingField('consigneeState', consignee.state || '');
+  setBookingField('consigneeCountry', consignee.country || '');
+  setBookingField('consigneeZip', consignee.zip || '');
+  setBookingField('consigneeTel', consignee.tel || '');
+  setBookingField('courier_date', cargo.courier_date || '');
+  setBookingField('courier_time', cargo.courier_time || '');
+  setBookingField('goodsDesc', cargo.goodsDesc || '');
+  setBookingField('declared_amount', cargo.declared_amount || '');
+  setBookingField('qty_pcs', cargo.qty_pcs || '');
+  setBookingField('wt_kilos', cargo.wt_kilos || '');
+  setBookingField('wt_grams', cargo.wt_grams || '');
+  setBookingField('dim_length', cargo.dim_length || '');
+  setBookingField('dim_width', cargo.dim_width || '');
+  setBookingField('dim_height', cargo.dim_height || '');
+  setCheckboxGroup('service', cargo.service);
+  setCheckboxGroup('shipment_type', cargo.shipment_type);
+  setCheckboxGroup('pkg_size', cargo.pkg_size);
+  setCheckboxGroup('charge', cargo.charges);
+
+  if (typeof openBookingModal === 'function') {
+    openBookingModal();
+  } else {
+    var modal = document.getElementById('bookingModal');
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+  }
+}
+</script>
 
 <!-- BOOKING STATUS DONUT + HELPERS -->
 <script>

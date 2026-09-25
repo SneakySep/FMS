@@ -6,7 +6,9 @@
  * Opened from the customer dashboard "Book Shipment" / "New Booking" / "Book" actions.
  */
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$customer_id = $_SESSION['customer_id'] ?? $_SESSION['user_id'] ?? '';
+// Sales-agent view_customer.php may preset this to the viewed customer so an
+// agent can book on the customer's behalf; otherwise fall back to the session.
+$customer_id = $booking_customer_id_preset ?? $_SESSION['customer_id'] ?? $_SESSION['user_id'] ?? '';
 ?>
 <style>
     :root {

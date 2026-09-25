@@ -41,8 +41,11 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $page_title ?? 'SwiftFreight - Sales Portal' ?></title>
 
-    <!-- Browser Tab Favicon (New Logo) -->
-    <link rel="icon" type="image/png" href="../../../assets/image/New%20logo.png">
+    <!-- Browser Tab Favicon (Circular Logo) -->
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <link rel="icon" type="image/png" sizes="64x64" href="../../../assets/image/logo-circle-64.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../../assets/image/logo-circle.png">
+    <link rel="apple-touch-icon" href="../../../assets/image/logo-circle.png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>

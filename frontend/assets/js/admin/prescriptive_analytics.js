@@ -49,26 +49,155 @@ async function fetchPrescriptiveAnalytics() {
     }
 }
 
-// 1. Render Alerts
-function renderAlerts(alerts) {
-    const container = document.getElementById("alerts-container");
-    if (!container) return;
+// 1. Render Alerts — card rows matching site aesthetic
+let prescriptiveAlertsCache = [];
+let prescriptiveAlertFilter = 'ALL';
 
-    if (alerts.length === 0) {
-        container.classList.add("hidden");
+function escapeHtmlAlert(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function parseAlertMeta(alert) {
+    const msg = alert.alert_message || '';
+    const mCompany = msg.match(/'([^']+)'/);
+    const mHours = msg.match(/([0-9,.]+)[ ]*oras/);
+    return {
+        company: alert.company_name || (mCompany ? mCompany[1] : 'Lead'),
+        hours: alert.hours_unattended ?? (mHours ? mHours[1] : null)
+    };
+}
+
+function styleAlertFilterButtons() {
+    document.querySelectorAll('.alert-filter-btn').forEach((btn) => {
+        const active = btn.dataset.alertFilter === prescriptiveAlertFilter;
+        btn.className = 'alert-filter-btn px-3 py-1 rounded-lg transition-all ' + (active
+            ? 'bg-white text-[#1A1A1A] font-semibold shadow-sm'
+            : 'text-gray-500 hover:text-slate-800');
+    });
+}
+
+function buildAlertRow(a) {
+    const isCritical = a.severity === 'CRITICAL';
+    const meta = parseAlertMeta(a);
+    const safeMsg = escapeHtmlAlert(a.alert_message);
+    const safeCompany = escapeHtmlAlert(meta.company);
+    const safeSev = escapeHtmlAlert(a.severity);
+    const accent = isCritical ? 'border-l-rose-500 hover:border-rose-200' : 'border-l-amber-400 hover:border-amber-200';
+    const iconWrap = isCritical ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-amber-50 text-amber-600 border-amber-100';
+    const pill = isCritical ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200';
+    const iconSvg = isCritical
+        ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>'
+        : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l2.5 2.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+    const ping = isCritical ? '<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>' : '';
+    const subHours = meta.hours !== null ? '<span aria-hidden="true">•</span><span class="inline-flex items-center gap-1"><i class="fa-regular fa-clock text-[10px]"></i>' + escapeHtmlAlert(meta.hours) + ' hrs pending</span>' : '';
+    return '' +
+    '<article class="alert-row flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-xl bg-white border border-slate-200 border-l-4 ' + accent + ' hover:shadow-sm transition-all duration-200">' +
+        '<div class="flex items-start gap-3 flex-1 min-w-0">' +
+            '<span class="relative flex w-9 h-9 shrink-0 items-center justify-center rounded-xl border ' + iconWrap + '">' + iconSvg + ping + '</span>' +
+            '<div class="min-w-0 flex-1">' +
+                '<p class="text-sm font-medium text-slate-800 leading-snug">' + safeMsg + '</p>' +
+                '<p class="text-xs text-gray-400 mt-1 flex items-center gap-1.5 flex-wrap">' +
+                    '<span class="inline-flex items-center gap-1"><i class="fa-regular fa-building text-[10px]"></i>' + safeCompany + '</span>' +
+                    subHours +
+                    '<span aria-hidden="true">•</span><span>High-probability</span>' +
+                '</p>' +
+            '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2 shrink-0 sm:pl-2">' +
+            '<span class="text-[11px] font-bold px-2.5 py-1 rounded-full border ' + pill + '">' + safeSev + '</span>' +
+            '<button type="button" data-alert-action="view" data-company="' + safeCompany + '" title="Highlight lead in table" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition active:scale-95"><i class="fa-solid fa-arrow-right text-[10px]"></i><span class="hidden md:inline">View Lead</span></button>' +
+            '<button type="button" data-alert-action="dismiss" title="Dismiss alert" aria-label="Dismiss alert for ' + safeCompany + '" class="w-8 h-8 rounded-lg border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>' +
+        '</div>' +
+    '</article>';
+}
+function renderAlerts(alerts) {
+    prescriptiveAlertsCache = Array.isArray(alerts) ? alerts : [];
+    const section = document.getElementById("alerts-section");
+    const container = document.getElementById("alerts-container");
+    const badge = document.getElementById("alerts-count-badge");
+    if (!section || !container) return;
+    bindAlertControlsOnce();
+    styleAlertFilterButtons();
+    if (prescriptiveAlertsCache.length === 0) {
+        section.classList.add("hidden");
+        container.innerHTML = "";
         return;
     }
+    section.classList.remove("hidden");
+    const critN = prescriptiveAlertsCache.filter((x) => x.severity === "CRITICAL").length;
+    if (badge) {
+        badge.textContent = critN > 0 ? critN + " critical" : (prescriptiveAlertsCache.length - critN) + " warning";
+        badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-full border " + (critN > 0 ? "bg-rose-50 text-rose-700 border-rose-200" : "bg-amber-50 text-amber-700 border-amber-200");
+    }
+    const visible = prescriptiveAlertsCache.filter((x) => prescriptiveAlertFilter === "ALL" || x.severity === prescriptiveAlertFilter);
+    if (visible.length === 0) {
+        container.innerHTML = '<div class="text-center py-6 text-sm text-slate-400">No ' + escapeHtmlAlert(prescriptiveAlertFilter.toLowerCase()) + ' alerts right now.</div>';
+        return;
+    }
+    container.innerHTML = visible.map(buildAlertRow).join("");
+}
 
-    container.classList.remove("hidden");
-    container.innerHTML = alerts.map(a => `
-        <div class="flex items-center justify-between p-3.5 rounded-xl ${a.severity === 'CRITICAL' ? 'bg-rose-50 border border-rose-200 text-rose-800' : 'bg-amber-50 border border-amber-200 text-amber-800'}">
-            <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full ${a.severity === 'CRITICAL' ? 'bg-rose-600' : 'bg-amber-600'} animate-ping"></span>
-                <p class="text-sm font-medium">${a.alert_message}</p>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-current font-semibold">${a.severity}</span>
-        </div>
-    `).join("");
+function bindAlertControlsOnce() {
+    const container = document.getElementById("alerts-container");
+    if (container && !container.dataset.bound) {
+        container.dataset.bound = "1";
+        container.addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-alert-action]");
+            if (!btn) return;
+            const row = btn.closest(".alert-row");
+            if (btn.dataset.alertAction === "dismiss" && row) {
+                row.style.transition = "opacity .25s ease, transform .25s ease";
+                row.style.opacity = "0";
+                row.style.transform = "translateX(12px)";
+                setTimeout(() => {
+                    row.remove();
+                    if (container.querySelectorAll(".alert-row").length === 0) {
+                        container.innerHTML = '<div class="flex items-center justify-center gap-2 py-6 text-sm text-slate-400"><i class="fa-solid fa-circle-check text-emerald-500"></i>All caught up — no follow-ups pending.</div>';
+                        const b = document.getElementById("alerts-count-badge");
+                        if (b) { b.textContent = "all clear"; b.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"; }
+                    }
+                }, 240);
+            }
+            if (btn.dataset.alertAction === "view") {
+                const tbody = document.getElementById("leads-table-body");
+                const company = (btn.dataset.company || "").toLowerCase();
+                if (tbody) {
+                    tbody.scrollIntoView({ behavior: "smooth", block: "center" });
+                    const match = Array.from(tbody.querySelectorAll("tr")).find((r) => r.textContent.toLowerCase().includes(company));
+                    if (match) {
+                        match.style.backgroundColor = "#fef2f2";
+                        match.style.outline = "1px solid #fecaca";
+                        setTimeout(() => { match.style.backgroundColor = ""; match.style.outline = ""; }, 2200);
+                    }
+                }
+            }
+        });
+    }
+    document.querySelectorAll(".alert-filter-btn").forEach((btn) => {
+        if (btn.dataset.bound) return;
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", () => {
+            prescriptiveAlertFilter = btn.dataset.alertFilter || "ALL";
+            renderAlerts(prescriptiveAlertsCache);
+        });
+    });
+    const toggleBtn = document.getElementById("btn-toggle-alerts");
+    if (toggleBtn && !toggleBtn.dataset.bound) {
+        toggleBtn.dataset.bound = "1";
+        toggleBtn.addEventListener("click", () => {
+            const list = document.getElementById("alerts-container");
+            const chev = document.getElementById("alerts-chevron");
+            if (!list) return;
+            const collapsed = list.classList.toggle("hidden");
+            toggleBtn.setAttribute("aria-expanded", String(!collapsed));
+            if (chev) chev.style.transform = collapsed ? "rotate(180deg)" : "rotate(0deg)";
+        });
+    }
 }
 
 // 2. Render Lead Prioritization

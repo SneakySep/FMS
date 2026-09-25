@@ -76,7 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($_SESSION["temp_email"]);
 
             // 4. Dynamic Redirect
-            if ($user_role === "admin") {
+            if ($user_role === "super_admin" || $user_role === "superadmin") {
+                header("Location: /src/views/Super_admin/dashboard.php");
+            } else if ($user_role === "admin") {
                 header("Location: /src/views/admin/dashboard.php");
             } else if ($user_role === "sales_agent" || $user_role === "sales") {
                 header("Location: /src/views/sales_agent/dashboard.php");

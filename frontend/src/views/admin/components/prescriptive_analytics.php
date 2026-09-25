@@ -17,10 +17,36 @@
         </button>
     </div>
 
-    <!-- Alert Banner: Follow-up Alerts -->
-    <div id="alerts-container" class="space-y-3 hidden">
-        <!-- Dynamic Alerts inserted via JS -->
-    </div>
+    <!-- Alert Card: Follow-up Attention Needed -->
+    <section id="alerts-section" class="hidden bg-white rounded-2xl border border-[#E5E5DF] shadow-sm overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-[#F0F0EC]">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                </span>
+                <div class="min-w-0">
+                    <h2 class="text-base font-bold text-[#1A1A1A] flex items-center gap-2 flex-wrap">
+                        Follow-up Attention Needed
+                        <span id="alerts-count-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">0 critical</span>
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5">High-probability leads pending too long — act before they go cold.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <div class="inline-flex p-1 bg-[#F3F3EF] rounded-xl border border-[#E5E5DF] text-xs font-medium" role="tablist" aria-label="Filter alerts by severity">
+                    <button type="button" data-alert-filter="ALL" class="alert-filter-btn px-3 py-1 rounded-lg bg-white text-[#1A1A1A] font-semibold transition-all shadow-sm">All</button>
+                    <button type="button" data-alert-filter="CRITICAL" class="alert-filter-btn px-3 py-1 rounded-lg text-gray-500 transition-all hover:text-rose-600">Critical</button>
+                    <button type="button" data-alert-filter="WARNING" class="alert-filter-btn px-3 py-1 rounded-lg text-gray-500 transition-all hover:text-amber-600">Warning</button>
+                </div>
+                <button type="button" id="btn-toggle-alerts" aria-expanded="true" aria-controls="alerts-container" title="Collapse section" class="w-8 h-8 rounded-lg border border-[#E5E5DF] bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition flex items-center justify-center">
+                    <i id="alerts-chevron" class="fa-solid fa-chevron-up text-xs transition-transform duration-200"></i>
+                </button>
+            </div>
+        </div>
+        <div id="alerts-container" class="p-4 sm:p-5 space-y-3">
+            <!-- Dynamic Alerts inserted via JS -->
+        </div>
+    </section>
 
     <!-- Top Grid: Lead Prioritization & Next Best Action -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

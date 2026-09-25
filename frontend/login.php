@@ -44,6 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if($_SESSION["role"] === 'admin' || $_SESSION["role"] === 'administrator') {
                 header("Location: src/views/admin/dashboard.php"); // Path ng Admin Dashboard mo
             } 
+            else if($_SESSION["role"] === 'super_admin' || $_SESSION["role"] === 'superadmin') {
+                header("Location: src/views/Super_admin/dashboard.php"); // Super Admin Dashboard (JSON demo mode)
+            }
             else if($_SESSION["role"] === 'customer') {
                 header("Location: src/views/customer/dashboard.php"); // Path ng Customer Dashboard mo
             } 

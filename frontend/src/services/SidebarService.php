@@ -48,6 +48,27 @@ class SidebarService
         $leads = 0;
         $alerts = 0;
         $tickets = 0;
+        $totalUsers = 0;
+        $restricted = 0;
+        $auditUnread = 0;
+
+        $norm = strtolower($role);
+        if ($norm === 'super_admin' || $norm === 'superadmin') {
+            $jsonPath = __DIR__ . '/../data/super_admin_mock.json';
+            if (file_exists($jsonPath)) {
+                $decoded = json_decode(@file_get_contents($jsonPath), true);
+                if (is_array($decoded)) {
+                    $totalUsers = count($decoded['users'] ?? []);
+                    $restricted = count(array_filter($decoded['restricted_accounts'] ?? [], function ($r) {
+                        return ($r['status'] ?? '') === 'restricted';
+                    }));
+                    $auditUnread = count(array_filter($decoded['audit_events'] ?? [], function ($e) {
+                        return empty($e['is_read']) && in_array($e['severity'] ?? '', ['high', 'critical'], true);
+                    }));
+                }
+            }
+            return ['leads' => $leads, 'alerts' => $alerts, 'tickets' => $tickets, 'total_users' => $totalUsers, 'restricted' => $restricted, 'audit_unread' => $auditUnread];
+        }
 
         if (function_exists('make_api_request')) {
             if ($role === 'admin') {
@@ -65,7 +86,7 @@ class SidebarService
             }
         }
 
-        return ['leads' => $leads, 'alerts' => $alerts, 'tickets' => $tickets];
+        return ['leads' => $leads, 'alerts' => $alerts, 'tickets' => $tickets, 'total_users' => 0, 'restricted' => 0, 'audit_unread' => 0];
     }
 
     /**
@@ -110,6 +131,46 @@ class SidebarService
         $leads   = $stats['leads'] ?? 0;
         $alerts  = $stats['alerts'] ?? 0;
         $tickets = $stats['tickets'] ?? 0;
+        $totalUsers = $stats['total_users'] ?? 0;
+        $restricted = $stats['restricted'] ?? 0;
+        $auditUnread = $stats['audit_unread'] ?? 0;
+
+        $normRole = strtolower($role);
+        if ($normRole === 'super_admin' || $normRole === 'superadmin') {
+            return [
+                'portalLabel' => 'SUPER ADMIN PORTAL',
+                'sections' => [
+                    'OVERVIEW' => [
+                        'dashboard' => ['label' => 'Dashboard', 'icon' => 'fa-chart-pie', 'url' => 'dashboard.php'],
+                    ],
+                    'MANAGEMENT' => [
+                        'create_account' => [
+                            'label' => 'Create Account',
+                            'icon' => 'fa-user-plus',
+                            'url' => 'create_account.php',
+                            'badge' => (string)$totalUsers,
+                            'badgeColor' => 'bg-violet-500/20 text-violet-300'
+                        ],
+                    ],
+                    'SECURITY' => [
+                        'restricted_accounts' => [
+                            'label' => 'Restricted Accounts',
+                            'icon' => 'fa-user-lock',
+                            'url' => 'restricted_accounts.php',
+                            'badge' => (string)$restricted,
+                            'badgeColor' => $restricted > 0 ? 'bg-rose-500/20 text-rose-300' : 'bg-slate-800 text-slate-500'
+                        ],
+                        'audit_trail' => [
+                            'label' => 'Audit Trail',
+                            'icon' => 'fa-shield-halved',
+                            'url' => 'audit_trail.php',
+                            'badge' => (string)$auditUnread,
+                            'badgeColor' => $auditUnread > 0 ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-500'
+                        ],
+                    ],
+                ]
+            ];
+        }
 
         if ($role === 'admin') {
             return [

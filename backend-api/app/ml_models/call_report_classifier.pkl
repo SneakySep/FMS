@@ -1,0 +1,56 @@
+import os
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+
+# 1. Gumawa ng sample training dataset base sa mga call reports
+data = {
+    "remarks": [
+        "As per Ms. Geraldine, her boss is the one who usually send shipments mostly to Middle East. They are using DHL and their rate is approximately PHP 2,000-2.400. I discussed our services with her and provided her with our brochure, rates and calling card. She said that she will endorse it to her boss.",
+        "They do not send documents internationally; they are the one receiving documents from abroad.",
+        "They send documents to Kuwait but very often, they just send shipments when it's needed. They are using DHL. But I still introduced our services and gave her brochure, rates and calling card. She said that she will endorse it.",
+        "I spoke with Sir Noel, and he said that they send documents to Japan and they are using FEDEX, I asked how much their rate is, but he does not have an idea. So, I explained our services with him and gave him brochure, rates and calling card. He told me that he will endorse it internally.",
+        "They do not send documents internationally; they just email or scan it to lower the cost of the company."
+    ],
+    "status": [
+        "Follow-Up",
+        "Not Interested",
+        "Follow-Up",
+        "Follow-Up",
+        "Not Interested"
+    ],
+    "rating": [
+        "Warm",
+        "Cold",
+        "Warm",
+        "Hot",
+        "Cold"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# 2. Gamitin ang Scikit-Learn Pipeline (TF-IDF Vectorizer + Random Forest Classifier)
+# MultiOutputClassifier para sabay na mahulaan ang status at rating
+from sklearn.multioutput import MultiOutputClassifier
+
+X = df["remarks"]
+y = np.array(df[["status", "rating"]])
+
+pipeline = Pipeline([
+    ("tfidf", TfidfVectorizer(stop_words="english", ngram_range=(1, 2))),
+    ("clf", MultiOutputClassifier(RandomForestClassifier(n_estimators=50, random_state=42)))
+])
+
+print("Training the Scikit-Learn model...")
+pipeline.fit(X, y)
+
+# 3. I-save ang trained model papuntang .pkl file
+os.makedirs("app/ml_models", exist_ok=True)
+model_path = "app/ml_models/call_report_classifier.pkl"
+joblib.dump(pipeline, model_path)
+
+print(f"Model successfully trained and saved to {model_path}!")

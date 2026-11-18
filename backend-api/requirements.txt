@@ -2,6 +2,7 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.14.1
 APScheduler==3.11.3
+bcrypt==5.0.0
 brotli==1.2.0
 certifi==2026.6.17
 cffi==2.1.0
@@ -46,6 +47,7 @@ narwhals==2.25.0
 numpy==2.5.2
 packaging==26.2
 pandas==3.0.5
+passlib==1.7.4
 patsy==1.0.3
 pillow==12.3.0
 pluggy==1.6.0

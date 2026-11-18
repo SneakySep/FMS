@@ -1,37 +1,42 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from typing import Optional, Dict, Any, List
-from app.service.campaign_service import CampaignService
+from fastapi import APIRouter, HTTPException, status, Depends
+from app.schemas.sales_agent.campaign_schema import CampaignCreateSchema
+from app.service.sales_agent.campaign_service import CampaignService
+from app.middleware.security import RoleChecker
 
-router = APIRouter(prefix="/api/v1/campaigns", tags=["Campaigns & Events"])
+campaign_router = APIRouter(
+    prefix="/api/sales/campaigns",
+    tags=["Sales Agent Campaigns"]
+)
 
-# POST: Para sa pag-upload ng Sales Agent
-@router.post("/create")
-async def create_campaign_post(
-    title: str = Form(...),
-    description: Optional[str] = Form(None),
-    is_permanent: bool = Form(False),
-    start_date: Optional[str] = Form(None),
-    end_date: Optional[str] = Form(None),
-    agent_id: Optional[str] = Form(None),
-    image: UploadFile = File(...)
-) -> Dict[str, Any]:
+@campaign_router.post("/create", status_code=status.HTTP_201_CREATED)
+async def create_campaign(
+    payload: CampaignCreateSchema,
+    current_user = Depends(RoleChecker(["sales_agent", "manager", "super_admin"]))
+):
+    """
+    Endpoint para sa Sales Agent para mag-post ng campaign:
+    - Sine-save sa database (may pagpipilian kung permanent o may expiration).
+    - Awtomatikong nagpapadala ng email broadcast sa lahat ng customer.
+    - Protektado ng RoleChecker.
+    """
     try:
-        return await CampaignService.create_campaign(
-            title=title,
-            description=description,
-            is_permanent=is_permanent,
-            start_date=start_date,
-            end_date=end_date,
-            image_file=image,
-            agent_id=agent_id
+        service = CampaignService()
+        # Kunin ang ID ng kasalukuyang nag-log in na employee mula sa current_user object
+        agent_id = getattr(current_user, "id", None) or current_user.get("id")
+
+        result = await service.create_and_broadcast_campaign(
+            agent_id=agent_id,
+            data=payload
         )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
-# GET: Para sa pagpapakita sa Customer Dashboard
-@router.get("/active-posts")
-def get_active_posts() -> List[Dict[str, Any]]:
-    try:
-        return CampaignService.get_active_campaigns_for_customer()
+        return {
+            "success": True,
+            "message": f"Campaign successfully published and broadcasted to {result['emails_sent']} customers.",
+            "data": result["campaign"]
+        }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create campaign: {str(e)}"
+        )

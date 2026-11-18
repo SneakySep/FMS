@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.supabase_config.supabase import supabase_secondary
 from datetime import datetime, timezone
 
-router = APIRouter(prefix="/api/v1/super_admin/dashboard", tags=["Admin Dashboard"])
+router = APIRouter(prefix="/api/v1/super_admin/dashboard", tags=["Super Admin Dashboard"])
 
 @router.get("/stats")
 async def get_dashboard_stats():

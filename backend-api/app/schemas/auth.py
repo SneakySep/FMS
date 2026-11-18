@@ -1,40 +1,54 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
-# Schema  para sa register (optinal lang muna to)
-class UserRegister(BaseModel):
-    email: EmailStr
-    password: str = Field(..., min_length=8, description="Password must be at least 8 characters log")
-    first_name: str = Field(..., min_length=1, description="Firstname is required")
-    last_name: str = Field(..., min_length=1, description="Lastname is required")
-
-
-# 1. Schema para sa login
-class UserLogin(BaseModel):
+# 1. Schema para sa pag-login ng user
+class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-
-# 2. Schema para sa success response sa login
+# 2. Schema para sa Token response galing sa Supabase Auth
 class TokenResponse(BaseModel):
     access_token: str
-    refresh_token: str # session refresh sa PHP
     token_type: str = "bearer"
-    user_id: str
-    email: str
-    role: str
+    refresh_token: Optional[str] = None
 
-# 3. Schema para sa pag balik ng profile data sa User
-class UserProfile(BaseModel):
-    id: str
-    email: str
+# 3. Schema para sa Employee Profile data 
+class EmployeeResponse(BaseModel):
+    employee_id: str        
+    auth_id: str            
     first_name: str
     last_name: str
-    role: str
+    email: EmailStr
+    phone: Optional[str] = None
+    position: Optional[str] = None
+    role: str               
+    created_at: str
 
-    
-# additonal
-class LoginResponse(BaseModel):
-    status: str
+    class Config:
+        from_attributes = True
+
+# 4. Combined response pag successful ang login 
+class AuthResponse(BaseModel):
     message: str
-    email: str
+    token: TokenResponse
+    employee: EmployeeResponse
+
+# 5. Sync sa crm project
+class SyncAuthResponse(BaseModel):
+    message: str
+    token: TokenResponse
+    employee: EmployeeResponse
+    synced_to_crm: bool
+
+class EmployeeCreateRequest(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    position: str
+    role: str 
+    employee_id: str
+
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str

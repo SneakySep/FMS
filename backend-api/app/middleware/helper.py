@@ -17,7 +17,7 @@ def send_otp_email(to_email: str, otp_code: str):
     msg['To'] = to_email
     msg['Subject'] = f"{otp_code} is your Priority Handling Logistics Inc. Verification Code"
 
-    logo_url = "https://ueexljyfzygzhgjluqhm.supabase.co/storage/v1/object/public/assets/logo1.jpg"
+    logo_url = "https://ikptlfzgqotfnneqkgae.supabase.co/storage/v1/object/public/assets/logo1.jpg"
 
     # HTML Body clean look 
     html_content = f"""

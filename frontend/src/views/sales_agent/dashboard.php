@@ -1,60 +1,10 @@
 <?php
+
+require_once '../../controllers/sales_agent/dashboard_controller.php';
+
 $page_title = "Sales Agent Dashboard · PRIORITY HANDLING";
 
 include_once '../../includes/header.php';
-require_once '../../helpers/api_helper.php';
-
-// 1. Fetch Dynamic Leads Stats mula sa FastAPI (/api/v1/leads/stats)
-$stats_res  = make_api_request('/api/v1/leads/stats', 'GET');
-$stats_data = $stats_res['data'] ?? [];
-
-// 2. Fetch Dashboard KPIs (Revenue & Customers Closed month vs last month)
-$kpi_res     = make_api_request('/api/v1/leads/dashboard-kpis', 'GET');
-
-// INAYOS DITO: Kinuha ang inner 'data' object mula sa FastAPI Response 
-$kpi_data    = $kpi_res['data']['data'] ?? $kpi_res['data'] ?? [];
-
-$revenue_current   = (float)($kpi_data['revenue']['current'] ?? 0);
-$revenue_diff      = (float)($kpi_data['revenue']['diff'] ?? 0);
-$customers_current = (int)($kpi_data['customers_closed']['current'] ?? 0);
-$customers_diff    = (int)($kpi_data['customers_closed']['diff'] ?? 0);
-
-// Extract Live Counts
-$total_leads = (int)($stats_data['all'] ?? 0);
-$new_inquiry = (int)($stats_data['new_inquiry'] ?? 0);
-$qualifying  = (int)($stats_data['qualifying'] ?? 0);
-$quote_sent  = (int)($stats_data['quote_sent'] ?? 0);
-$negotiation = (int)($stats_data['negotiation'] ?? 0);
-$closed_won  = (int)($stats_data['closed_won'] ?? 0);
-
-// Compute Percentage para sa Pipeline Progress Bars
-$max_count = max(1, $total_leads); 
-$pipeline  = [
-    'new_inquiry' => ['count' => $new_inquiry, 'percentage' => min(100, round(($new_inquiry / $max_count) * 100))],
-    'qualifying'  => ['count' => $qualifying,  'percentage' => min(100, round(($qualifying / $max_count) * 100))],
-    'quote_sent'  => ['count' => $quote_sent,  'percentage' => min(100, round(($quote_sent / $max_count) * 100))],
-    'negotiation' => ['count' => $negotiation, 'percentage' => min(100, round(($negotiation / $max_count) * 100))],
-    'won_mtd'     => ['count' => $closed_won,  'percentage' => min(100, round(($closed_won / $max_count) * 100))],
-];
-
-// 3. Fetch Pending Leads para sa Escalation Queue Widget 
-$recent_leads_res = make_api_request('/api/v1/leads/?status=new_inquiry&limit=5', 'GET');
-$escalations      = $recent_leads_res['data']['data'] ?? [];
-
-// Helper function para sa Status Badges
-function getContractStatusBadge($status) {
-    switch (strtoupper(trim($status))) {
-        case 'ACTIVE':
-            return 'bg-emerald-100 text-emerald-600';
-        case 'PENDING':
-        case 'PENDING APPROVAL':
-            return 'bg-amber-100 text-amber-600';
-        case 'DRAFT':
-            return 'bg-blue-100 text-blue-600';
-        default:
-            return 'bg-slate-100 text-slate-600';
-    }
-}
 ?>
 
 <!-- SIDEBAR INCLUDE -->
@@ -63,30 +13,25 @@ function getContractStatusBadge($status) {
 <!-- MAIN CONTENT AREA -->
 <main class="flex-1 overflow-y-auto bg-[#F8FAFC] p-6 lg:p-8">
 
-  <!-- TOP HEADER & NAVBAR -->
-  <?php include_once '../../components/top_header.php'; ?>
+    <!-- TOP HEADER & NAVBAR -->
+    <?php include_once '../../components/top_header.php'; ?>
 
-  <!-- ROW 1: TOP KPI METRICS -->
-  <?php include_once 'components/kpi_cards.php'; ?>
+    <!-- PAGE HEADING -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-extrabold text-slate-900">Sales Dashboard & Pipeline</h1>
+        <p class="text-xs text-slate-500 mt-1">Welcome Back, <?php echo htmlspecialchars($_SESSION['first_name'] ?? 'Agent'); ?>! Here are your live performance and inquiries..</p>
+    </div>
 
-  <!-- ROW 3: PIPELINE ACTIVITY & TOP CUSTOMERS -->
-  <div class="mt-6">
-    <?php include_once 'components/top_routes.php'; ?>
-   
-  </div>
+    <!-- INCLUDE KPI CARDS COMPONENT -->
+    <?php include_once 'components/dashboard/kpi_cards.php'; ?>
 
-    <!-- MODALS -->
-  <?php include_once 'components/lead_modal.php'; ?>
+    <!-- INCLUDE KANBAN BOARD COMPONENT -->
+    <?php include_once 'components/dashboard/kanban_board.php'; ?>
 
 </main>
 
-<?php include_once 'components/alert.php'; ?>
-
-<!-- SCRIPT  -->
-
-<script src="../../../assets/js/sales_agent/kpi.js"></script>
-<script src="../../../assets/js/sales_agent/new_leads.js"></script>
-<script src="../../../assets/js/sales_agent/top_routes.js"></script>
-
 <!-- FOOTER INCLUDE -->
 <?php include_once '../../includes/footer.php'; ?>
+
+<!-- SALES AGENT CUSTOM JS -->
+<script src="../../../assets/js/sales_agent/kanban.js"></script>

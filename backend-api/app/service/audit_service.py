@@ -1,25 +1,21 @@
 from app.supabase_config.supabase import supabase_secondary
-from typing import Optional
+from datetime import datetime, timezone
 
-def log_audit(
-    user_email: str,
-    user_role: str,
-    action: str,         
-    module: str,         
-    details: Optional[str] = None,
-    user_id: Optional[str] = None,
-    ip_address: Optional[str] = None
-):
+async def log_audit(user_email: str, action: str, ip_address: str = None, details: dict = None):
+   
     try:
-        data = {
-            "user_id": user_id,
+        audit_payload = {
             "user_email": user_email,
-            "user_role": user_role,
             "action": action,
-            "module": module,
-            "details": details,
-            "ip_address": ip_address
+            "ip_address": ip_address,
+            "details": details or {},
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
-        supabase_secondary.table("audit_logs").insert(data).execute()
+
+       
+        response = supabase_secondary.table('audit_logs').insert(audit_payload).execute()
+        return response
+        
     except Exception as e:
-        print(f"DEBUG: Failed to insert audit log: {e}")
+        print(f"CRITICAL ERROR: Failed to save audit log -> {str(e)}")
+        return None

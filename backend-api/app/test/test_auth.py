@@ -1,258 +1,218 @@
 import sys
-from unittest.mock import MagicMock
-
+from unittest.mock import MagicMock, AsyncMock
 sys.modules["weasyprint"] = MagicMock()
-
 import pytest
-import json
-from datetime import datetime, timezone, timedelta
 from fastapi.testclient import TestClient
 from unittest.mock import patch
-from app.main import app  # Siguraduhing nasa ilalim ito ng sys.modules mock
+from app.main import app 
 
 client = TestClient(app)
 
 # ==========================================
-# MOCK CLASSES & HELPERS
+# 1. TEST LOGIN ENDPOINT (Updated para sa bagong flow)
 # ==========================================
 
-class FakeUser:
-    id = "mocked-uuid-1234"
-    email = "christian@gmail.com"
-
-class FakeSession:
-    access_token = "mock-access-token"
-    refresh_token = "mock-refresh-token"
-
-class FakeAuthResponse:
-    user = FakeUser()
-    session = FakeSession()
-
-class DynamicQueryChain:
-    """Flexible mock query chain para sa iba't ibang Supabase table calls."""
-    def __init__(self, data=None):
-        self._data = data if data is not None else []
-
-    def select(self, *args, **kwargs):
-        return self
-
-    def eq(self, *args, **kwargs):
-        return self
-
-    def maybe_single(self, *args, **kwargs):
-        return self
-
-    def update(self, *args, **kwargs):
-        return self
-
-    def insert(self, *args, **kwargs):
-        return self
-
-    def execute(self, *args, **kwargs):
-        mock_res = MagicMock()
-        mock_res.data = self._data
-        return mock_res
-
-
-# ==========================================
-# 1. TEST: VALIDATION
-# ==========================================
-
-def test_login_validation_failed():
-    payload = {
-        "email": "invalid-email-format",
-        "password": ""
-    }
-    response = client.post("/api/auth/login", json=payload)
-    assert response.status_code == 422
-
-
-# ==========================================
-# 2. TEST: LOGIN (PRIMARY & SECONDARY AUTH)
-# ==========================================
-
-@patch("app.routes.auth.auth.log_audit")
+@patch("app.routes.auth.auth.get_auth_client_secondary")
+@patch("app.routes.auth.auth.supabase_secondary")
+@patch("app.routes.auth.auth.redis_client")
 @patch("app.routes.auth.auth.send_otp_email")
-@patch("app.routes.auth.auth.redis_client")
-@patch("app.routes.auth.auth.supabase_secondary")
-@patch("app.routes.auth.auth.supabase")
-def test_login_primary_success(
-    mock_supabase_primary, mock_supabase_secondary, mock_redis, mock_send_email, mock_audit
-):
-    # Setup mocks
-    mock_supabase_secondary.table.return_value = DynamicQueryChain(data=None) # Walang restriction
-    mock_supabase_primary.auth.sign_in_with_password.return_value = FakeAuthResponse()
-    mock_supabase_primary.table.return_value = DynamicQueryChain(data=[{"role": "sales"}])
+@patch("app.routes.auth.auth.log_audit", new_callable=AsyncMock)
+def test_login_success(mock_log_audit, mock_send_email, mock_redis, mock_supabase_sec, mock_get_auth_client):
+    # 1. Mock restriction check (Wala pang lockout)
+    mock_restriction_res = MagicMock()
+    mock_restriction_res.data = None
 
-    payload = {
-        "email": "christian@gmail.com",
-        "password": "securepassword123",
+    # 2. Mock employee table lookup (Para makuha ang role na 'staff')
+    mock_emp_res = MagicMock()
+    mock_emp_res.data = {
+        "employee_id": "EMP-001",
+        "email": "testemployee@example.com",
+        "role": "staff"
     }
 
-    response = client.post("/api/auth/login", json=payload)
+    # I-configure ang mock ng supabase_secondary 
+    def supabase_table_side_effect(table_name):
+        table_mock = MagicMock()
+        if table_name == "login_restrictions":
+            table_mock.select.return_value.eq.return_value.maybe_single.return_value.execute.return_value = mock_restriction_res
+        elif table_name == "employees":
+            table_mock.select.return_value.ilike.return_value.maybe_single.return_value.execute.return_value = mock_emp_res
+        return table_mock
 
-    assert response.status_code == 200
-    assert response.json()["status"] == "otp_sent"
-    assert response.json()["email"] == "christian@gmail.com"
-    assert mock_redis.setex.called
-    assert mock_send_email.called
+    mock_supabase_sec.table.side_effect = supabase_table_side_effect
 
-
-@patch("app.routes.auth.auth.log_audit")
-@patch("app.routes.auth.auth.send_otp_email")
-@patch("app.routes.auth.auth.redis_client")
-@patch("app.routes.auth.auth.supabase_secondary")
-@patch("app.routes.auth.auth.supabase")
-def test_login_secondary_customer_success(
-    mock_supabase_primary, mock_supabase_secondary, mock_redis, mock_send_email, mock_audit
-):
-    # Primary Auth fails, Fallback to Secondary Auth (Customer)
-    mock_supabase_primary.auth.sign_in_with_password.side_effect = Exception("Primary failed")
+    # 3. Mock Supabase Secondary Auth sign-in success
+    mock_user = MagicMock()
+    mock_user.id = "fake-auth-uuid-123"
+    mock_auth_response = MagicMock()
+    mock_auth_response.user = mock_user
     
-    mock_supabase_secondary.auth.sign_in_with_password.return_value = FakeAuthResponse()
-    mock_supabase_secondary.table.return_value = DynamicQueryChain(data=[{"role": "customer"}])
+    mock_auth_client_instance = MagicMock()
+    mock_auth_client_instance.auth.sign_in_with_password.return_value = mock_auth_response
+    mock_get_auth_client.return_value = mock_auth_client_instance
 
-    payload = {
-        "email": "customer@gmail.com",
-        "password": "customerpassword123",
-    }
+    # Mock email sending & redis
+    mock_send_email.return_value = True
+    mock_redis.setex.return_value = True
 
-    response = client.post("/api/auth/login", json=payload)
+    response = client.post("/api/auth/login", json={
+        "email": "testemployee@example.com",
+        "password": "SecurePassword123!"
+    })
 
-    assert response.status_code == 200
-    assert response.json()["status"] == "otp_sent"
-    assert mock_redis.setex.called
-    assert mock_send_email.called
-
-
-# ==========================================
-# 3. TEST: FAILED LOGIN & RESTRICTION LOGIC
-# ==========================================
-
-@patch("app.routes.auth.auth.is_customer_account", return_value=False)
-@patch("app.routes.auth.auth.record_failed_attempt", return_value=(1, False))
-@patch("app.routes.auth.auth.supabase_secondary")
-@patch("app.routes.auth.auth.supabase")
-def test_login_staff_failed_attempt_counter(
-    mock_supabase_primary, mock_supabase_secondary, mock_record_failed, mock_is_customer
-):
-    # Fail both primary and secondary
-    mock_supabase_primary.auth.sign_in_with_password.side_effect = Exception("Failed")
-    mock_supabase_secondary.auth.sign_in_with_password.side_effect = Exception("Failed")
-    mock_supabase_secondary.table.return_value = DynamicQueryChain(data=None)
-
-    payload = {
-        "email": "staff@gmail.com",
-        "password": "wrongpassword",
-    }
-
-    response = client.post("/api/auth/login", json=payload)
-
-    assert response.status_code == 401
-    assert "4 attempt(s) left" in response.json()["detail"]
-    assert mock_record_failed.called
-
-
-@patch("app.routes.auth.auth.is_customer_account", return_value=False)
-@patch("app.routes.auth.auth.record_failed_attempt", return_value=(5, True))
-@patch("app.routes.auth.auth.supabase_secondary")
-@patch("app.routes.auth.auth.supabase")
-def test_login_staff_fifth_failed_attempt_triggers_restriction(
-    mock_supabase_primary, mock_supabase_secondary, mock_record_failed, mock_is_customer
-):
-    mock_supabase_primary.auth.sign_in_with_password.side_effect = Exception("Failed")
-    mock_supabase_secondary.auth.sign_in_with_password.side_effect = Exception("Failed")
-    mock_supabase_secondary.table.return_value = DynamicQueryChain(data=None)
-
-    payload = {
-        "email": "staff@gmail.com",
-        "password": "wrongpassword",
-    }
-
-    response = client.post("/api/auth/login", json=payload)
-
-    assert response.status_code == 403
-    assert "Maximum failed login attempts (5) reached" in response.json()["detail"]
-
-
-@patch("app.routes.auth.auth.supabase_secondary")
-def test_login_precheck_blocked_if_restricted(mock_supabase_secondary):
-    # Simulate an account currently restricted in the DB
-    future_time = (datetime.now(timezone.utc) + timedelta(minutes=20)).isoformat()
-    restricted_data = {
-        "is_restricted": True,
-        "restricted_until": future_time
-    }
-    
-    mock_supabase_secondary.table.return_value = DynamicQueryChain(data=restricted_data)
-
-    payload = {
-        "email": "locked@gmail.com",
-        "password": "anypassword",
-    }
-
-    response = client.post("/api/auth/login", json=payload)
-
-    assert response.status_code == 403
-    assert "Account temporarily restricted" in response.json()["detail"]
-
-
-# ==========================================
-# 4. TEST: VERIFY OTP
-# ==========================================
-
-@patch("app.routes.auth.auth.log_audit")
-@patch("app.routes.auth.auth.redis_client")
-def test_verify_otp_success(mock_redis, mock_audit):
-    cached_session = {
-        "otp": "123456",
-        "access_token": "valid-jwt-token",
-        "refresh_token": "valid-refresh-token",
-        "user_id": "user-uuid-123",
-        "email": "christian@gmail.com",
-        "role": "sales"
-    }
-    
-    mock_redis.get.return_value = json.dumps(cached_session)
-
-    response = client.post("/api/auth/verify-otp", params={"email": "christian@gmail.com", "otp_code": "123456"})
-    
     assert response.status_code == 200
     data = response.json()
-    assert data["access_token"] == "valid-jwt-token"
-    assert data["role"] == "sales"
-    assert data["token_type"] == "bearer"
-    mock_redis.delete.assert_called_once_with("pre_auth:christian@gmail.com")
-    assert mock_audit.called
+    assert data["requires_otp"] is True
+    assert data["email"] == "testemployee@example.com"
+    assert data["role"] == "staff"
+    assert "Login successful" in data["message"]
 
 
-@patch("app.routes.auth.auth.log_audit")
-@patch("app.routes.auth.auth.redis_client")
-def test_verify_otp_invalid_code(mock_redis, mock_audit):
-    cached_session = {
-        "otp": "123456",
-        "access_token": "token",
-        "refresh_token": "token",
-        "user_id": "user-uuid-123",
-        "email": "christian@gmail.com",
-        "role": "sales"
+@patch("app.routes.auth.auth.supabase_secondary")
+@patch("app.routes.auth.auth.handle_failed_login", new_callable=AsyncMock)
+@patch("app.routes.auth.auth.log_audit", new_callable=AsyncMock)
+def test_login_employee_not_found(mock_log_audit, mock_handle_failed, mock_supabase_sec):
+    # Mock restriction check (Wala pang lockout)
+    mock_restriction_res = MagicMock()
+    mock_restriction_res.data = None
+
+    # Mock employee table lookup na nagbabalik ng None (Wala sa CRM employees table)
+    mock_emp_res = MagicMock()
+    mock_emp_res.data = None
+
+    def supabase_table_side_effect(table_name):
+        table_mock = MagicMock()
+        if table_name == "login_restrictions":
+            table_mock.select.return_value.eq.return_value.maybe_single.return_value.execute.return_value = mock_restriction_res
+        elif table_name == "employees":
+            table_mock.select.return_value.ilike.return_value.maybe_single.return_value.execute.return_value = mock_emp_res
+        return table_mock
+
+    mock_supabase_sec.table.side_effect = supabase_table_side_effect
+
+    response = client.post("/api/auth/login", json={
+        "email": "notfound@example.com",
+        "password": "SomePassword123!"
+    })
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
+    mock_handle_failed.assert_awaited_once()
+
+
+@patch("app.routes.auth.auth.get_auth_client_secondary")
+@patch("app.routes.auth.auth.supabase_secondary")
+@patch("app.routes.auth.auth.handle_failed_login", new_callable=AsyncMock)
+@patch("app.routes.auth.auth.log_audit", new_callable=AsyncMock)
+def test_login_invalid_credentials(mock_log_audit, mock_handle_failed, mock_supabase_sec, mock_get_auth_client):
+    # Mock restriction check
+    mock_restriction_res = MagicMock()
+    mock_restriction_res.data = None
+
+    # Mock employee table lookup (Valid employee pero mali ang password sa Supabase Auth)
+    mock_emp_res = MagicMock()
+    mock_emp_res.data = {
+        "employee_id": "EMP-001",
+        "email": "testemployee@example.com",
+        "role": "staff"
     }
-    mock_redis.get.return_value = json.dumps(cached_session)
 
-    response = client.post("/api/auth/verify-otp", params={"email": "christian@gmail.com", "otp_code": "999999"})
-    
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Wrong OTP code"
-    assert mock_audit.called
+    def supabase_table_side_effect(table_name):
+        table_mock = MagicMock()
+        if table_name == "login_restrictions":
+            table_mock.select.return_value.eq.return_value.maybe_single.return_value.execute.return_value = mock_restriction_res
+        elif table_name == "employees":
+            table_mock.select.return_value.ilike.return_value.maybe_single.return_value.execute.return_value = mock_emp_res
+        return table_mock
 
+    mock_supabase_sec.table.side_effect = supabase_table_side_effect
 
-@patch("app.routes.auth.auth.log_audit")
+    # Mock Supabase Auth exception (Invalid password)
+    mock_auth_client_instance = MagicMock()
+    mock_auth_client_instance.auth.sign_in_with_password.side_effect = Exception("Invalid credentials")
+    mock_get_auth_client.return_value = mock_auth_client_instance
+
+    response = client.post("/api/auth/login", json={
+        "email": "testemployee@example.com",
+        "password": "WrongPassword"
+    })
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
+    mock_handle_failed.assert_awaited_once()
+
+# ==========================================
+# 2. TEST VERIFY OTP ENDPOINT (/api/auth/verify-otp)
+# ==========================================
+
+@patch("app.routes.auth.auth.jwt.encode")
+@patch("app.routes.auth.auth.settings")
+@patch("app.routes.auth.auth.supabase_secondary")
 @patch("app.routes.auth.auth.redis_client")
-def test_verify_otp_expired_or_missing_session(mock_redis, mock_audit):
-    mock_redis.get.return_value = None
+@patch("app.routes.auth.auth.log_audit", new_callable=AsyncMock)
+def test_verify_otp_success(mock_log_audit, mock_redis, mock_supabase_sec, mock_settings, mock_jwt_encode):
+    # Mock Redis stored OTP
+    mock_redis.get.return_value = b"123456"
 
-    response = client.post("/api/auth/verify-otp", params={"email": "christian@gmail.com", "otp_code": "123456"})
+    # Mock JWT secret and encoded token return value
+    mock_settings.SUPABASE_JWT_SECRET = "fake-jwt-secret-key"
+    mock_jwt_encode.return_value = "mocked.jwt.access.token.string"
+
+    # Mock employee lookup in CRM database
+    mock_emp_res = MagicMock()
+    mock_emp_res.data = {
+        "id": "uuid-db-123",
+        "employee_id": "EMP-001",
+        "email": "testemployee@example.com",
+        "role": "staff"
+    }
+    mock_supabase_sec.table.return_value.select.return_value.ilike.return_value.maybe_single.return_value.execute.return_value = mock_emp_res
+
+    response = client.post("/api/auth/verify-otp", json={
+        "email": "testemployee@example.com",
+        "otp": "123456"
+    })
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "OTP verified successfully."
+    assert data["access_token"] == "mocked.jwt.access.token.string"
+    assert data["token_type"] == "bearer"
+    assert data["employee"]["employee_id"] == "EMP-001"
     
-    assert response.status_code == 400
-    assert "Expired na o walang nahanap" in response.json()["detail"]
-    assert mock_audit.called
+    mock_redis.delete.assert_called_once_with("otp:testemployee@example.com")
+    mock_jwt_encode.assert_called_once()
+
+# ==========================================
+# 3. TEST RBAC PROTECTED ENDPOINT (/api/auth/me)
+# ==========================================
+
+@patch("app.routes.auth.auth.supabase_secondary")
+def test_get_current_employee_profile_success(mock_supabase_sec):
+    # 1. Gumawa tayo ng mock user object
+    mock_user = MagicMock()
+    mock_user.id = "fake-auth-uuid-123"
+    mock_user.email = "testemployee@example.com"
+
+    # 2. I-override ang FastAPI dependency para hindi mag-fail ang authentication
+    from app.middleware.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: mock_user
+
+    try:
+        # Mock employee table profile result
+        mock_profile_res = MagicMock()
+        mock_profile_res.data = {
+            "employee_id": "EMP-001",
+            "auth_id": "fake-auth-uuid-123",
+            "email": "testemployee@example.com"
+        }
+        mock_supabase_sec.table.return_value.select.return_value.eq.return_value.maybe_single.return_value.execute.return_value = mock_profile_res
+
+        response = client.get("/api/auth/me")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["employee_profile"]["employee_id"] == "EMP-001"
+    finally:
+        # 3. clear ang dependency overrides pagkatapos ng test 
+        app.dependency_overrides.clear()

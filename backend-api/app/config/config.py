@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
+    SUPABASE_SERVICE_KEY: str
     SUPABASE_JWT_SECRET: str
     UPSTASH_REDIS_REST_URL: str
     UPSTASH_REDIS_REST_TOKEN: str
@@ -24,10 +25,13 @@ class Settings(BaseSettings):
     # MONGODB SETTING
     MONGODB_URL: str
 
+    # Logitic API Key
+    LOGISTIC_API_KEY: str
+
     #Automatic na babasahin ang .env file sa root folder
     model_config = SettingsConfigDict(
         env_file=".env", 
         env_file_encoding="utf-8",
-        extra="ignore" # I-ignore ang ibang variables na wala sa class na ito
+        extra="ignore" 
     )
 settings = Settings()

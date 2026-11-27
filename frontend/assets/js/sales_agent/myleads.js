@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
       updateValueChip(val);
     });
   }
+
+  // Toggle SLA Reason field base sa Contract Type
+  const contractTypeSelect = document.getElementById('modalContractTypeSelect');
+  if (contractTypeSelect) {
+    contractTypeSelect.addEventListener('change', function () {
+      toggleSlaReason(this.value);
+    });
+  }
 });
 
 const STAGE_ORDER = ['new_inquiry', 'qualifying', 'quote_sent', 'negotiation', 'closed_won', 'closed_lost'];
@@ -76,6 +84,14 @@ function togglePickupFields(status) {
   } else {
     pickupSection.classList.add('hidden');
   }
+}
+
+function toggleSlaReason(contractType) {
+  const reasonField = document.getElementById('slaReasonField');
+  if (!reasonField) return;
+
+  const isSla = String(contractType || '').toLowerCase().trim() === 'sla';
+  reasonField.classList.toggle('hidden', !isSla);
 }
 
 function generateInitials(name) {
@@ -145,6 +161,20 @@ function openViewModal(lead) {
   document.getElementById('modalHandling').innerText = displayValue(lead.handling);
   document.getElementById('modalServices').innerText = displayValue(lead.service);
 
+  // Contract details (editable sa form sa ibaba)
+  const contractType = String(lead.contract_type || 'standard_tc').toLowerCase().trim();
+  const contractTypeSelect = document.getElementById('modalContractTypeSelect');
+  if (contractTypeSelect) {
+    contractTypeSelect.value = contractType === 'sla' ? 'sla' : 'standard_tc';
+  }
+
+  const slaReasonInput = document.getElementById('modalSlaReasonInput');
+  if (slaReasonInput) {
+    slaReasonInput.value = lead.sla_reason || '';
+  }
+
+  toggleSlaReason(contractType);
+
   // 4. Action Button (Email only; walang Call Client)
   const emailBtn = document.getElementById('drawerEmailBtn');
   if (emailBtn) {
@@ -200,6 +230,8 @@ async function handleStatusUpdate(e) {
   const cargoDetails = document.getElementById('modalCargo')?.value.trim();
   const pickupAddress = document.getElementById('modalPickupAddress')?.value.trim();
   const pickupDateTime = document.getElementById('modalPickupDateTime')?.value;
+  const contractType = document.getElementById('modalContractTypeSelect')?.value || 'standard_tc';
+  const slaReason = (document.getElementById('modalSlaReasonInput')?.value || '').trim();
 
   if (newStatus === 'closed_won') {
     if (!pickupAddress || !pickupDateTime) {
@@ -222,7 +254,10 @@ async function handleStatusUpdate(e) {
     estimated_price: priceVal ? parseFloat(priceVal) : 0,
     cargo_details: cargoDetails || null,
     pickup_address: pickupAddress || null,
-    pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null
+    pickup_datetime: pickupDateTime ? new Date(pickupDateTime).toISOString() : null,
+    contract_type: contractType,
+    // '' (hindi null) para ma-clear talaga ang lumang reason; nilalagpasan kasi ng backend ang None.
+    sla_reason: contractType === 'sla' ? slaReason : ''
   };
 
   try {

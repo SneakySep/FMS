@@ -123,6 +123,24 @@
           </select>
         </div>
 
+        <!-- CONTRACT DETAILS -->
+        <div class="rounded-2xl bg-indigo-50/40 p-3.5 border border-indigo-100/50 space-y-3">
+          <span class="block text-xs font-bold text-indigo-900"><i class="fa-solid fa-file-contract mr-1"></i> Contract Details</span>
+          <div>
+            <label class="block text-[11px] font-medium text-slate-500 mb-1">Contract Type</label>
+            <select id="modalContractTypeSelect"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="standard_tc">Standard T&amp;C</option>
+              <option value="sla">SLA</option>
+            </select>
+          </div>
+          <div id="slaReasonField" class="hidden">
+            <label class="block text-[11px] font-medium text-slate-500 mb-1">SLA Reason</label>
+            <textarea id="modalSlaReasonInput" rows="2" placeholder="Reason for SLA..."
+                      class="w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          </div>
+        </div>
+
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Agreed Price / Quote (&#8369;)</label>
           <input type="number" step="0.01" id="modalPriceInput" placeholder="0.00"

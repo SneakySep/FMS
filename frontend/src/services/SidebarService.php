@@ -214,9 +214,9 @@ class SidebarService
                             'badge' => (string)$leads, 
                             'badgeColor' => 'bg-purple-500/20 text-purple-400'
                         ],
-                        'kanban' => ['label' => 'Sales Board', 
+                        'SLA Contracts' => ['label' => 'SLA Contracts', 
                                      'icon' => 'fa-columns', 
-                                     'url' => '/src/views/sales_agent/kanban.php'],
+                                     'url' => '/src/views/sales_agent/sla_contracts.php'],
                     ],
                     'ACCOUNTS & CLIENTS' => [
                         'accounts_group' => [

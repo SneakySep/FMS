@@ -33,10 +33,11 @@ async function submitNewLead(event) {
   };
 
   try {
-    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/leads/leads`, {
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/sales/inquiries/manual-entry`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (window.APP_CONFIG.ACCESS_TOKEN || '')
       },
       body: JSON.stringify(payload)
     });

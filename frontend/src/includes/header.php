@@ -146,7 +146,7 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
 <script>
     window.APP_CONFIG = {
         
-        API_BASE_URL: <?= json_encode(PUBLIC_API_URL) ?>
+        API_BASE_URL: <?= json_encode(PUBLIC_API_URL) ?>,
         ACCESS_TOKEN: <?= json_encode($_SESSION['access_token'] ?? '') ?>
     };
 </script>

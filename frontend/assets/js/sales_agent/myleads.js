@@ -110,6 +110,12 @@ function restrictStatusDropdown(currentStatus) {
   });
 }
 
+// Value formatter: empty/placeholder -> "None"
+function displayValue(value) {
+  const s = (value === null || value === undefined) ? '' : String(value).trim();
+  return ['', 'string', 'null', 'undefined', 'n/a', 'none'].includes(s.toLowerCase()) ? 'None' : s;
+}
+
 function openViewModal(lead) {
   console.log("OPENING MODAL WITH DATA:", lead);
 
@@ -126,32 +132,26 @@ function openViewModal(lead) {
   }
 
   // 3. Contact Info
-  const contact = lead.contact_person || lead.contact || 'N/A';
-  const email = lead.email || 'N/A';
-  const phone = lead.phone_number || lead.phone || 'N/A';
+  const contact = displayValue(lead.contact_person || lead.contact);
+  const email = displayValue(lead.email);
+  const phone = displayValue(lead.phone_number || lead.phone);
 
   document.getElementById('modalContact').innerText = contact;
   document.getElementById('modalEmail').innerText = email;
   document.getElementById('modalPhone').innerText = phone;
-  document.getElementById('modalPlatform').innerText = (lead.platform_used === 'Google Forms') ? 'Gmail' : (lead.platform_used || 'N/A');
-  document.getElementById('modalService').innerText = lead.service_type || lead.service || 'N/A';
-  document.getElementById('modalRoute').innerText = (lead.origin || 'N/A') + ' ➔ ' + (lead.destination || 'N/A');
-  document.getElementById('modalHandling').innerText = lead.handling || 'N/A';
-  document.getElementById('modalServices').innerText = lead.service || 'N/A';
+  document.getElementById('modalPlatform').innerText = (lead.platform_used === 'Google Forms') ? 'Gmail' : displayValue(lead.platform_used);
+  document.getElementById('modalService').innerText = displayValue(lead.service_type || lead.service);
+  document.getElementById('modalRoute').innerText = displayValue(lead.origin) + ' ➔ ' + displayValue(lead.destination);
+  document.getElementById('modalHandling').innerText = displayValue(lead.handling);
+  document.getElementById('modalServices').innerText = displayValue(lead.service);
 
-  // 4. Action Buttons 
-  const emailBtn = document.getElementById('contactModalEmailBtn');
-  const emailText = document.getElementById('contactModalEmailText');
-  if (emailBtn && emailText) {
-    emailText.innerText = email;
-    emailBtn.href = (email !== 'N/A') ? `mailto:${email}` : '#';
-  }
-
-  const phoneBtn = document.getElementById('contactModalPhoneBtn');
-  const phoneText = document.getElementById('contactModalPhoneText');
-  if (phoneBtn && phoneText) {
-    phoneText.innerText = phone;
-    phoneBtn.href = (phone !== 'N/A') ? `tel:${phone}` : '#';
+  // 4. Action Button (Email only; walang Call Client)
+  const emailBtn = document.getElementById('drawerEmailBtn');
+  if (emailBtn) {
+    const hasEmail = email !== 'None';
+    emailBtn.href = hasEmail ? `mailto:${lead.email}` : '#';
+    emailBtn.classList.toggle('opacity-50', !hasEmail);
+    emailBtn.classList.toggle('pointer-events-none', !hasEmail);
   }
 
   // 5. Cargo Details
@@ -226,9 +226,12 @@ async function handleStatusUpdate(e) {
   };
 
   try {
-    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/v1/leads/${leadId}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/sales/leads/${encodeURIComponent(leadId)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (window.APP_CONFIG.ACCESS_TOKEN || '')
+      },
       body: JSON.stringify(payload)
     });
 

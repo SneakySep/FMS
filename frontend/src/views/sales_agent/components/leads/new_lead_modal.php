@@ -1,7 +1,7 @@
 <!-- CREATE NEW LEAD MODAL -->
-<div id="newLeadModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
-  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
-    
+<div id="newLeadModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+
     <!-- MODAL HEADER -->
     <div class="flex items-center justify-between pb-4 border-b border-slate-100">
       <div class="flex items-center gap-3">
@@ -20,22 +20,25 @@
 
     <!-- MODAL FORM -->
     <form id="createLeadForm" onsubmit="submitNewLead(event)" class="py-5 space-y-4">
-      
+
       <!-- COMPANY NAME -->
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">Company Name</label>
-        <input type="text" name="company_name" required placeholder="e.g. Smartech Solutions" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+        <input type="text" name="company_name" required placeholder="e.g. Smartech Solutions"
+               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
       </div>
 
       <!-- CONTACT PERSON & EMAIL -->
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Contact Person</label>
-          <input type="text" name="contact_person" required placeholder="e.g. Juan Cruz" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+          <input type="text" name="contact_person" required placeholder="e.g. Juan Cruz"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
         </div>
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Email Address</label>
-          <input type="email" name="email" required placeholder="juan@company.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+          <input type="email" name="email" required placeholder="juan@company.com"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
         </div>
       </div>
 
@@ -43,7 +46,8 @@
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Phone Number</label>
-          <input type="text" name="phone_number" required placeholder="09123456789" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+          <input type="text" name="phone_number" placeholder="09123456789"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
         </div>
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Freight Mode</label>
@@ -87,11 +91,13 @@
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Origin</label>
-          <input type="text" name="origin" required placeholder="e.g. Manila Port" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+          <input type="text" name="origin" required placeholder="e.g. Manila Port"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
         </div>
         <div>
           <label class="text-[11px] font-bold text-slate-600 block mb-1">Destination</label>
-          <input type="text" name="destination" required placeholder="e.g. Cebu City" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+          <input type="text" name="destination" required placeholder="e.g. Cebu City"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
         </div>
       </div>
 
@@ -106,6 +112,5 @@
       </div>
 
     </form>
-
   </div>
 </div>

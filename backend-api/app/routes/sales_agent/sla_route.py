@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["Sales SLA Contracts"]
 )
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/contract", status_code=status.HTTP_201_CREATED)
 async def create_sla_contract(
     payload: SLACreateRequest,
     request: Request,

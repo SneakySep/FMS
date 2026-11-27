@@ -9,6 +9,7 @@ from app.routes.sales_agent.leads import leads_router
 from app.routes.sales_agent.call_report_route import call_report_router
 from app.routes.sales_agent.shipment_router import shipment_router
 from app.routes.sales_agent.campaign_router import campaign_router
+from app.routes.sales_agent.sla_template_route import sla_template_router
 
 #======== End of Sales Agent Routes ========#
 from app.routes.admin.admin import router as admin_router
@@ -65,6 +66,7 @@ app.include_router(call_report_router)
 app.include_router(kanban_router)
 app.include_router(shipment_router)
 app.include_router(sla_router)
+app.include_router(sla_template_router)
 app.include_router(campaign_router)
 app.include_router(sales_inquiry_router)
 app.include_router(admin_analytics_router)

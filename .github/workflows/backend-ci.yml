@@ -9,6 +9,7 @@ on:
     branches: [ main, dev ]
     paths:
       - 'backend-api/**'
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -22,10 +23,10 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: '3.13.3'
+        python-version: '3.12'
         cache: 'pip'
 
     - name: Install Dependencies
@@ -46,9 +47,12 @@ jobs:
       env:
         SUPABASE_URL: "https://dummy-url.supabase.co"
         SUPABASE_KEY: "dummy-key"
+        SUPABASE_SERVICE_KEY: "dummy-service-key"
         SUPABASE_URL_2: "https://dummy-url-2.supabase.co"
-        SUPABASE_SERVICE_KEY_2: "dummy-key-2"
+        SUPABASE_KEY_2: "dummy-key-2"
+        SUPABASE_SERVICE_KEY_2: "dummy-service-key-2"
         SUPABASE_JWT_SECRET: "dummy-jwt-secret"
+        LOGISTIC_API_KEY: "dummy-logistic-key"
         GEMINI_API_KEY: "fake-gemini-api-key-for-testing"
         MONGODB_URL: "mongodb://fake-mongo-url:27017"
         SMTP_SENDER: "test@gmail.com"

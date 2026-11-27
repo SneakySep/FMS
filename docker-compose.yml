@@ -17,6 +17,8 @@ services:
   frontend:
     build: ./frontend
     container_name: crm_frontend
+    env_file:
+      - ./frontend/.env
     ports:
       - "8080:80"
     volumes:

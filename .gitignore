@@ -1,0 +1,29 @@
+# Environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+myvenv/
+.venv/
+venv/
+
+# PHP / Node dependencies
+node_modules/
+vendor/
+
+# IDE / OS files
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db

@@ -25,8 +25,8 @@ $navSections = $sidebar['navSections'];
         
         <!-- Brand Logo & Dynamic Badge -->
         <div class="flex items-center gap-3 px-1.5 py-2">
-            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/30 flex items-center justify-center bg-white/5 border border-white/10 shrink-0">
-                <img src="../../../assets/image/new_logo.png" alt="Company Logo" class="w-full h-full object-contain p-1">
+            <div class="w-10 h-10 rounded-xl overflow-hidden bg-white border border-white/10 shadow-lg shadow-blue-500/20 flex items-center justify-center shrink-0">
+                <img src="../../../assets/image/new_logo.png" alt="Priority Handling logo" class="w-full h-full object-contain p-1">
             </div>
             <div class="leading-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">
                 <h1 class="text-[12px] font-black tracking-wider text-white uppercase">PRIORITY <span class="text-brand-blue">HANDLING</span></h1>
@@ -141,10 +141,15 @@ $navSections = $sidebar['navSections'];
                 </div>
             </div>
             
-            <!-- Logout Button -->
-            <a href="logout.php" id="logoutBtn" title="Logout" class="text-slate-400 hover:text-red-400 p-1.5 transition-colors shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
-            </a>
+            <!-- Theme Toggle + Logout -->
+            <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button type="button" data-theme-toggle onclick="window.FMSTheme && window.FMSTheme.toggle()" title="Toggle dark mode" class="text-slate-400 hover:text-white p-1.5 transition-colors">
+                    <i class="fa-solid fa-moon text-sm"></i>
+                </button>
+                <a href="logout.php" id="logoutBtn" title="Logout" class="text-slate-400 hover:text-red-400 p-1.5 transition-colors">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                </a>
+            </div>
         </div>
     </div>
 </aside>

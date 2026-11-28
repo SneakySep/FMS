@@ -61,6 +61,19 @@ $hasNotifications = isset($new_inquiry) && $new_inquiry > 0;
         </a>
       <?php endif; ?>
 
+      <!-- Theme Toggle -->
+      <button
+        type="button"
+        data-theme-toggle
+        onclick="window.FMSTheme && window.FMSTheme.toggle()"
+        class="p-1.5 text-slate-500 hover:text-slate-800 transition shrink-0 rounded-lg hover:bg-slate-100"
+        title="Toggle dark mode"
+        aria-label="Toggle dark mode"
+        aria-pressed="false"
+      >
+        <i class="fa-solid fa-moon text-sm"></i>
+      </button>
+
       <!-- Notification Bell -->
       <button 
         type="button" 

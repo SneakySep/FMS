@@ -3,6 +3,18 @@
 <title>Priority Handling Logistics</title>
 <link rel="icon" type="image/png" href="/assets/image/new_logo.png">
 
+<!-- Anti-flash theme boot: apply graphite dark before first paint -->
+<script>
+    (function () {
+        try {
+            var saved = localStorage.getItem('fms-theme');
+            var dark = saved ? saved === 'dark'
+                             : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.classList.toggle('dark', dark);
+        } catch (e) { /* ignore */ }
+    })();
+</script>
+
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,6 +29,7 @@
 <!-- Tailwind Config Customization -->
 <script>
     tailwind.config = {
+        darkMode: 'class',
         theme: {
             extend: {
                 colors: {
@@ -35,3 +48,6 @@
         }
     }
 </script>
+
+<!-- Graphite theme controller -->
+<script src="/assets/js/theme.js"></script>

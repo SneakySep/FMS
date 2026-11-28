@@ -77,3 +77,24 @@
   font-size: 9.5px; 
   line-height: 1.1; 
 }
+
+/* Graphite dark overrides for the pipeline stepper */
+html.dark .lm-step::before { background: #2b2e34; }
+html.dark .lm-dot {
+  background: #1f2125;
+  color: #6c7178;
+  border-color: #2b2e34;
+}
+html.dark .lm-step.is-done .lm-dot {
+  background: #26292e;
+  color: #e7e8ea;
+  border-color: #3a3e45;
+}
+html.dark .lm-step.is-active .lm-dot {
+  background: linear-gradient(135deg, #ffffff, #c9ccd2);
+  color: #0c0d0f;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14);
+}
+html.dark .lm-step.is-done::before,
+html.dark .lm-step.is-active::before { background: #3a3e45; }

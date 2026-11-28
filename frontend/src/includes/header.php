@@ -44,6 +44,18 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
     <!-- Browser Tab Favicon (New Logo) -->
      <link rel="icon" type="image/png" href="../../../assets/image/new_logo.png">
 
+    <!-- Anti-flash theme boot: apply graphite dark before first paint -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('fms-theme');
+                var dark = saved ? saved === 'dark'
+                                 : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', dark);
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -66,6 +78,10 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
         #routes-map .leaflet-tile-pane {
         filter: grayscale(100%) brightness(105%) contrast(90%);
         }
+        /* Graphite dark tiles */
+        html.dark #routes-map .leaflet-tile-pane {
+        filter: invert(100%) hue-rotate(180deg) grayscale(20%) brightness(95%) contrast(90%);
+        }
     </style>
 
     <?php 
@@ -76,6 +92,9 @@ $isChatPage = (strpos($currentScript, 'chat.php') !== false);
 
     <!-- ApexCharts CDN -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Graphite theme controller (must load after ApexCharts) -->
+    <script src="/assets/js/theme.js"></script>
     
 </head>
 <body 

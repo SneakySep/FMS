@@ -217,6 +217,9 @@ class SidebarService
                         'SLA Contracts' => ['label' => 'SLA Contracts', 
                                      'icon' => 'fa-columns', 
                                      'url' => '/src/views/sales_agent/sla_contracts.php'],
+                        'SLA Templates' => ['label' => 'SLA Templates', 
+                                     'icon' => 'fa-columns', 
+                                     'url' => '/src/views/sales_agent/sla_templates.php']
                     ],
                     'ACCOUNTS & CLIENTS' => [
                         'accounts_group' => [

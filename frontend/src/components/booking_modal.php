@@ -60,7 +60,8 @@ $customer_id = $booking_customer_id_preset ?? $_SESSION['customer_id'] ?? $_SESS
 
     .logo-icon {
       width: 34px;
-      height: 24px;
+      height: 28px;
+      object-fit: contain;
     }
 
     .logo-text {
@@ -495,11 +496,7 @@ $customer_id = $booking_customer_id_preset ?? $_SESSION['customer_id'] ?? $_SESS
     <header class="top-header">
       <div class="company-info">
         <div class="logo-container">
-          <svg class="logo-icon" viewBox="0 0 48 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 18C4 10.268 10.268 4 18 4H30C37.732 4 44 10.268 44 18C44 25.732 37.732 32 30 32H18C10.268 32 4 25.732 4 18Z" stroke="#1aa0d8" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M2 18H46" stroke="#1aa0d8" stroke-width="3" stroke-linecap="round"/>
-            <path d="M14 10L34 26" stroke="#0e1e38" stroke-width="3" stroke-linecap="round"/>
-          </svg>
+          <img class="logo-icon" src="/assets/image/new_logo.png" alt="Priority Handling logo">
           <div>
             <div class="logo-text">PRIORITY HANDLING LOGISTICS, INC.</div>
             <div class="logo-tagline">For your Courier and Freight Forwarding Needs</div>

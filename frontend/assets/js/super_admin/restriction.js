@@ -27,7 +27,7 @@
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="6" class="text-center py-10 text-slate-400">
-                            <i class="fa-solid fa-shield-check text-2xl text-emerald-500/50 mb-2"></i>
+                            <i class="fa-solid fa-shield-halved text-2xl text-emerald-500/50 mb-2"></i>
                             <p>No restricted user records found.</p>
                         </td>
                     </tr>`;
